@@ -9,7 +9,9 @@ import Notifications from "@/pages/Notifications.vue";
 import Icons from "@/pages/Icons.vue";
 import Maps from "@/pages/Maps.vue";
 import Typography from "@/pages/Typography.vue";
-import TableList from "@/pages/TableList.vue";
+import Stocks from "@/pages/Stocks.vue";
+import Products from "@/pages/Products.vue";
+import Logs from "@/pages/Logs.vue";
 
 const routes = [
   {
@@ -48,9 +50,19 @@ const routes = [
         component: Typography
       },
       {
-        path: "table-list",
-        name: "table-list",
-        component: TableList
+        path: "stocks",
+        name: "stocks",
+        component: Stocks
+      },
+      {
+        path: "products",
+        name: "products",
+        component: Products
+      },
+      {
+        path: "logs",
+        name: "logs",
+        component: Logs
       }
     ]
   },

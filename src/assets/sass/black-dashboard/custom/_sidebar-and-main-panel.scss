@@ -269,12 +269,12 @@
         padding: $padding-base-vertical $padding-base-horizontal;
         z-index: 4;
 
-        a.logo-mini,
-        a.logo-normal{
+        span.logo-mini,
+        span.logo-normal{
             @extend .animation-transition-general;
         }
 
-        a.logo-mini{
+        span.logo-mini{
             opacity: 1;
             float: left;
             width: 34px;
@@ -283,7 +283,7 @@
             margin-right: 10px;
         }
 
-        a.logo-mini .logo-img {
+        span.logo-mini .logo-img {
           width: 32px;
           display: inline-block;
           height: 32px;
@@ -300,7 +300,7 @@
           }
         }
 
-        a.logo-normal{
+        span.logo-normal{
             display: block;
             opacity: 1;
             @include transform-translate-x(0px);
