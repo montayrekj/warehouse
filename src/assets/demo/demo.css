@@ -61,3 +61,16 @@
   max-width: 530px;
   margin: 0 auto;
 }
+
+.sweet-modal.theme-dark {
+  background-color: #273544
+}
+
+.sweet-modal-overlay.theme-dark {
+  background: rgba(47, 61, 74, 0.75);
+}
+
+.sweet-title h2 {
+  top: 35%;
+  position: relative;
+}
