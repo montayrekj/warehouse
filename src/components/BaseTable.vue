@@ -3,6 +3,14 @@
     <thead :class="theadClasses">
     <tr>
       <slot name="columns">
+        <th>
+          <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" v-model="selectAll" @click="selectAllStocks">
+            <span class="form-check-sign"></span>
+          </label>
+          </div>
+				</th>
         <th v-for="column in columns" :key="column">{{column}}</th>
       </slot>
     </tr>
@@ -10,6 +18,14 @@
     <tbody :class="tbodyClasses">
     <tr v-for="(item, index) in data" :key="index">
       <slot :row="item">
+        <td>
+          <div class="form-check">
+					<label class="form-check-label">
+    					<input class="form-check-input" type="checkbox" :value="item.id" v-model="selected">
+						<span class="form-check-sign"></span>
+  					</label>
+          </div>
+				</td>
         <td v-for="(column, index) in columns"
             :key="index"
             v-if="hasValue(item, column)">
@@ -50,6 +66,12 @@
         description: "<tbody> css classes"
       }
     },
+    data() {
+      return {
+        selected: [],
+        selectAll: false,
+      }
+    },
     computed: {
       tableClass() {
         return this.type && `table-${this.type}`;
@@ -61,7 +83,15 @@
       },
       itemValue(item, column) {
         return item[column.toLowerCase()];
-      }
+      },
+      selectAllStocks() {
+        this.selected = [];
+        if (!this.selectAll) {
+            for (let i in this.data) {
+              this.selected.push(this.data[i].id);
+          }
+        }
+      },
     }
   };
 </script>

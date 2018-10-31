@@ -1,37 +1,123 @@
 <template>
     <div class="row">
       <div class="col-12">
-        <card :title="table1.title">
+        <card>
           <div class="pull-right" style="padding-bottom: 10px">
-            <button class="btn btn-sm btn-success" style="margin-right: 5px" v-on:click="toggleModal('addStock')">Stock +</button>
-            <button class="btn btn-sm btn-danger" v-on:click="toggleModal('removeStock')">Stock -</button>
+            <button class="btn btn-sm btn-success" style="margin-right: 5px" v-on:click="toggleModal('addStock')">Add Stocks</button>
+            <button class="btn btn-sm btn-danger" v-on:click="toggleModal('removeStock')">Reduce Stocks</button>
           </div>
           <div class="table-responsive">
-            <base-table :data="table1.data"
-                        :columns="table1.columns"
-                        thead-classes="text-primary">
-            </base-table>
+            <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+              <tr>
+                <slot name="columns">
+                  <th>
+                    <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" v-model="selectAll" @click="selectAllStocks">
+                      <span class="form-check-sign"></span>
+                    </label>
+                    </div>
+                  </th>
+                  <th v-for="column in table1.columns" :key="column">{{column}}</th>
+                </slot>
+              </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+              <tr v-for="(item, index) in table1.data" :key="index">
+                <slot :row="item">
+                  <td>
+                    <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" :value="item.id" v-model="selected">
+                      <span class="form-check-sign"></span>
+                      </label>
+                    </div>
+                  </td>
+                  <td v-for="(column, index) in table1.columns"
+                      :key="index"
+                      v-if="hasValue(item, column)">
+                    {{itemValue(item, column)}}
+                  </td>
+                </slot>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </card>
       </div>
-      <sweet-modal ref="addStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks">
-        This is an error…
 
-        <button slot="button" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
+      <!-- Add Stocks Modal -->
+      <sweet-modal ref="errorStockModal" icon="error" hide-close-button overlay-theme="dark" modal-theme="dark" title="Oops!">
+        Please select a Stock inorder to Add/Reduce Stocks.
+        <button slot="button" v-on:click="closeErrorModal()" class="btn btn-sm btn-success">Fine!</button>
+      </sweet-modal>
+      <!-- Add Stocks Modal -->
+      <sweet-modal ref="addStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks">
+        <table class="table tablesorter" :class="tableClass">
+          <thead class="text-primary">
+          <tr>
+            <slot name="columns">
+              <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
+            </slot>
+          </tr>
+          </thead>
+          <tbody :class="tbodyClasses">
+          <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+            <slot :row="i">
+              <td v-for="(column, index) in table1.modalColumns"
+                  :key="index"
+                  v-if="hasValue(getItemById(i), column)">
+                {{itemValue(getItemById(i), column)}}
+                <input v-if="quantityChangeColumn(column)" 
+                  type="number" 
+                  class="form-control" 
+                  id="stockQuantity" 
+                  style="background-color: #1c2a38"
+                  min="0"
+                  @change="quantityChange($event, i, indexTemp, 'addStock')"
+                  v-model="quantity[indexTemp]">
+              </td>
+            </slot>
+          </tr>
+          </tbody>
+        </table>
+
+        <button slot="button" v-on:click="saveStock('addStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
         <button slot="button" v-on:click="toggleModal('addStock')" class="btn btn-sm btn-danger">Cancel</button>
       </sweet-modal>
-      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Remove Stocks">
-        <div class="row">
-          <span class="col-md-6" style="height: 35px;line-height: 35px;">Product Name: &nbsp Sample Product</span>
-    
-          <div class="col-md-5">
-            <div class="row">
-            <span style="height: 35px;line-height: 35px;margin-right: 10px">Quantity: </span>
-            <input type="number" class="form-control col-md-4" id="stockQuantity" style="background-color: #1c2a38">
-            </div>
-          </div>
-        </div>
-        <button slot="button" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
+
+      <!-- Remove Stocks Modal -->
+      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
+        <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+              <tr>
+                <slot name="columns">
+                  <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
+                </slot>
+              </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+              <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+                <slot :row="i">
+                  <td v-for="(column, index) in table1.modalColumns"
+                      :key="index"
+                      v-if="hasValue(getItemById(i), column)">
+                    {{itemValue(getItemById(i), column)}}
+                    <input v-if="quantityChangeColumn(column)" 
+                      type="number" 
+                      class="form-control" 
+                      id="stockQuantity" 
+                      style="background-color: #1c2a38"
+                      min="0"
+                      @change="quantityChange($event, i, indexTemp, 'removeStock')"
+                      v-model="quantity[indexTemp]">
+                  </td>
+                </slot>
+              </tr>
+              </tbody>
+            </table>
+        <button slot="button" v-on:click="saveStock('removeStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
         <button slot="button" v-on:click="toggleModal('removeStock')" class="btn btn-sm btn-danger">Cancel</button>
       </sweet-modal>
     </div>
@@ -39,56 +125,64 @@
 <script>
 import { BaseTable } from "@/components";
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-const tableColumns = ["Name", "Country", "City", "Salary"];
+const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price"];
+const modalColumns = ["Name", "Quantity", "Unit", ""]
 const tableData = [
   {
     id: 1,
-    name: "Dakota Rice",
-    salary: "$36.738",
-    country: "Niger",
-    city: "Oud-Turnhout",
+    name: "Ganador",
+    code: "GNDR",
+    quantity: "10",
+    unit: "Sack",
+    price: "54.00"
   },
   {
     id: 2,
-    name: "Minerva Hooper",
-    salary: "$23,789",
-    country: "Curaçao",
-    city: "Sinaai-Waas"
+    name: "Lion Ivory",
+    code: "LNIVRY",
+    quantity: "8",
+    unit: "Sack",
+    price: "50.00"
   },
   {
     id: 3,
-    name: "Sage Rodriguez",
-    salary: "$56,142",
-    country: "Netherlands",
-    city: "Baileux"
+    name: "NFA Rice",
+    code: "NFA",
+    quantity: "25",
+    unit: "Kilo",
+    price: "30.00"
   },
   {
     id: 4,
-    name: "Philip Chaney",
-    salary: "$38,735",
-    country: "Korea, South",
-    city: "Overland Park"
+    name: "A Plus",
+    code: "APLS",
+    quantity: "15",
+    unit: "Sack",
+    price: "84.00"
   },
   {
     id: 5,
-    name: "Doris Greene",
-    salary: "$63,542",
-    country: "Malawi",
-    city: "Feldkirchen in Kärnten"
+    name: "Pilit",
+    code: "PLT",
+    quantity: "50",
+    unit: "Kilo",
+    price: "45.00"
   },
   {
     id: 6,
-    name: 'Mason Porter',
-    salary: '$98,615',
-    country: 'Chile',
-    city: 'Gloucester'
+    name: "Sinandomeng",
+    code: "SNDMNG",
+    quantity: "25",
+    unit: "Sack",
+    price: "51.00"
   },
   {
     id: 7,
-    name: 'Jon Porter',
-    salary: '$78,615',
-    country: 'Portugal',
-    city: 'Gloucester'
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
   }
 ];
 
@@ -101,33 +195,144 @@ export default {
   data() {
     return {
       table1: {
-        title: "Stocks",
         columns: [...tableColumns],
         data: [...tableData],
-        selectedId: [1,3,6]
+        modalColumns: [...modalColumns]
       },
-      modalFlag: false
+      modalFlag: false,
+      selected: [],
+      selectAll: false,
+      type: '',
+      tbodyClasses: '',
+      quantity: [],
     };
+  },
+  computed: {
+    tableClass() {
+      return this.type && `table-${this.type}`;
+    },
+  },
+  watch: {
+    selected: function(){
+      if(this.selected.length !== this.table1.data.length){
+        this.selectAll = false;
+      } else if(this.selected.length === this.table1.data.length){
+        this.selectAll = true;
+      }
+    }
   },
   methods: {
     toggleModal: function(origin){
       if(origin === "addStock") {
         if(!this.$data.modalFlag) {
-          this.$refs.addStockModal.open()
-          this.$data.modalFlag = true;
+          if(this.selected.length > 0){
+            this.$refs.addStockModal.open()
+            this.quantity = new Array(this.selected.length);
+            for(var i = 0; i < this.quantity.length; i++){
+              this.quantity[i] = 0;
+            }
+            this.$data.modalFlag = true;
+          } else {
+            this.$refs.errorStockModal.open();
+          }
         } else {
           this.$refs.addStockModal.close()
+          this.quantity = [];
           this.$data.modalFlag = false;
         }
       } else if(origin === "removeStock") {
         if(!this.$data.modalFlag) {
-          this.$refs.removeStockModal.open()
-          this.$data.modalFlag = true;
+          if(this.selected.length > 0){
+            this.$refs.removeStockModal.open()
+            this.quantity = new Array(this.selected.length);
+            for(var i = 0; i < this.quantity.length; i++){
+              this.quantity[i] = 0;
+            }
+            this.$data.modalFlag = true;
+          } else {
+            this.$refs.errorStockModal.open();
+          }
         } else {
           this.$refs.removeStockModal.close()
+          this.quantity = [];
           this.$data.modalFlag = false;
         }
       }
+    },
+    closeErrorModal(){
+      this.$refs.errorStockModal.close()
+    },
+    isSelected(index) {
+      return this.selected.indexOf(index) > -1;
+    },
+    getWidth(column) {
+      return column === ""? "20%":""
+    },
+    hasValue(item, column) {
+      return item[column.toLowerCase()] !== "undefined";
+    },
+    itemValue(item, column) {
+      return item[column.toLowerCase()];
+    },
+    getItemById(id){
+      for(var i = 0; i < this.table1.data.length; i++){
+        if(this.table1.data[i].id === id){
+          return this.table1.data[i];
+        }
+      }
+    },
+    quantityChangeColumn(column){
+      return column === "";
+    },
+    selectAllStocks() {
+      this.selected = [];
+      if (!this.selectAll) {
+          for (let i in this.table1.data) {
+            this.selected.push(this.table1.data[i].id);
+        }
+      } 
+    },
+    saveStock(origin) {
+      if(origin === "addStock") {
+          for(var i = 0; i < this.selected.length; i++){
+            for(var j = 0; j < this.table1.data.length; j++){
+              if(this.table1.data[j].id === this.selected[i]){
+                this.table1.data[j].quantity = Number(this.table1.data[j].quantity) + Number(this.quantity[i]);
+                this.table1.data[j].quantity = this.table1.data[j].quantity.toString();
+                break;
+              }
+            }
+          }
+          this.$refs.addStockModal.close()
+          this.quantity = [];
+          this.$data.modalFlag = false;
+      } else if(origin === "removeStock") {
+          for(var i = 0; i < this.selected.length; i++){
+            for(var j = 0; j < this.table1.data.length; j++){
+              if(this.table1.data[j].id === this.selected[i]){
+                this.table1.data[j].quantity = Number(this.table1.data[j].quantity) - Number(this.quantity[i]);
+                this.table1.data[j].quantity = this.table1.data[j].quantity.toString();
+                break;
+              }
+            }
+          }
+          this.$refs.removeStockModal.close()
+          this.quantity = [];
+          this.$data.modalFlag = false;
+      }
+    },
+    quantityChange(event, i, index, origin){
+      event.preventDefault();
+      var val = Number(event.target.value);
+      var item = this.getItemById(i);
+      if(val < 0){
+        this.quantity[index] = 0;
+      } else if(val > Number(item.quantity)){
+        if(origin === 'removeStock'){
+          this.quantity[index] = item.quantity;
+        }
+      }
+      this.$forceUpdate();
     }
   }
 };
