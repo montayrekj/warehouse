@@ -4,9 +4,11 @@
         <card style="max-height: calc(100vh - 88px); overflow: scroll">
           <div class="pull-right" style="padding-bottom: 10px">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-8">
+              </div>
+              <div class="col-md-2">
               <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">Add Stocks</button></div>
-              <div class="col-md-6">
+              <div class="col-md-2">
               <button class="btn btn-danger" style=" width: 100%" v-on:click="toggleModal('removeStock')">Reduce Stocks</button></div>
             </div>
           </div>

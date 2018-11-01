@@ -2,8 +2,14 @@
     <div class="row">
       <div class="col-12">
         <card>
-          <div class="pull-right" style="padding-bottom: 10px">
-            <button class="btn btn-sm btn-success" style="margin-right: 5px" @click="toggleAddProduct">Add Product</button>
+          <div class="pull-right" style="padding-bottom: 10px; width: 100%">
+            <div class="row">
+              <div class="col-lg-10">
+              </div>
+              <div class="col-lg-2 pull-right">
+                <button class="btn btn-success" style="width: 100%" @click="toggleAddProduct">Add Product</button>
+              </div>
+            </div>
           </div>
           <div class="table-responsive">
             <table class="table tablesorter" :class="tableClass">
