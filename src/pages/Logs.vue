@@ -5,10 +5,9 @@
         <card type="chart">
           <template slot="header">
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-12">
                 <div class="btn-group btn-group-toggle"
-                     :class="'float-left'"
-                     data-toggle="buttons">
+                     :class="'float-right'" data-toggle="buttons">
                   <label v-for="(option, index) in logsCategories"
                          :key="option"
                          class="btn btn-sm btn-primary btn-simple"
@@ -31,17 +30,29 @@
                     <thead class="text-primary">
                     <tr>
                       <slot name="columns" style="text-align: center">
-                        <th v-for="column in table1.columns" :key="column">{{column}}</th>
+                        <th v-for="column in logsTableColumns" :key="column" align:center>{{column}}</th>
                       </slot>
                     </tr>
                     </thead>
                     <tbody :class="tbodyClasses">
                     <tr v-for="(item, index) in table1.data" :key="index">
                       <slot :row="item">
-                        <td v-for="(column, index) in table1.columns"
+                        <td v-for="(column, index) in logsTableColumns"
                             :key="index"
                             v-if="hasValue(item, column)">
-                          {{itemValue(item, column)}}
+                          <span v-if="column !== 'Type'">{{itemValue(item, column)}}</span>
+                          <span v-if="column === 'Type' && itemValue(item, column) === 'Added'" 
+                          style="background-image: linear-gradient(to bottom left, #00f2c3, #00b191, #00f2c3) !important;
+                          padding: 4px 12px;
+                          border-radius: 20px;">
+                            {{itemValue(item, column)}}
+                          </span>
+                          <span v-if="column === 'Type' && itemValue(item, column) === 'Reduced'"
+                          style="background-image: linear-gradient(to bottom left, #fd5d93, #ec250d, #fd5d93);
+                          padding: 4px 12px;
+                          border-radius: 20px;">
+                            {{itemValue(item, column)}}
+                          </span>
                         </td>
                       </slot>
                     </tr>
@@ -58,8 +69,7 @@
 <script>
   import { BaseTable } from "@/components";
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
-
-  const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price"];
+  
   const tableData = [
     {
       id: 1,
@@ -67,7 +77,9 @@
       code: "GNDR",
       quantity: "10",
       unit: "Sack",
-      price: "54.00"
+      price: "54.00",
+      type: "Added"
+
     },
     {
       id: 2,
@@ -75,7 +87,8 @@
       code: "LNIVRY",
       quantity: "8",
       unit: "Sack",
-      price: "50.00"
+      price: "50.00",
+      type: "Added"
     },
     {
       id: 3,
@@ -83,7 +96,8 @@
       code: "NFA",
       quantity: "25",
       unit: "Kilo",
-      price: "30.00"
+      price: "30.00",
+      type: "Added"
     },
     {
       id: 4,
@@ -91,7 +105,8 @@
       code: "APLS",
       quantity: "15",
       unit: "Sack",
-      price: "84.00"
+      price: "84.00",
+      type: "Added"
     },
     {
       id: 5,
@@ -99,7 +114,8 @@
       code: "PLT",
       quantity: "50",
       unit: "Kilo",
-      price: "45.00"
+      price: "45.00",
+      type: "Reduced"
     },
     {
       id: 6,
@@ -107,7 +123,8 @@
       code: "SNDMNG",
       quantity: "25",
       unit: "Sack",
-      price: "51.00"
+      price: "51.00",
+      type: "Reduced"
     },
     {
       id: 7,
@@ -115,7 +132,8 @@
       code: "JSMN",
       quantity: "5",
       unit: "Sack",
-      price: "58.00"
+      price: "58.00",
+      type: "Reduced"
     }
   ];
 
@@ -128,15 +146,18 @@
     data() {
       return {
         table1: {
-          columns: [...tableColumns],
           data: [...tableData],
           activeIndex: 0
-        }
+        },
+        tbodyClasses: ''
       };
     },
     computed: {
       tableClass() {
         return this.type && `table-${this.type}`;
+      },
+      logsTableColumns() {
+        return this.$t('logs.tableColumns');
       },
       logsCategories() {
         return this.$t('logs.logsCategories');
@@ -157,7 +178,9 @@
             code: "GNDR",
             quantity: "10",
             unit: "Sack",
-            price: "54.00"
+            price: "54.00",
+            type: "Added"
+
           },
           {
             id: 2,
@@ -165,17 +188,17 @@
             code: "LNIVRY",
             quantity: "8",
             unit: "Sack",
-            price: "50.00"
-          }
-        ]
-        let updatedTableDataReducedStocks = [
+            price: "50.00",
+            type: "Added"
+          },
           {
             id: 3,
             name: "NFA Rice",
             code: "NFA",
             quantity: "25",
             unit: "Kilo",
-            price: "30.00"
+            price: "30.00",
+            type: "Added"
           },
           {
             id: 4,
@@ -183,7 +206,37 @@
             code: "APLS",
             quantity: "15",
             unit: "Sack",
-            price: "84.00"
+            price: "84.00",
+            type: "Added"
+          }
+        ]
+        let updatedTableDataReducedStocks = [
+          {
+            id: 5,
+            name: "Pilit",
+            code: "PLT",
+            quantity: "50",
+            unit: "Kilo",
+            price: "45.00",
+            type: "Reduced"
+          },
+          {
+            id: 6,
+            name: "Sinandomeng",
+            code: "SNDMNG",
+            quantity: "25",
+            unit: "Sack",
+            price: "51.00",
+            type: "Reduced"
+          },
+          {
+            id: 7,
+            name: "Jasmine",
+            code: "JSMN",
+            quantity: "5",
+            unit: "Sack",
+            price: "58.00",
+            type: "Reduced"
           }
         ]
         switch(index){

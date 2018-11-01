@@ -122,6 +122,13 @@
       "All",
       "Added Stocks",
       "Reduced Stocks"
-    ]
+    ],
+    "tableColumns" : [
+      "Name", 
+      "Code", 
+      "Quantity", 
+      "Unit",  
+      "Price", 
+      "Type"]
   }
 }
