@@ -116,5 +116,12 @@
     "stocks": "Stocks",
     "products": "Products",
     "logs": "Logs"
+  },
+  "logs": {
+    "logsCategories": [
+      "All",
+      "Added Stocks",
+      "Reduced Stocks"
+    ]
   }
 }
