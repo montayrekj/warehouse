@@ -92,35 +92,35 @@
       </sweet-modal>
 
       <!-- Remove Stocks Modal -->
-      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
+      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks" style="max-height: 80%">
         <table class="table tablesorter" :class="tableClass">
-              <thead class="text-primary">
-              <tr>
-                <slot name="columns">
-                  <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
-                </slot>
-              </tr>
-              </thead>
-              <tbody :class="tbodyClasses">
-              <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
-                <slot :row="i">
-                  <td v-for="(column, index) in table1.modalColumns"
-                      :key="index"
-                      v-if="hasValue(getItemById(i), column)">
-                    {{itemValue(getItemById(i), column)}}
-                    <input v-if="quantityChangeColumn(column)" 
-                      type="number" 
-                      class="form-control" 
-                      id="stockQuantity" 
-                      style="background-color: #1c2a38"
-                      min="0"
-                      @change="quantityChange($event, i, indexTemp, 'removeStock')"
-                      v-model="quantity[indexTemp]">
-                  </td>
-                </slot>
-              </tr>
-              </tbody>
-            </table>
+          <thead class="text-primary">
+          <tr>
+            <slot name="columns">
+              <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
+            </slot>
+          </tr>
+          </thead>
+          <tbody :class="tbodyClasses">
+          <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+            <slot :row="i">
+              <td v-for="(column, index) in table1.modalColumns"
+                  :key="index"
+                  v-if="hasValue(getItemById(i), column)">
+                {{itemValue(getItemById(i), column)}}
+                <input v-if="quantityChangeColumn(column)" 
+                  type="number" 
+                  class="form-control" 
+                  id="stockQuantity" 
+                  style="background-color: #1c2a38"
+                  min="0"
+                  @change="quantityChange($event, i, indexTemp, 'removeStock')"
+                  v-model="quantity[indexTemp]">
+              </td>
+            </slot>
+          </tr>
+          </tbody>
+        </table>
         <button slot="button" v-on:click="saveStock('removeStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
         <button slot="button" v-on:click="toggleModal('removeStock')" class="btn btn-sm btn-danger">Cancel</button>
       </sweet-modal>
@@ -320,6 +320,9 @@ export default {
       return this.type && `table-${this.type}`;
     },
   },
+  props: {
+    sample: Boolean
+  },
   watch: {
     selected: function(){
       if(this.selected.length !== this.table1.data.length){
@@ -331,9 +334,11 @@ export default {
   },
   methods: {
     toggleModal: function(origin){
+      this.$emit("changeSample", !this.sample)
       if(origin === "addStock") {
         if(!this.$data.modalFlag) {
           if(this.selected.length > 0){
+           
             this.$refs.addStockModal.open()
             this.quantity = new Array(this.selected.length);
             for(var i = 0; i < this.quantity.length; i++){
@@ -368,6 +373,7 @@ export default {
       }
     },
     closeErrorModal(){
+      this.$emit("changeSample", !this.sample)
       this.$refs.errorStockModal.close()
     },
     isSelected(index) {

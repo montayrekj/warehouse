@@ -4,9 +4,9 @@
         <card style="max-height: calc(100vh - 88px); overflow: auto">
           <div class="pull-right" style="padding-bottom: 10px; width: 100%">
             <div class="row">
-              <div class="col-lg-9">
+              <div class="col-lg-10">
               </div>
-              <div class="col-lg-3 pull-right">
+              <div class="col-lg-2 pull-right">
                 <button class="btn btn-success" style="width: 100%" @click="toggleAddProduct">Add Product</button>
               </div>
             </div>
@@ -169,6 +169,9 @@ export default {
       productPrice: null,
     };
   },
+  props: {
+    sample: Boolean
+  },
   computed: {
     tableClass() {
       return this.type && `table-${this.type}`;
@@ -191,6 +194,7 @@ export default {
       return item[column.toLowerCase()];
     },
     deleteWarn(index) {
+      this.$emit("changeSample", !this.sample)
       if(!this.modalFlag) {
         this.$refs.deleteWarning.open();
         this.modalFlag = true;
@@ -202,12 +206,14 @@ export default {
       }
     },
     deleteProduct() {
+      this.$emit("changeSample", !this.sample)
       this.table1.data.splice(this.toBeDeleted, 1)
       this.$refs.deleteWarning.close();
       this.modalFlag = false;
       this.toBeDeleted = 0;
     },
     toggleAddProduct(){
+      this.$emit("changeSample", !this.sample)
       if(!this.modalFlag) {
         this.$refs.addProductModal.open();
         this.modalFlag = true;

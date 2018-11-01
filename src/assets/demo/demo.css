@@ -78,3 +78,7 @@
 .form-control {
   background-color: #1c2a38;
 }
+
+.sweet-buttons {
+  position: relative !important;
+}
