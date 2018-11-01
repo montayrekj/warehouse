@@ -129,6 +129,8 @@
       "Quantity", 
       "Unit",  
       "Price", 
-      "Type"]
+      "Date",
+      "Type"
+    ]
   }
 }

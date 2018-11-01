@@ -78,6 +78,7 @@
       quantity: "10",
       unit: "Sack",
       price: "54.00",
+      date: "11/01/2018",
       type: "Added"
 
     },
@@ -88,6 +89,7 @@
       quantity: "8",
       unit: "Sack",
       price: "50.00",
+      date: "11/01/2018",
       type: "Added"
     },
     {
@@ -97,6 +99,7 @@
       quantity: "25",
       unit: "Kilo",
       price: "30.00",
+      date: "11/01/2018",
       type: "Added"
     },
     {
@@ -106,6 +109,7 @@
       quantity: "15",
       unit: "Sack",
       price: "84.00",
+      date: "11/01/2018",
       type: "Added"
     },
     {
@@ -115,6 +119,7 @@
       quantity: "50",
       unit: "Kilo",
       price: "45.00",
+      date: "11/01/2018",
       type: "Reduced"
     },
     {
@@ -124,6 +129,7 @@
       quantity: "25",
       unit: "Sack",
       price: "51.00",
+      date: "11/01/2018",
       type: "Reduced"
     },
     {
@@ -133,6 +139,7 @@
       quantity: "5",
       unit: "Sack",
       price: "58.00",
+      date: "11/01/2018",
       type: "Reduced"
     }
   ];
@@ -179,6 +186,7 @@
             quantity: "10",
             unit: "Sack",
             price: "54.00",
+            date: "11/01/2018",
             type: "Added"
 
           },
@@ -189,6 +197,7 @@
             quantity: "8",
             unit: "Sack",
             price: "50.00",
+            date: "11/01/2018",
             type: "Added"
           },
           {
@@ -198,6 +207,7 @@
             quantity: "25",
             unit: "Kilo",
             price: "30.00",
+            date: "11/01/2018",
             type: "Added"
           },
           {
@@ -207,6 +217,7 @@
             quantity: "15",
             unit: "Sack",
             price: "84.00",
+            date: "11/01/2018",
             type: "Added"
           }
         ]
@@ -218,6 +229,7 @@
             quantity: "50",
             unit: "Kilo",
             price: "45.00",
+            date: "11/01/2018",
             type: "Reduced"
           },
           {
@@ -227,6 +239,7 @@
             quantity: "25",
             unit: "Sack",
             price: "51.00",
+            date: "11/01/2018",
             type: "Reduced"
           },
           {
@@ -236,6 +249,7 @@
             quantity: "5",
             unit: "Sack",
             price: "58.00",
+            date: "11/01/2018",
             type: "Reduced"
           }
         ]

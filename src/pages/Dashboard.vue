@@ -12,7 +12,7 @@
               </div>
               <div class="col-sm-6">
                 <div class="btn-group btn-group-toggle"
-                     :class="isRTL ? 'float-left' : 'float-right'"
+                     :class="'float-right'"
                      data-toggle="buttons">
                   <label v-for="(option, index) in bigLineChartCategories"
                          :key="option"
