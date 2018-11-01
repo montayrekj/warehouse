@@ -3,7 +3,7 @@
       <div class="col-12">
         <card>
           <div class="pull-right" style="padding-bottom: 10px">
-            <button class="btn btn-sm btn-success" style="margin-right: 5px" @click="toggleAddProduct">Add Stocks</button>
+            <button class="btn btn-sm btn-success" style="margin-right: 5px" @click="toggleAddProduct">Add Product</button>
           </div>
           <div class="table-responsive">
             <table class="table tablesorter" :class="tableClass">
