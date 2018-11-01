@@ -1,101 +1,260 @@
 <template>
     <div class="row">
       <div class="col-12">
-        <card :title="table1.title">
+        <card>
+          <div class="pull-right" style="padding-bottom: 10px">
+            <button class="btn btn-sm btn-success" style="margin-right: 5px" @click="toggleAddProduct">Add Stocks</button>
+          </div>
           <div class="table-responsive">
-            <base-table :data="table1.data"
-                        :columns="table1.columns"
-                        thead-classes="text-primary">
-            </base-table>
+            <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+              <tr>
+                <slot name="columns" style="text-align: center">
+                  <th v-for="column in table1.columns" :key="column">{{column}}</th>
+                  <th style="display: inline-block;width: 100%;text-align: center;">Actions</th>
+                </slot>
+              </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+              <tr v-for="(item, index) in table1.data" :key="index">
+                <slot :row="item">
+                  <td v-for="(column, index) in table1.columns"
+                      :key="index"
+                      v-if="hasValue(item, column)">
+                    {{itemValue(item, column)}}
+                  </td>
+                  <td style="text-align: center">
+                    <i class="tim-icons icon-trash-simple text-danger delete-product" 
+                      style="font-weight: bold;display: inline-block;width: 20%;text-align: center; cursor:pointer" @click="deleteWarn(index)">
+                    </i>
+                  </td>
+                </slot>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </card>
       </div>
 
-      <div class="col-12">
-        <card class="card-plain">
-          <div class="table-full-width table-responsive">
-            <base-table :title="table2.title" :sub-title="table2.subTitle" :data="table2.data"
-                         :columns="table2.columns">
+      <!-- Add Product Modal -->
+      <sweet-modal ref="addProductModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Product">
+        <div class="form-group">
+          <label for="productName">Name</label>
+          <input type="text" class="form-control" placeholder="Enter product name..." v-model="productName" >
+        </div>
+        <div class="form-group">
+          <label for="productCode">Code</label>
+          <input type="text" class="form-control"  placeholder="Enter product code..." v-model="productCode" >
+        </div>
+        <div class="form-group">
+          <label for="productQuantity">Quantity</label>
+          <input type="number" class="form-control" placeholder="0" v-model="productQuantity" >
+        </div>
+        <div class="form-group">
+          <label for="productUnit">Unit</label>
+          <input type="text" class="form-control" placeholder="Enter product unit..." v-model="productUnit" >
+        </div>
+        <div class="form-group">
+          <label for="productPrice">Price</label>
+          <input type="number" class="form-control" placeholder="0.00" v-model="productPrice" >
+        </div>
 
-            </base-table>
-          </div>
-        </card>
-      </div>
+        <button slot="button" @click="addProduct" class="btn btn-sm btn-success" style="margin-right: 5px">Add</button>
+        <button slot="button" v-on:click="toggleAddProduct()" class="btn btn-sm btn-danger">Cancel</button>
+      </sweet-modal>
 
+      <!--Delete Warning Modal -->
+      <sweet-modal ref="deleteWarning" icon="warning" hide-close-button overlay-theme="dark" modal-theme="dark">
+        Are you sure you want to delete this product?
+        <button slot="button" v-on:click="deleteProduct()" class="btn btn-sm btn-success" style="margin-right: 5px">Yes</button>
+        <button slot="button" v-on:click="deleteWarn(0)" class="btn btn-sm btn-danger">No</button>
+      </sweet-modal>
+
+      <!--Add Product Required Error Modal -->
+      <sweet-modal ref="addErrorModal" icon="error" hide-close-button overlay-theme="dark" modal-theme="dark">
+        Please input all fields!
+        <button slot="button" v-on:click="closeErrorAddProduct()" class="btn btn-sm btn-success" style="margin-right: 5px">Fine!</button>
+      </sweet-modal>
     </div>
 </template>
 <script>
 import { BaseTable } from "@/components";
-const tableColumns = ["Name", "Country", "City", "Salary"];
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price"];
 const tableData = [
   {
     id: 1,
-    name: "Dakota Rice",
-    salary: "$36.738",
-    country: "Niger",
-    city: "Oud-Turnhout",
+    name: "Ganador",
+    code: "GNDR",
+    quantity: "10",
+    unit: "Sack",
+    price: "54.00"
   },
   {
     id: 2,
-    name: "Minerva Hooper",
-    salary: "$23,789",
-    country: "Curaçao",
-    city: "Sinaai-Waas"
+    name: "Lion Ivory",
+    code: "LNIVRY",
+    quantity: "8",
+    unit: "Sack",
+    price: "50.00"
   },
   {
     id: 3,
-    name: "Sage Rodriguez",
-    salary: "$56,142",
-    country: "Netherlands",
-    city: "Baileux"
+    name: "NFA Rice",
+    code: "NFA",
+    quantity: "25",
+    unit: "Kilo",
+    price: "30.00"
   },
   {
     id: 4,
-    name: "Philip Chaney",
-    salary: "$38,735",
-    country: "Korea, South",
-    city: "Overland Park"
+    name: "A Plus",
+    code: "APLS",
+    quantity: "15",
+    unit: "Sack",
+    price: "84.00"
   },
   {
     id: 5,
-    name: "Doris Greene",
-    salary: "$63,542",
-    country: "Malawi",
-    city: "Feldkirchen in Kärnten"
+    name: "Pilit",
+    code: "PLT",
+    quantity: "50",
+    unit: "Kilo",
+    price: "45.00"
   },
   {
     id: 6,
-    name: 'Mason Porter',
-    salary: '$98,615',
-    country: 'Chile',
-    city: 'Gloucester'
+    name: "Sinandomeng",
+    code: "SNDMNG",
+    quantity: "25",
+    unit: "Sack",
+    price: "51.00"
   },
   {
     id: 7,
-    name: 'Jon Porter',
-    salary: '$78,615',
-    country: 'Portugal',
-    city: 'Gloucester'
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
   }
 ];
 
 export default {
   components: {
-    BaseTable
+    BaseTable,
+    SweetModal,
+    SweetModalTab,
   },
   data() {
     return {
       table1: {
-        title: "Simple Table",
         columns: [...tableColumns],
         data: [...tableData]
       },
-      table2: {
-        title: "Table on Plain Background",
-        columns: [...tableColumns],
-        data: [...tableData]
-      }
+      modalFlag: false,
+      type: '',
+      tbodyClasses: '',
+      toBeDeleted: 0,
+      productName: null,
+      productCode: null,
+      productQuantity: null,
+      productUnit: null,
+      productPrice: null,
     };
+  },
+  computed: {
+    tableClass() {
+      return this.type && `table-${this.type}`;
+    },
+  },
+  watch: {
+    productCode: function() {
+      this.productCode = this.productCode.toUpperCase();
+    }
+  },
+  methods: {
+    hasValue(item, column) {
+      return item[column.toLowerCase()] !== "undefined";
+    },
+    itemValue(item, column) {
+      return item[column.toLowerCase()];
+    },
+    deleteWarn(index) {
+      if(!this.modalFlag) {
+        this.$refs.deleteWarning.open();
+        this.modalFlag = true;
+        this.toBeDeleted = index;
+      } else {
+        this.$refs.deleteWarning.close();
+        this.modalFlag = false;
+        this.toBeDeleted = 0;
+      }
+    },
+    deleteProduct() {
+      this.table1.data.splice(this.toBeDeleted, 1)
+      this.$refs.deleteWarning.close();
+      this.modalFlag = false;
+      this.toBeDeleted = 0;
+    },
+    toggleAddProduct(){
+      if(!this.modalFlag) {
+        this.$refs.addProductModal.open();
+        this.modalFlag = true;
+      } else {
+        this.$refs.addProductModal.close();
+        this.modalFlag = false;
+      }
+    },
+    closeErrorAddProduct() {
+      this.$refs.addErrorModal.close();
+      this.$refs.addProductModal.open();
+    },
+    addProduct(){
+      this.$forceUpdate();
+      if(!this.validateProductAdd()){
+        this.$refs.addErrorModal.open();
+        this.$refs.addProductModal.close();
+      } else {
+        var price = Number(this.productPrice).toFixed(2);
+        var item = {
+          id: Number(this.table1.data.length) + 1,
+          name: this.productName,
+          code: this.productCode,
+          quantity: this.productQuantity.toString(),
+          unit: this.productUnit,
+          price: price.toString()
+        }
+
+        this.table1.data.push(item)
+        this.$refs.addProductModal.close();
+        this.productName = null
+        this.productCode =  null;
+        this.productQuantity =  null;
+        this.productUnit = null;
+        this.productPrice = null;
+        this.modalFlag = false;
+      }
+    },
+    validateProductAdd(){
+      var flag = true;
+      if(this.productName === null){
+        flag = false;
+      } 
+      if(this.productCode === null){
+        flag = false;
+      } 
+      if(this.productQuantity === null){
+        flag = false;
+      } 
+      if(this.productUnit === null){
+        flag = false;
+      } 
+      if(this.productPrice === null){
+        flag = false;
+      }
+      return flag;
+    }
   }
 };
 </script>

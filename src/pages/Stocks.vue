@@ -47,7 +47,7 @@
         </card>
       </div>
 
-      <!-- Add Stocks Modal -->
+      <!-- Error Stocks Modal -->
       <sweet-modal ref="errorStockModal" icon="error" hide-close-button overlay-theme="dark" modal-theme="dark" title="Oops!">
         Please select a Stock inorder to Add/Reduce Stocks.
         <button slot="button" v-on:click="closeErrorModal()" class="btn btn-sm btn-success">Fine!</button>
