@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="row">
+    <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
-        <card type="chart">
+        <card type="chart" style="max-height: calc(100vh - 88px); overflow: scroll">
           <template slot="header">
             <div class="row">
               <div class="col-sm-6">

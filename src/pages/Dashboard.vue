@@ -1,9 +1,8 @@
 <template>
-  <div>
-
+  <div style="max-height: calc(100vh - 88px); overflow-y: scroll; overflow-x: hidden">
     <div class="row">
       <div class="col-12">
-        <card type="chart">
+        <card type="chart" >
           <template slot="header">
             <div class="row">
               <div class="col-sm-6" :class="isRTL ? 'text-right' : 'text-left'">

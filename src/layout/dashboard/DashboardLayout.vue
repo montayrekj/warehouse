@@ -11,7 +11,7 @@
     <div class="main-panel">
       <top-navbar></top-navbar>
 
-      <dashboard-content @click.native="toggleSidebar">
+      <dashboard-content @click.native="toggleSidebar" style="top: 0;right: 0; bottom: 0; left: 0; position: fixed;">
 
       </dashboard-content>
 
@@ -29,6 +29,9 @@ export default {
     TopNavbar,
     DashboardContent,
     MobileMenu
+  },
+  props: {
+    sample: Boolean
   },
   methods: {
     toggleSidebar() {
