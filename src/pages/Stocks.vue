@@ -1,10 +1,16 @@
 <template>
-    <div class="row">
+    <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
-        <card>
+        <card style="max-height: calc(100vh - 88px); overflow: scroll">
           <div class="pull-right" style="padding-bottom: 10px">
-            <button class="btn btn-sm btn-success" style="margin-right: 5px" v-on:click="toggleModal('addStock')">Add Stocks</button>
-            <button class="btn btn-sm btn-danger" v-on:click="toggleModal('removeStock')">Reduce Stocks</button>
+            <div class="row">
+              <div class="col-md-8">
+              </div>
+              <div class="col-md-2">
+              <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">Add Stocks</button></div>
+              <div class="col-md-2">
+              <button class="btn btn-danger" style=" width: 100%" v-on:click="toggleModal('removeStock')">Reduce Stocks</button></div>
+            </div>
           </div>
           <div class="table-responsive">
             <table class="table tablesorter" :class="tableClass">
@@ -178,6 +184,110 @@ const tableData = [
   },
   {
     id: 7,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 8,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 9,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 10,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 11,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 12,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 13,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 14,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 15,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 16,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 17,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 18,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 19,
+    name: "Jasmine",
+    code: "JSMN",
+    quantity: "5",
+    unit: "Sack",
+    price: "58.00"
+  },
+  {
+    id: 20,
     name: "Jasmine",
     code: "JSMN",
     quantity: "5",
