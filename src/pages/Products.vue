@@ -1,12 +1,12 @@
 <template>
-    <div class="row">
+    <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
-        <card>
+        <card style="max-height: calc(100vh - 88px); overflow: scroll">
           <div class="pull-right" style="padding-bottom: 10px; width: 100%">
             <div class="row">
-              <div class="col-lg-10">
+              <div class="col-lg-9">
               </div>
-              <div class="col-lg-2 pull-right">
+              <div class="col-lg-3 pull-right">
                 <button class="btn btn-success" style="width: 100%" @click="toggleAddProduct">Add Product</button>
               </div>
             </div>
