@@ -2,7 +2,7 @@
   <div>
     <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
-        <card type="chart" style="max-height: calc(100vh - 88px); overflow: scroll">
+        <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
           <template slot="header">
             <div class="row">
               <div class="col-sm-12">
@@ -44,13 +44,13 @@
                           <span v-if="column === 'Type' && itemValue(item, column) === 'Added'" 
                           style="background-image: linear-gradient(to bottom left, #00f2c3, #00b191, #00f2c3) !important;
                           padding: 4px 12px;
-                          border-radius: 20px;">
+                          border-radius: 20px; font-weight: 500; color: #fff">
                             {{itemValue(item, column)}}
                           </span>
                           <span v-if="column === 'Type' && itemValue(item, column) === 'Reduced'"
                           style="background-image: linear-gradient(to bottom left, #fd5d93, #ec250d, #fd5d93);
                           padding: 4px 12px;
-                          border-radius: 20px;">
+                          border-radius: 20px; font-weight: 500; color: #fff">
                             {{itemValue(item, column)}}
                           </span>
                         </td>

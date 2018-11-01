@@ -1,7 +1,7 @@
 <template>
     <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
-        <card style="max-height: calc(100vh - 88px); overflow: scroll">
+        <card style="max-height: calc(100vh - 88px); overflow: auto">
           <div class="pull-right" style="padding-bottom: 10px">
             <div class="row">
               <div class="col-md-6">
