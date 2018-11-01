@@ -65,7 +65,7 @@
 
       <!--Delete Warning Modal -->
       <sweet-modal ref="deleteWarning" icon="warning" hide-close-button overlay-theme="dark" modal-theme="dark">
-        Are you sure you want to delete this product?
+        Are you sure you want to delete <span>{{toBeDeletedName}}</span>?
         <button slot="button" v-on:click="deleteProduct()" class="btn btn-sm btn-success" style="margin-right: 5px">Yes</button>
         <button slot="button" v-on:click="deleteWarn(0)" class="btn btn-sm btn-danger">No</button>
       </sweet-modal>
@@ -167,10 +167,14 @@ export default {
     tableClass() {
       return this.type && `table-${this.type}`;
     },
+    toBeDeletedName() {
+      return this.table1.data[this.toBeDeleted].name;
+    }
   },
   watch: {
     productCode: function() {
-      this.productCode = this.productCode.toUpperCase();
+      if(this.productCode !== null)
+        this.productCode = this.productCode.toUpperCase();
     }
   },
   methods: {
