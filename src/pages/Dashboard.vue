@@ -5,7 +5,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Daily Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-primary "></i> 763,215</h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-primary "></i> 3,215</h3>
           </template>
         </card>
       </div>
@@ -13,7 +13,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Weekly Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-info "></i> 3,500€</h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-info "></i> 15,426</h3>
           </template>
         </card>
       </div>
@@ -21,7 +21,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Monthly Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-success "></i> 12,100K</h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-success "></i> 72,392</h3>
           </template>
         </card>
       </div>
@@ -39,15 +39,15 @@
                 <div class="btn-group btn-group-toggle"
                      :class="'float-right'"
                      data-toggle="buttons">
-                  <label v-for="(option, index) in bigLineChartCategories"
+                  <label v-for="(option, index) in chartCategories"
                          :key="option"
                          class="btn btn-sm btn-primary btn-simple"
-                         :class="{active: bigLineChart.activeIndex === index}"
+                         :class="{active: salesLineChart.activeIndex === index}"
                          :id="index">
                     <input type="radio"
-                           @click="initBigChart(index)"
+                           @click="initChart(index)"
                            name="options" autocomplete="off"
-                           :checked="bigLineChart.activeIndex === index">
+                           :checked="salesLineChart.activeIndex === index">
                     {{option}}
                   </label>
                 </div>
@@ -56,42 +56,53 @@
           </template>
           <div class="chart-area">
             <line-chart style="height: 100%"
-                        ref="bigChart"
-                        :chart-data="bigLineChart.chartData"
-                        :gradient-colors="bigLineChart.gradientColors"
-                        :gradient-stops="bigLineChart.gradientStops"
-                        :extra-options="bigLineChart.extraOptions">
+                        ref="salesChart"
+                        :chart-data="salesLineChart.chartData"
+                        :gradient-colors="salesLineChart.gradientColors"
+                        :gradient-stops="salesLineChart.gradientStops"
+                        :extra-options="salesLineChart.extraOptions">
             </line-chart>
+          </div>
+          <div class="row">
+            <div class="col-4"></div>
+            <div class="col-3">
+              <h5 class="card-category"><i class="tim-icons icon-simple-delete text-success "></i> In</h5>     
+            </div>
+            <div class="col-3">
+              <h5 class="card-category"><i class="tim-icons icon-simple-delete text-info "></i> Out</h5>
+            </div>
+            <div class="col-2"></div>
           </div>
         </card>
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-6 col-md-12">
-        <card type="tasks" :header-classes="{'text-right': isRTL}">
-          <template slot="header">
-            <h6 class="title d-inline">{{$t('dashboard.tasks', {count: 5})}}</h6>
-            <p class="card-category d-inline">{{$t('dashboard.today')}}</p>
-            <base-dropdown menu-on-right=""
-                           tag="div"
-                           title-classes="btn btn-link btn-icon"
-                           :class="{'float-left': isRTL}">
-              <i slot="title" class="tim-icons icon-settings-gear-63"></i>
-              <a class="dropdown-item" href="#pablo">{{$t('dashboard.dropdown.action')}}</a>
-              <a class="dropdown-item" href="#pablo">{{$t('dashboard.dropdown.anotherAction')}}</a>
-              <a class="dropdown-item" href="#pablo">{{$t('dashboard.dropdown.somethingElse')}}</a>
-            </base-dropdown>
-          </template>
-          <div class="table-full-width table-responsive">
-            <task-list></task-list>
-          </div>
-        </card>
-      </div>
-      <div class="col-lg-6 col-md-12">
-        <card class="card" :header-classes="{'text-right': isRTL}">
-          <h4 slot="header" class="card-title">{{$t('dashboard.simpleTable')}}</h4>
+      <div class="col-12">
+        <card class="card">
+          <h4 slot="header" class="card-title">Low Stocks</h4>
           <div class="table-responsive">
-            <user-table></user-table>
+            <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+              <tr>
+                <slot name="columns" style="text-align: center">
+                  <th v-for="column in dashboardTableColumns" :key="column">
+                    {{column}}
+                  </th>
+                </slot>
+              </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+                <tr v-for="(item, index) in table.data" :key="index" :class="{ 'out-of-stock': itemValue(item, 'Quantity') == 0}">
+                  <slot :row="item">
+                    <td v-for="(column, index) in dashboardTableColumns"
+                        :key="index"
+                        v-if="hasValue(item, column)">  
+                          {{itemValue(item, column)}}
+                    </td>
+                  </slot>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </card>
       </div>
@@ -100,52 +111,74 @@
 </template>
 <script>
   import LineChart from '@/components/Charts/LineChart';
-  import BarChart from '@/components/Charts/BarChart';
   import * as chartConfigs from '@/components/Charts/config';
-  import TaskList from './Dashboard/TaskList';
-  import UserTable from './Dashboard/UserTable';
   import config from '@/config';
+
+  const tableData = [
+    {
+      id: 1,
+      name: "Ganador",
+      code: "GNDR",
+      quantity: "0",
+      unit: "Sack",
+      supplier: "Rabago's Merchandise"
+
+    },
+    {
+      id: 2,
+      name: "Lion Ivory",
+      code: "LNIVRY",
+      quantity: "2",
+      unit: "Sack",
+      supplier: "Bugasan ni Juan"
+    },
+    {
+      id: 3,
+      name: "NFA Rice",
+      code: "NFA",
+      quantity: "0",
+      unit: "Kilo",
+      supplier: "Bayanihan Market"
+    }
+  ];
 
   export default {
     components: {
-      LineChart,
-      BarChart,
-      TaskList,
-      UserTable
+      LineChart
     },
     data() {
       return {
-        bigLineChart: {
-          allDataWeekly: [
-            100, 70, 90, 70, 85, 60, 75
-          ],
-          allDataMonthly: [
-            80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120
-          ],
+        salesLineChart: {
           activeIndex: 0,
           chartData: null,
           extraOptions: chartConfigs.purpleChartOptions,
           gradientColors: config.colors.primaryGradient,
           gradientStops: [1, 0.4, 0],
           categories: []
-        }
+        },
+        table: {
+          data: [...tableData],
+          activeIndex: 0
+        },
+        tbodyClasses: ''
       }
     },
     computed: {
-      enableRTL() {
-        return this.$route.query.enableRTL;
-      },
-      isRTL() {
-        return this.$rtl.isRTL;
-      },
-      bigLineChartCategories() {
+      chartCategories() {
         return this.$t('dashboard.chartCategories');
+      },
+      tableClass() {
+        return this.type && `table-${this.type}`;
+      },
+      dashboardTableColumns() {
+        return this.$t('dashboard.tableColumns');
       }
     },
     methods: {
-      initBigChart(index) {
-        let chartDataWeekly = {
-          datasets: [{
+      initChart(index) {
+        let chartData = {
+          datasets: 
+          [{
             fill: true,
             borderColor: config.colors.primary,
             borderWidth: 2,
@@ -158,57 +191,58 @@
             pointHoverRadius: 4,
             pointHoverBorderWidth: 15,
             pointRadius: 4,
-            data: this.bigLineChart.allDataWeekly
+            data: []
+          },
+          {
+            fill: true,
+            borderColor: config.colors.info,
+            borderWidth: 2,
+            borderDash: [],
+            borderDashOffset: 0.0,
+            pointBackgroundColor: config.colors.info,
+            pointBorderColor: 'rgba(255,255,255,0)',
+            pointHoverBackgroundColor: config.colors.info,
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+            data: []
           }],
-          labels: ['SUN','MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+          labels: []
         }
 
-        let chartDataMonthly = {
-          datasets: [{
-            fill: true,
-            borderColor: config.colors.primary,
-            borderWidth: 2,
-            borderDash: [],
-            borderDashOffset: 0.0,
-            pointBackgroundColor: config.colors.primary,
-            pointBorderColor: 'rgba(255,255,255,0)',
-            pointHoverBackgroundColor: config.colors.primary,
-            pointBorderWidth: 20,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 15,
-            pointRadius: 4,
-            data: this.bigLineChart.allDataMonthly
-          }],
-          labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-        }
         switch(index) {
           case 0:
-            this.bigLineChart.chartData = chartDataWeekly;
+            chartData.labels = ['SUN','MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            chartData.datasets[0].data = [100, 70, 90, 70, 85, 60, 75];
+            chartData.datasets[1].data = [90, 60, 80, 60, 75, 50, 65];
             break;
           case 1:
-            this.bigLineChart.chartData = chartDataMonthly;
+            chartData.labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            chartData.datasets[0].data = [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120];
+            chartData.datasets[1].data = [70, 130, 95, 120, 85, 115, 80, 110, 70, 105, 60, 130];
             break;
         }
         
-        this.$refs.bigChart.updateGradients(this.bigLineChart.chartData);
-        this.bigLineChart.activeIndex = index;
+        this.salesLineChart.chartData = chartData;
+        this.$refs.salesChart.updateGradients(this.salesLineChart.chartData);
+        this.salesLineChart.activeIndex = index;
+      },
+      hasValue(item, column) {
+        return item[column.toLowerCase()] !== "undefined";
+      },
+      itemValue(item, column) {
+        return item[column.toLowerCase()];
       }
     },
     mounted() {
-      this.i18n = this.$i18n;
-      if (this.enableRTL) {
-        this.i18n.locale = 'ar';
-        this.$rtl.enableRTL();
-      }
-      this.initBigChart(0);
-    },
-    beforeDestroy() {
-      if (this.$rtl.isRTL) {
-        this.i18n.locale = 'en';
-        this.$rtl.disableRTL();
-      }
+      this.initChart(0);
     }
   };
 </script>
-<style>
+<style scoped>
+  .out-of-stock {
+    background-image: linear-gradient(to bottom left, #fd5d93, #ec250d, #fd5d93);
+    color: #fff;
+  }
 </style>

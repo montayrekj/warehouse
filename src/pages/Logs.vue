@@ -67,7 +67,7 @@
   </div>
 </template>
 <script>
-  import { BaseTable } from "@/components";
+
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
   
   const tableData = [
@@ -146,7 +146,6 @@
 
   export default {
     components: {
-      BaseTable,
       SweetModal,
       SweetModalTab
     },

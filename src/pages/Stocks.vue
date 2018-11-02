@@ -93,34 +93,69 @@
 
       <!-- Remove Stocks Modal -->
       <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
-        <table class="table tablesorter" :class="tableClass">
-          <thead class="text-primary">
-          <tr>
-            <slot name="columns">
-              <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
-            </slot>
-          </tr>
-          </thead>
-          <tbody :class="tbodyClasses">
-          <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
-            <slot :row="i">
-              <td v-for="(column, index) in table1.modalColumns"
-                  :key="index"
-                  v-if="hasValue(getItemById(i), column)">
-                {{itemValue(getItemById(i), column)}}
-                <input v-if="quantityChangeColumn(column)" 
-                  type="number" 
-                  class="form-control" 
-                  id="stockQuantity" 
-                  style="background-color: #1c2a38"
-                  min="0"
-                  @change="quantityChange($event, i, indexTemp, 'removeStock')"
-                  v-model="quantity[indexTemp]">
-              </td>
-            </slot>
-          </tr>
-          </tbody>
-        </table>
+        <div class="row form-group">
+          <div class="col-3" style="align-self:center">
+            <label class="control-label">Customer Name </label>
+          </div>
+          <div class="col-9">
+            <input aria-describedby="addon-right addon-left" class="form-control">
+          </div>
+        </div>
+        <card>
+          <table class="table tablesorter" :class="tableClass">
+            <thead class="text-primary">
+            <tr>
+              <slot name="columns">
+                <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
+              </slot>
+            </tr>
+            </thead>
+            <tbody :class="tbodyClasses">
+              <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+                <slot :row="i">
+                  <td v-for="(column, index) in table1.modalColumns"
+                      :key="index"
+                      v-if="hasValue(getItemById(i), column)">
+                    {{itemValue(getItemById(i), column)}}
+                    <input v-if="quantityChangeColumn(column)" 
+                      type="number" 
+                      class="form-control" 
+                      id="stockQuantity" 
+                      style="background-color: #1c2a38"
+                      min="0"
+                      @change="quantityChange($event, i, indexTemp,'removeStock')"
+                      v-model="quantity[indexTemp]">
+                  </td>
+                </slot>
+              </tr>
+            </tbody>
+          </table>
+        </card>
+        <div class="row">
+          <div class="col-12">
+            <label class="control-label" style="float: right">Grand Total: {{this.grandTotal}} </label>
+          </div>
+        </div>
+        <br>
+        <card>
+        <div class="row">
+          <div class="col-2" style="padding-top: 10px">
+            <label class="control-label">Paid </label>
+          </div>
+          <div class="col-2 form-check form-check-radio">
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" value="Yes" v-model="paid"/>Yes
+              <span class="form-check-sign"></span>
+            </label>
+          </div>
+          <div class="col-2 form-check form-check-radio">
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" value="No" v-model="paid"/>No
+              <span class="form-check-sign"></span>
+            </label>
+          </div>
+        </div>
+        </card>
         <button slot="button" v-on:click="saveStock('removeStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
         <button slot="button" v-on:click="toggleModal('removeStock')" class="btn btn-sm btn-danger">Cancel</button>
       </sweet-modal>
@@ -130,7 +165,7 @@
 import { BaseTable } from "@/components";
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price"];
-const modalColumns = ["Name", "Quantity", "Unit", ""]
+const modalColumns = ["Name", "Quantity", "Unit", "Price", ""]
 const tableData = [
   {
     id: 1,
@@ -313,6 +348,8 @@ export default {
       type: '',
       tbodyClasses: '',
       quantity: [],
+      grandTotal: 0,
+      paid: 'No'
     };
   },
   computed: {
@@ -351,6 +388,7 @@ export default {
         } else {
           this.$refs.addStockModal.close()
           this.quantity = [];
+          this.grandTotal = 0;
           this.$data.modalFlag = false;
         }
       } else if(origin === "removeStock") {
@@ -368,6 +406,7 @@ export default {
         } else {
           this.$refs.removeStockModal.close()
           this.quantity = [];
+          this.grandTotal = 0;
           this.$data.modalFlag = false;
         }
       }
@@ -446,7 +485,14 @@ export default {
           this.quantity[index] = item.quantity;
         }
       }
+      this.computeGrandTotal(item);
       this.$forceUpdate();
+    },
+    computeGrandTotal(item) {
+      this.grandTotal = 0;
+      for(var i=0; i<this.quantity.length; i++) {
+        this.grandTotal += (item.price * this.quantity[i]);
+      }
     }
   }
 };
