@@ -12,8 +12,10 @@ import Typography from "@/pages/Typography.vue";
 import Stocks from "@/pages/Stocks.vue";
 import Products from "@/pages/Products.vue";
 import Logs from "@/pages/Logs.vue";
+import Login from "@/pages/Login.vue"
 
 const routes = [
+  { path: "/login", component: Login },
   {
     path: "/",
     component: DashboardLayout,

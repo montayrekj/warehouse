@@ -92,7 +92,7 @@
       </sweet-modal>
 
       <!-- Remove Stocks Modal -->
-      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks" style="max-height: 80%">
+      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
         <table class="table tablesorter" :class="tableClass">
           <thead class="text-primary">
           <tr>

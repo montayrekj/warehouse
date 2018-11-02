@@ -49,7 +49,7 @@
               </li>
               <div class="dropdown-divider"></div>
               <li class="nav-link">
-                <a href="#" class="nav-item dropdown-item">Log out</a>
+                <a href="/#/login" @click="logout" class="nav-item dropdown-item">Log out</a>
               </li>
             </base-dropdown>
           </ul>
@@ -96,6 +96,9 @@
       },
       toggleMenu() {
         this.showMenu = !this.showMenu;
+      },
+      logout() {
+        localStorage.removeItem('user');
       }
     }
   };

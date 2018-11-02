@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-100">
     <notifications></notifications>
     <router-view :key="$route.fullPath"></router-view>
   </div>
@@ -7,6 +7,11 @@
 
 <script>
   export default {
+    computed: {
+      divStyle() {
+        
+      }
+    },
     methods: {
       disableRTL() {
         if (!this.$rtl.isRTL) {

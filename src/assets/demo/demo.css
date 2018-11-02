@@ -82,3 +82,11 @@
 .sweet-buttons {
   position: relative !important;
 }
+
+body {
+  height: 100%;
+}
+
+html {
+  height: 100%
+}
