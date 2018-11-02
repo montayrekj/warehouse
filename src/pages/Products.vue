@@ -4,9 +4,11 @@
         <card style="max-height: calc(100vh - 88px); overflow: auto">
           <div class="pull-right" style="padding-bottom: 10px; width: 100%">
             <div class="row">
-              <div class="col-lg-10">
+              <div class="col-md-3">
+                <input type="text" placeholder="Search" v-model="search" class="form-control" />
               </div>
-              <div class="col-lg-2 pull-right">
+              <div class="col-md-6"></div>
+              <div class="col-md-3 pull-right">
                 <button class="btn btn-success" style="width: 100%" @click="toggleAddProduct">Add Product</button>
               </div>
             </div>
@@ -24,9 +26,7 @@
               <tbody :class="tbodyClasses">
               <tr v-for="(item, index) in table1.data" :key="index">
                 <slot :row="item">
-                  <td v-for="(column, index) in table1.columns"
-                      :key="index"
-                      v-if="hasValue(item, column)">
+                  <td v-for="(column, index) in table1.columns" :key="index" v-if="hasValue(item, column)">
                     {{itemValue(item, column)}}
                   </td>
                   <td style="text-align: center">
@@ -64,6 +64,14 @@
           <label for="productPrice">Price</label>
           <input type="number" class="form-control" placeholder="0.00" v-model="productPrice" >
         </div>
+        <div class="form-group">
+          <label for="productSupplier">Supplier</label>
+          <input type="text" class="form-control" placeholder="Enter product supplier..." v-model="productSupplier" >
+        </div>
+        <div class="form-group">
+          <label for="productLimit">Limit</label>
+          <input type="number" class="form-control" placeholder="0" v-model="productLimit" >
+        </div>
 
         <button slot="button" @click="addProduct" class="btn btn-sm btn-success" style="margin-right: 5px">Add</button>
         <button slot="button" v-on:click="toggleAddProduct()" class="btn btn-sm btn-danger">Cancel</button>
@@ -86,7 +94,7 @@
 <script>
 import { BaseTable } from "@/components";
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price"];
+const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier", "Limit"];
 const tableData = [
   {
     id: 1,
@@ -94,7 +102,9 @@ const tableData = [
     code: "GNDR",
     quantity: "10",
     unit: "Sack",
-    price: "54.00"
+    price: "54.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   },
   {
     id: 2,
@@ -102,7 +112,9 @@ const tableData = [
     code: "LNIVRY",
     quantity: "8",
     unit: "Sack",
-    price: "50.00"
+    price: "50.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   },
   {
     id: 3,
@@ -110,7 +122,9 @@ const tableData = [
     code: "NFA",
     quantity: "25",
     unit: "Kilo",
-    price: "30.00"
+    price: "30.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   },
   {
     id: 4,
@@ -118,7 +132,9 @@ const tableData = [
     code: "APLS",
     quantity: "15",
     unit: "Sack",
-    price: "84.00"
+    price: "84.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   },
   {
     id: 5,
@@ -126,7 +142,9 @@ const tableData = [
     code: "PLT",
     quantity: "50",
     unit: "Kilo",
-    price: "45.00"
+    price: "45.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   },
   {
     id: 6,
@@ -134,7 +152,9 @@ const tableData = [
     code: "SNDMNG",
     quantity: "25",
     unit: "Sack",
-    price: "51.00"
+    price: "51.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   },
   {
     id: 7,
@@ -142,7 +162,9 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan",
+    limit: "5"
   }
 ];
 
@@ -162,11 +184,14 @@ export default {
       type: '',
       tbodyClasses: '',
       toBeDeleted: 0,
+      search: '',
       productName: null,
       productCode: null,
       productQuantity: null,
       productUnit: null,
       productPrice: null,
+      productSupplier: null,
+      productLimit: null
     };
   },
   props: {
@@ -177,13 +202,28 @@ export default {
       return this.type && `table-${this.type}`;
     },
     toBeDeletedName() {
-      return this.table1.data[this.toBeDeleted].name;
+      if(this.table1.data.length > 0)
+        return this.table1.data[this.toBeDeleted].name;
     }
   },
   watch: {
     productCode: function() {
       if(this.productCode !== null)
         this.productCode = this.productCode.toUpperCase();
+    },
+    search: function () {
+      if(this.search != '') {
+        this.table1.data = [...tableData].filter(item => 
+          item.name.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.code.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.quantity.includes(this.search) ||
+          item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.price.includes(this.search) ||
+          item.limit.includes(this.search) ||
+          item.supplier.toUpperCase().includes(this.search.toUpperCase()));
+      }
+      else
+        this.table1.data = [...tableData];
     }
   },
   methods: {
@@ -239,7 +279,9 @@ export default {
           code: this.productCode,
           quantity: this.productQuantity.toString(),
           unit: this.productUnit,
-          price: price.toString()
+          price: price.toString(),
+          supplier: this.productSupplier,
+          limit: this.productLimit.toString()
         }
 
         this.table1.data.push(item)

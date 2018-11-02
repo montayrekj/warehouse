@@ -2,11 +2,15 @@
     <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
         <card style="max-height: calc(100vh - 88px); overflow: auto">
-          <div class="pull-right" style="padding-bottom: 10px">
+          <div style="padding-bottom: 10px">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-3">
+                <input type="text" placeholder="Search" v-model="search" class="form-control" />
+              </div>
+              <div class="col-md-3"></div>
+              <div class="col-md-3 pull-right">
               <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">Add Stocks</button></div>
-              <div class="col-md-6">
+              <div class="col-md-3 pull-right">
               <button class="btn btn-danger" style="width: 100%" v-on:click="toggleModal('removeStock')">Reduce Stocks</button></div>
             </div>
           </div>
@@ -101,7 +105,7 @@
             <input aria-describedby="addon-right addon-left" class="form-control">
           </div>
         </div>
-        <card>
+        <card style="background-color: #2b3b4c">
           <table class="table tablesorter" :class="tableClass">
             <thead class="text-primary">
             <tr>
@@ -132,29 +136,75 @@
           </table>
         </card>
         <div class="row">
-          <div class="col-12">
-            <label class="control-label" style="float: right">Grand Total: {{this.grandTotal}} </label>
+          <div class= "col-4" style="padding-top: 10px">
+            <label class="control-label">Grand Total</label>
+          </div>
+          <div>
+            <input type="number" class="form-control" style="background-color: #1c2a38;" min="0" v-model="grandTotal" disabled>
           </div>
         </div>
         <br>
-        <card>
-        <div class="row">
-          <div class="col-2" style="padding-top: 10px">
-            <label class="control-label">Paid </label>
+        <card style="background-color: #2b3b4c">
+          <div class="row">
+            <div class="col-2" style="padding-top: 10px">
+              <label class="control-label">Paid </label>
+            </div>
+            <base-radio :name="'Yes'" v-model="paid">Yes</base-radio>
+            <div class="col-2">
+              <base-radio :name="'No'" v-model="paid">No</base-radio>
+            </div>
           </div>
-          <div class="col-2 form-check form-check-radio">
-            <label class="form-check-label">
-              <input class="form-check-input" type="radio" value="Yes" v-model="paid"/>Yes
-              <span class="form-check-sign"></span>
-            </label>
+          <div class="row" v-if="paid === 'Yes'">
+            <div class="col-3" style="padding-top: 10px">
+              <label class="control-label">Payment Method </label>
+            </div>
+            <base-radio :name="'Cash'" v-model="paymentMethod">Cash</base-radio>
+            <div class="col-2">
+              <base-radio :name="'Cheque'" v-model="paymentMethod">Cheque</base-radio>
+            </div>
           </div>
-          <div class="col-2 form-check form-check-radio">
-            <label class="form-check-label">
-              <input class="form-check-input" type="radio" value="No" v-model="paid"/>No
-              <span class="form-check-sign"></span>
-            </label>
+          <div class="row" v-if="paid === 'Yes'">
+            <div class="col-3" style="padding-top: 10px">
+              <label class="control-label">Payment Type </label>
+            </div>
+            <base-radio :name="'Full'" v-model="paymentType">Full</base-radio>
+            <div class="col-2">
+              <base-radio :name="'Partial'" v-model="paymentType">Partial</base-radio>
+            </div>
           </div>
-        </div>
+          <div class="row" v-if="paid === 'Yes' && paymentType === 'Partial'">
+            <div class="col-3" style="padding-top: 10px">
+              <label class="control-label">Paid Amount </label>
+            </div>
+            <div class="col-3">
+              <input type="number" 
+              class="form-control" style="background-color: #1c2a38" 
+              min="0" v-model="paidAmount">
+            </div>
+            <div class="col-2" style="padding-top: 10px">
+              <label class="control-label">Balance </label>
+            </div>
+            <div class="col-3">
+              <input type="number" class="form-control" style="background-color: #1c2a38" min="0" v-model="balance" disabled>
+            </div>
+          </div>
+          <div class="row" v-if="paid === 'Yes' && paymentMethod === 'Cheque'">
+            <div class="col-3" style="padding-top: 10px">
+              <label class="control-label">Cheque Due Date </label>
+            </div>
+            <div class="col-3">
+              <input type="text" 
+              class="form-control" style="background-color: #1c2a38" 
+              min="0" v-model="chequeDueDate">
+            </div>
+          </div>
+          <div style="padding-top: 10px">
+            <label class="control-label">Remarks</label>
+          </div>
+          <div>
+            <textarea class="form-control" style="background-color: #1c2a38" v-model="remarks">
+            </textarea>
+          </div>
         </card>
         <button slot="button" v-on:click="saveStock('removeStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
         <button slot="button" v-on:click="toggleModal('removeStock')" class="btn btn-sm btn-danger">Cancel</button>
@@ -163,9 +213,10 @@
 </template>
 <script>
 import { BaseTable } from "@/components";
+import { BaseRadio } from "@/components";
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price"];
-const modalColumns = ["Name", "Quantity", "Unit", "Price", ""]
+const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier"];
+const modalColumns = ["Name", "Quantity", "Unit", "Price", "Supplier", ""]
 const tableData = [
   {
     id: 1,
@@ -173,7 +224,8 @@ const tableData = [
     code: "GNDR",
     quantity: "10",
     unit: "Sack",
-    price: "54.00"
+    price: "54.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 2,
@@ -181,7 +233,8 @@ const tableData = [
     code: "LNIVRY",
     quantity: "8",
     unit: "Sack",
-    price: "50.00"
+    price: "50.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 3,
@@ -189,7 +242,8 @@ const tableData = [
     code: "NFA",
     quantity: "25",
     unit: "Kilo",
-    price: "30.00"
+    price: "30.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 4,
@@ -197,7 +251,8 @@ const tableData = [
     code: "APLS",
     quantity: "15",
     unit: "Sack",
-    price: "84.00"
+    price: "84.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 5,
@@ -205,7 +260,8 @@ const tableData = [
     code: "PLT",
     quantity: "50",
     unit: "Kilo",
-    price: "45.00"
+    price: "45.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 6,
@@ -213,7 +269,8 @@ const tableData = [
     code: "SNDMNG",
     quantity: "25",
     unit: "Sack",
-    price: "51.00"
+    price: "51.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 7,
@@ -221,7 +278,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 8,
@@ -229,7 +287,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 9,
@@ -237,7 +296,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 10,
@@ -245,7 +305,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 11,
@@ -253,7 +314,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 12,
@@ -261,7 +323,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 13,
@@ -269,7 +332,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 14,
@@ -277,7 +341,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 15,
@@ -285,7 +350,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 16,
@@ -293,7 +359,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 17,
@@ -301,7 +368,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 18,
@@ -309,7 +377,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 19,
@@ -317,7 +386,8 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
   },
   {
     id: 20,
@@ -325,7 +395,17 @@ const tableData = [
     code: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00"
+    price: "58.00",
+    supplier: "Bugasan ni Juan"
+  },
+  {
+    id: 21,
+    name: "Ganador",
+    code: "GNDR",
+    quantity: "10",
+    unit: "Sack",
+    price: "53.00",
+    supplier: "Rabago's Bugasan"
   }
 ];
 
@@ -334,6 +414,7 @@ export default {
     BaseTable,
     SweetModal,
     SweetModalTab,
+    BaseRadio
   },
   data() {
     return {
@@ -348,24 +429,84 @@ export default {
       type: '',
       tbodyClasses: '',
       quantity: [],
+      search: '',
       grandTotal: 0,
-      paid: 'No'
+      paid: 'No',
+      paymentMethod: 'Cash',
+      paymentType: 'Full',
+      paidAmount: 0,
+      balance: 0,
+      chequeDueDate: null,
+      remarks: null
     };
   },
   computed: {
     tableClass() {
       return this.type && `table-${this.type}`;
     },
+    stocksPaid() {
+        return this.$t('stocks.paid');
+      }
   },
   props: {
     sample: Boolean
   },
   watch: {
-    selected: function(){
+    selected: function() {
       if(this.selected.length !== this.table1.data.length){
         this.selectAll = false;
       } else if(this.selected.length === this.table1.data.length){
         this.selectAll = true;
+      }
+    },
+    search: function () {
+      if(this.search != '') {
+        this.table1.data = [...tableData].filter(item => 
+          item.name.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.code.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.quantity.includes(this.search) ||
+          item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.price.includes(this.search) ||
+          item.supplier.toUpperCase().includes(this.search.toUpperCase()));
+      }
+      else
+        this.table1.data = [...tableData];
+    },
+    paid: function() {
+      if(this.paid == 'No') {
+        this.paymentMethod = 'Cash',
+        this.paymentType = 'Full',
+        this.paidAmount = 0;
+        this.balance = 0;
+        this.chequeDueDate = null;
+      }
+    },
+    paymentMethod: function() {
+      this.paidAmount = 0;
+      this.balance = 0;
+      this.chequeDueDate = null;
+    },
+    paymentType: function() {
+      this.paidAmount = 0;
+      this.balance = 0;
+      this.chequeDueDate = null;
+    } ,
+    paidAmount: function() {
+      if(this.paidAmount != '') {
+        if(this.grandTotal > this.paidAmount)
+          this.balance = this.grandTotal - this.paidAmount;
+        else
+          this.balance = 0;
+      } 
+      else
+        this.balance = 0;
+    },
+    grandTotal: function() {
+      if(this.paidAmount != '' && this.paidAmount > 0) {
+        if(this.grandTotal > this.paidAmount)
+          this.balance = this.grandTotal - this.paidAmount;
+        else
+          this.balance = 0;
       }
     }
   },
