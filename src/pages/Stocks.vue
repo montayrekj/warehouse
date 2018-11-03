@@ -62,50 +62,7 @@
       </sweet-modal>
       <!-- Add Stocks Modal -->
       <sweet-modal ref="addStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks">
-        <table class="table tablesorter" :class="tableClass">
-          <thead class="text-primary">
-          <tr>
-            <slot name="columns">
-              <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
-            </slot>
-          </tr>
-          </thead>
-          <tbody :class="tbodyClasses">
-          <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
-            <slot :row="i">
-              <td v-for="(column, index) in table1.modalColumns"
-                  :key="index"
-                  v-if="hasValue(getItemById(i), column)">
-                {{itemValue(getItemById(i), column)}}
-                <input v-if="quantityChangeColumn(column)" 
-                  type="number" 
-                  class="form-control" 
-                  id="stockQuantity" 
-                  style="background-color: #1c2a38"
-                  min="0"
-                  @change="quantityChange($event, i, indexTemp, 'addStock')"
-                  v-model="quantity[indexTemp]">
-              </td>
-            </slot>
-          </tr>
-          </tbody>
-        </table>
-
-        <button slot="button" v-on:click="saveStock('addStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
-        <button slot="button" v-on:click="toggleModal('addStock')" class="btn btn-sm btn-danger">Cancel</button>
-      </sweet-modal>
-
-      <!-- Remove Stocks Modal -->
-      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
-        <div class="row form-group">
-          <div class="col-3" style="align-self:center">
-            <label class="control-label">Customer Name </label>
-          </div>
-          <div class="col-9">
-            <input aria-describedby="addon-right addon-left" class="form-control">
-          </div>
-        </div>
-        <card style="background-color: #2b3b4c">
+        <div class="table-responsive">
           <table class="table tablesorter" :class="tableClass">
             <thead class="text-primary">
             <tr>
@@ -115,25 +72,71 @@
             </tr>
             </thead>
             <tbody :class="tbodyClasses">
-              <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
-                <slot :row="i">
-                  <td v-for="(column, index) in table1.modalColumns"
-                      :key="index"
-                      v-if="hasValue(getItemById(i), column)">
-                    {{itemValue(getItemById(i), column)}}
-                    <input v-if="quantityChangeColumn(column)" 
-                      type="number" 
-                      class="form-control" 
-                      id="stockQuantity" 
-                      style="background-color: #1c2a38"
-                      min="0"
-                      @change="quantityChange($event, i, indexTemp,'removeStock')"
-                      v-model="quantity[indexTemp]">
-                  </td>
-                </slot>
-              </tr>
+            <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+              <slot :row="i">
+                <td v-for="(column, index) in table1.modalColumns"
+                    :key="index"
+                    v-if="hasValue(getItemById(i), column)">
+                  {{itemValue(getItemById(i), column)}}
+                  <input v-if="quantityChangeColumn(column)" 
+                    type="number" 
+                    class="form-control" 
+                    id="stockQuantity" 
+                    style="background-color: #1c2a38"
+                    min="0"
+                    @change="quantityChange($event, i, indexTemp, 'addStock')"
+                    v-model="quantity[indexTemp]">
+                </td>
+              </slot>
+            </tr>
             </tbody>
           </table>
+        </div>
+        <button slot="button" v-on:click="saveStock('addStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
+        <button slot="button" v-on:click="toggleModal('addStock')" class="btn btn-sm btn-danger">Cancel</button>
+      </sweet-modal>
+
+      <!-- Remove Stocks Modal -->
+      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
+        <div class="row form-group">
+          <div class="col-3">
+            <label class="control-label">Customer Name </label>
+          </div>
+          <div class="col-9">
+            <input aria-describedby="addon-right addon-left" class="form-control">
+          </div>
+        </div>
+        <card style="background-color: #2b3b4c">
+          <div class="table-responsive">
+            <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+                <tr>
+                  <slot name="columns">
+                    <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
+                  </slot>
+                </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+                <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+                  <slot :row="i">
+                    <td v-for="(column, index) in table1.modalColumns"
+                        :key="index"
+                        v-if="hasValue(getItemById(i), column)">
+                      {{itemValue(getItemById(i), column)}}
+                      <input v-if="quantityChangeColumn(column)" 
+                        type="number" 
+                        class="form-control" 
+                        id="stockQuantity" 
+                        style="background-color: #1c2a38"
+                        min="0"
+                        @change="quantityChange($event, i, indexTemp,'removeStock')"
+                        v-model="quantity[indexTemp]">
+                    </td>
+                  </slot>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </card>
         <div class="row">
           <div class= "col-4" style="padding-top: 10px">
@@ -202,7 +205,12 @@
             <label class="control-label">Remarks</label>
           </div>
           <div>
-            <textarea class="form-control" style="background-color: #1c2a38" v-model="remarks">
+            <textarea class="form-control" 
+              style="background-color: #1c2a38; 
+                  border-radius: 5px;
+                  padding: 0.5rem 0.7rem;
+                  line-height: 1.125rem;" 
+              v-model="remarks">
             </textarea>
           </div>
         </card>

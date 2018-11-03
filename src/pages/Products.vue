@@ -30,7 +30,7 @@
                     {{itemValue(item, column)}}
                   </td>
                   <td style="text-align: center">
-                    <i class="tim-icons icon-trash-simple text-danger delete-product" 
+                    <i class="tim-icons icon-trash-simple text-danger" 
                       style="font-weight: bold;display: inline-block;width: 20%;text-align: center; cursor:pointer" @click="deleteWarn(index)">
                     </i>
                   </td>

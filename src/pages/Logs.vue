@@ -5,18 +5,21 @@
         <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
           <template slot="header">
             <div class="row">
-              <div class="col-sm-12">
+              <div class="col-sm-3">
+                <input type="text" placeholder="Search" v-model="search" class="form-control" />
+              </div>
+              <div class="col-sm-9">
                 <div class="btn-group btn-group-toggle"
                      :class="'float-right'" data-toggle="buttons">
                   <label v-for="(option, index) in logsCategories"
                          :key="option"
                          class="btn btn-sm btn-primary btn-simple"
-                         :class="{active: table1.activeIndex === index}"
+                         :class="{active: table.activeIndex === index}"
                          :id="index">
                     <input type="radio"
-                           @click="updateTable(index)"
+                           @click="updateLogsTable(index)"
                            name="options" autocomplete="off"
-                           :checked="table1.activeIndex === index">
+                           :checked="table.activeIndex === index">
                     {{option}}
                   </label>
                 </div>
@@ -25,124 +28,179 @@
           </template>
           <div>
             <div class="col-12">
-                <div class="table-responsive">
-                  <table class="table tablesorter" :class="tableClass">
-                    <thead class="text-primary">
-                    <tr>
-                      <slot name="columns" style="text-align: center">
-                        <th v-for="column in logsTableColumns" :key="column" align:center>{{column}}</th>
-                      </slot>
-                    </tr>
-                    </thead>
-                    <tbody :class="tbodyClasses">
-                    <tr v-for="(item, index) in table1.data" :key="index">
-                      <slot :row="item">
-                        <td v-for="(column, index) in logsTableColumns"
-                            :key="index"
-                            v-if="hasValue(item, column)">
-                          <span v-if="column !== 'Type'">{{itemValue(item, column)}}</span>
-                          <span v-if="column === 'Type' && itemValue(item, column) === 'Added'" 
-                          style="background-image: linear-gradient(to bottom left, #00f2c3, #00b191, #00f2c3) !important;
-                          padding: 4px 12px;
-                          border-radius: 20px; font-weight: 500; color: #fff">
-                            {{itemValue(item, column)}}
-                          </span>
-                          <span v-if="column === 'Type' && itemValue(item, column) === 'Reduced'"
-                          style="background-image: linear-gradient(to bottom left, #fd5d93, #ec250d, #fd5d93);
-                          padding: 4px 12px;
-                          border-radius: 20px; font-weight: 500; color: #fff">
-                            {{itemValue(item, column)}}
-                          </span>
-                        </td>
-                      </slot>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div class="table-responsive">
+                <table class="table tablesorter" :class="tableClass">
+                  <thead class="text-primary">
+                  <tr>
+                    <slot name="columns" style="text-align: center">
+                      <th v-for="(column, index) in tableColumns" :key="index">{{column.Header}}</th>
+                      <th style="display: inline-block;width: 100%;text-align: center;">Actions</th>
+                    </slot>
+                  </tr>
+                  </thead>
+                  <tbody :class="tbodyClasses">
+                  <tr v-for="(item, index) in table.data" :key="index">
+                    <slot :row="item">
+                      <td v-for="(column, index) in tableColumns"
+                          :key="index"
+                          v-if="hasValue(item, column)">
+                        {{itemValue(item, column)}}
+                      </td>
+                      <td style="text-align: center">
+                        <i class="tim-icons icon-paper text-info" 
+                          style="font-weight: bold;display: inline-block;width: 20%;text-align: center; cursor:pointer" @click="toggleModal(item)">
+                        </i>
+                      </td>
+                    </slot>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </card>
       </div>
     </div>
+
+    <sweet-modal ref="logDetailsModal" hide-close-button overlay-theme="dark" modal-theme="dark">  
+      <div class="row" style="padding-bottom: 20px">
+        <div class="col-sm-12">
+          <div class="btn-group btn-group-toggle"
+                :class="'float-right'" data-toggle="buttons">
+            <label v-for="(option, index) in detailsCategories"
+                    :key="option"
+                    class="btn btn-sm btn-primary btn-simple"
+                    :class="{active: activeIndexDetails === index}"
+                    :id="index">
+              <input type="radio"
+                      @click="updateDetailsCategory(index)"
+                      name="options" autocomplete="off"
+                      :checked="activeIndexDetails === index">
+              {{option}}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div v-if="activeIndexDetails === 0">
+        <div class="row form-group" v-if="category === 1">
+          <div class="col-md-4" style="text-align: left">
+            <label class="control-label">Customer Name </label>
+          </div>
+          <div class="col-md-8" style="text-align: left">
+            <label class="control-label">{{ detailsData.Customer_Name }}</label>
+          </div>
+        </div>
+        <card style="background-color: #2b3b4c">
+          <div class="table-responsive">
+            <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+                <tr>
+                  <slot name="columns">
+                    <th v-for="(column, index) in modalColumns" :key="index">{{column.Header}}</th>
+                  </slot>
+                </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+                <tr v-for="(i, index) in detailsData.Products" :key="index">
+                  <slot :row="i">
+                    <td v-for="(column, index) in modalColumns"
+                        :key="index"
+                        v-if="hasValue(i, column)">
+                      {{itemValue(i, column)}}
+                    </td>
+                  </slot>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </card>
+        <div class="row form-group" v-if="category === 1">
+          <div class="col-md-4" style="text-align: left">
+            <label class="control-label">Total Amount </label>
+          </div>
+          <div class="col-md-8" style="text-align: left">
+            <label class="control-label">{{ detailsData.Total_Amount }}</label>
+          </div>
+        </div>
+        <div class="row form-group" v-if="category === 1">
+          <div class="col-md-4" style="text-align: left">
+            <label class="control-label">Purchased From </label>
+          </div>
+          <div class="col-md-8" style="text-align: left">
+            <label class="control-label">{{ detailsData.Created_By }}</label>
+          </div>
+        </div>
+      </div>
+      <button slot="button" v-on:click="toggleModal" class="btn btn-sm btn-danger">Cancel</button>
+    </sweet-modal>
   </div>
 </template>
 <script>
 
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
   
-  const tableData = [
-    {
-      id: 1,
-      name: "Ganador",
-      code: "GNDR",
-      quantity: "10",
-      unit: "Sack",
-      price: "54.00",
-      date: "11/01/2018",
-      type: "Added"
+  const tableDataIn = [
+  {
+    id: 1,
+    Products: [
+    {productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"},
+    {productName: "Ganador", productCode: "GNDR", quantity: "10", unit: "Sack", price: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3" }],
+    Created_Date: "11/01/2018",
+    Created_By: "Admin"
 
-    },
-    {
-      id: 2,
-      name: "Lion Ivory",
-      code: "LNIVRY",
-      quantity: "8",
-      unit: "Sack",
-      price: "50.00",
-      date: "11/01/2018",
-      type: "Added"
-    },
-    {
-      id: 3,
-      name: "NFA Rice",
-      code: "NFA",
-      quantity: "25",
-      unit: "Kilo",
-      price: "30.00",
-      date: "11/01/2018",
-      type: "Added"
-    },
-    {
-      id: 4,
-      name: "A Plus",
-      code: "APLS",
-      quantity: "15",
-      unit: "Sack",
-      price: "84.00",
-      date: "11/01/2018",
-      type: "Added"
-    },
-    {
-      id: 5,
-      name: "Pilit",
-      code: "PLT",
-      quantity: "50",
-      unit: "Kilo",
-      price: "45.00",
-      date: "11/01/2018",
-      type: "Reduced"
-    },
-    {
-      id: 6,
-      name: "Sinandomeng",
-      code: "SNDMNG",
-      quantity: "25",
-      unit: "Sack",
-      price: "51.00",
-      date: "11/01/2018",
-      type: "Reduced"
-    },
-    {
-      id: 7,
-      name: "Jasmine",
-      code: "JSMN",
-      quantity: "5",
-      unit: "Sack",
-      price: "58.00",
-      date: "11/01/2018",
-      type: "Reduced"
-    }
-  ];
+  },
+  {
+    id: 2,
+    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Created_Date: "11/01/2018",
+    Created_By: "Admin"
+  },
+  {
+    id: 3,
+    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Created_Date: "11/01/2018",
+    Created_By: "Admin"
+  },
+  {
+    id: 4,
+    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Created_Date: "11/01/2018",
+    Created_By: "Admin"
+  }
+];
+        
+const tableDataOut = [
+  {
+    id: 5,
+    Customer_Name: "Tala",
+    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Total_Amount: "30.00",
+    Paid_Amount: "1000",
+    Balance: "45.00",
+    Created_Date: "11/01/2018",
+    Created_By: "Admin"
+  },
+  {
+    id: 6,
+    Customer_Name: "Tala",
+    Products: [{ productName: "NFA Rice", Product_Code: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Total_Amount: "30.00",
+    Paid_Amount: "1000",
+    Balance: "45.00",
+    Created_Date: "11/01/2018",
+    Created_By: "Admin"
+  },
+  {
+    id: 7,
+    Customer_Name: "King",
+    Products: [{ productName: "Ganador", productCode: "GNDR", quantity: "25", unit: "Kilo", price: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Total_Amount: "1350.00",
+    Paid_Amount: "1000",
+    Balance: "1350.00",
+    Created_Date: "11/03/2018",
+    Created_By: "Humba"
+  }
+];
 
   export default {
     components: {
@@ -151,119 +209,108 @@
     },
     data() {
       return {
-        table1: {
-          data: [...tableData],
+        table: {
+          data: [...tableDataIn],
           activeIndex: 0
         },
-        tbodyClasses: ''
+        search: '',
+        category: 0,
+        tbodyClasses: '',
+        tableColumns: this.$t('logs.tableColumnsIn'),
+        modalFlag: false,
+        activeIndexDetails: 0,
+        detailsData: []
       };
+    },
+    watch: {
+      search: function () {
+        switch(this.category){
+          case 0:
+                if(this.search != '') {
+                  this.table.data = [...tableDataIn].filter(item => 
+                    this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase())||
+                    item.Created_Date.toUpperCase().includes(this.search.toUpperCase()) ||
+                    item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
+                }
+                else
+                  this.table.data = [...tableDataIn];
+                break;
+          case 1:
+                if(this.search != '') {
+                  this.table.data = [...tableDataOut].filter(item => 
+                    item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) || 
+                    this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase()) ||
+                    item.Total_Amount.toString().includes(this.search) || 
+                    item.Paid_Amount.toUpperCase().includes(this.search.toUpperCase()) ||  
+                    item.Balance.toString().includes(this.search) || 
+                    item.Created_Date.toUpperCase().includes(this.search.toUpperCase()) ||
+                    item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
+                }
+                else
+                  this.table.data = [...tableDataOut];
+                break;
+        }
+      }
     },
     computed: {
       tableClass() {
         return this.type && `table-${this.type}`;
       },
-      logsTableColumns() {
-        return this.$t('logs.tableColumns');
-      },
       logsCategories() {
         return this.$t('logs.logsCategories');
+      },
+      detailsCategories() {
+        return this.$t('logs.detailsCategories');
+      },
+      modalColumns() {
+        return this.$t('logs.modalColumns');
       }
     },
     methods: {
       hasValue(item, column) {
-        return item[column.toLowerCase()] !== "undefined";
+        return item[column.Item] !== "undefined";
       },
       itemValue(item, column) {
-        return item[column.toLowerCase()];
-      },
-      updateTable(index) {
-        let updatedTableDataAddedStocks = [
-          {
-            id: 1,
-            name: "Ganador",
-            code: "GNDR",
-            quantity: "10",
-            unit: "Sack",
-            price: "54.00",
-            date: "11/01/2018",
-            type: "Added"
+        var temp = item[column.Item];
+        if(column.Item === "Products"){
+          temp = "";
+          for(var i = 0 ; i < item[column.Item].length; i++){
+            temp = temp + item[column.Item][i].productName + ", ";
+          }
+        }
 
-          },
-          {
-            id: 2,
-            name: "Lion Ivory",
-            code: "LNIVRY",
-            quantity: "8",
-            unit: "Sack",
-            price: "50.00",
-            date: "11/01/2018",
-            type: "Added"
-          },
-          {
-            id: 3,
-            name: "NFA Rice",
-            code: "NFA",
-            quantity: "25",
-            unit: "Kilo",
-            price: "30.00",
-            date: "11/01/2018",
-            type: "Added"
-          },
-          {
-            id: 4,
-            name: "A Plus",
-            code: "APLS",
-            quantity: "15",
-            unit: "Sack",
-            price: "84.00",
-            date: "11/01/2018",
-            type: "Added"
-          }
-        ]
-        let updatedTableDataReducedStocks = [
-          {
-            id: 5,
-            name: "Pilit",
-            code: "PLT",
-            quantity: "50",
-            unit: "Kilo",
-            price: "45.00",
-            date: "11/01/2018",
-            type: "Reduced"
-          },
-          {
-            id: 6,
-            name: "Sinandomeng",
-            code: "SNDMNG",
-            quantity: "25",
-            unit: "Sack",
-            price: "51.00",
-            date: "11/01/2018",
-            type: "Reduced"
-          },
-          {
-            id: 7,
-            name: "Jasmine",
-            code: "JSMN",
-            quantity: "5",
-            unit: "Sack",
-            price: "58.00",
-            date: "11/01/2018",
-            type: "Reduced"
-          }
-        ]
+        return temp;
+      },
+      updateLogsTable(index) {
+        this.search = "";
+        this.category = index;
+        this.activeIndexDetails = 0;
         switch(index){
-          case 0 : 
-            this.table1.data = tableData;
+          case 0:
+            this.tableColumns = this.$t('logs.tableColumnsIn');
+            this.table.data = [...tableDataIn];
             break;
           case 1:
-            this.table1.data = updatedTableDataAddedStocks;
-            break;
-          case 2: 
-            this.table1.data = updatedTableDataReducedStocks;
+            this.tableColumns = this.$t('logs.tableColumnsOut');
+            this.table.data = [...tableDataOut];
             break;
         }
-        this.table1.activeIndex = index;
+        this.table.activeIndex = index;
+      },
+      toggleModal(item) {
+        console.log("tada", item);
+        this.detailsData = item;
+        this.activeIndexDetails = 0;
+        if(!this.modalFlag) {
+          this.modalFlag = true;
+          this.$refs.logDetailsModal.open();
+        } else {
+          this.modalFlag = false;
+          this.$refs.logDetailsModal.close();
+        }
+      },
+      updateDetailsCategory(index) {
+        this.activeIndexDetails = index;
       }
     }
   };

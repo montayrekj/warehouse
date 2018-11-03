@@ -21,18 +21,34 @@
   },
   "logs": {
     "logsCategories": [
-      "All",
-      "Added Stocks",
-      "Reduced Stocks"
+      "In",
+      "Out"
     ],
-    "tableColumns" : [
-      "Name", 
-      "Code", 
-      "Quantity", 
-      "Unit",  
-      "Price", 
-      "Date",
-      "Type"
+    "detailsCategories": [
+      "Log Details",
+      "Payment History"
+    ],
+    "tableColumnsIn" : [
+      {"Header":"Products Added", "Item":"Products"},
+      {"Header":"Date Added", "Item":"Created_Date"},
+      {"Header":"Facilitator", "Item":"Created_By"}
+    ],
+    "tableColumnsOut" : [
+      {"Header":"Customer Name", "Item":"Customer_Name"}, 
+      {"Header":"Products Purchased", "Item":"Products"},
+      {"Header":"Total Amount", "Item":"Total_Amount"},
+      {"Header":"Paid Amount", "Item":"Paid_Amount"},
+      {"Header":"Balance", "Item":"Balance"},
+      {"Header":"Date Purchased", "Item":"Created_Date"},
+      {"Header":"Purchased To", "Item":"Created_By"}
+    ],
+    "modalColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Price", "Item":"price"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"Quantity Added", "Item":"quantityAdded"}
     ]
   }
 }
