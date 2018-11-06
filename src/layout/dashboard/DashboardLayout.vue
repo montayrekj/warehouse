@@ -5,6 +5,7 @@
         <sidebar-link to="/dashboard" :name="$t('sidebar.dashboard')" icon="tim-icons icon-chart-pie-36"/>
         <sidebar-link to="/stocks" :name="$t('sidebar.stocks')" icon="tim-icons icon-chart-bar-32"/>
         <sidebar-link to="/products" :name="$t('sidebar.products')" icon="tim-icons icon-bullet-list-67"/>
+        <sidebar-link to="/paymentBacklogs" :name="$t('sidebar.paymentBacklogs')" icon="tim-icons icon-wallet-43"/>
         <sidebar-link to="/logs" :name="$t('sidebar.logs')" icon="tim-icons icon-notes"/>
       </template>
     </side-bar>

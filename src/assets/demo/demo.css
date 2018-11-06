@@ -90,3 +90,37 @@ body {
 html {
   height: 100%
 }
+
+.stocksModal .sweet-content-content {
+  overflow: hidden
+}
+
+.stocksModal .card-body {
+  overflow: scroll
+}
+
+.card-body-color {
+  background-color: #2b3b4c
+}
+
+.label-content-color {
+  color: #fff !important
+}
+
+.label-content-size {
+  font-size: 10px
+}
+
+.label-content-style {
+  font-style: italic;
+}
+
+.label-title-content {
+  font-size: 11px !important;
+  color:rgba(255, 255, 255, 0.6) !important;
+}
+
+.div-content-align {
+  text-align: left
+}
+

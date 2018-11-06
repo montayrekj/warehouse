@@ -17,7 +17,31 @@
     "dashboard": "dashboard",
     "stocks": "Stocks",
     "products": "Products",
+    "paymentBacklogs": "Payment Backlogs",
     "logs": "Logs"
+  },
+  "paymentBacklogs": {
+    "tableColumns" : [
+      {"Header":"Customer Name", "Item":"Customer_Name"}, 
+      {"Header":"Products Purchased", "Item":"Products"},
+      {"Header":"Total Amount", "Item":"Total_Amount"},
+      {"Header":"Paid Amount", "Item":"Paid_Amount"},
+      {"Header":"Balance", "Item":"Balance"},
+      {"Header":"Date Purchased", "Item":"Created_Date"},
+      {"Header":"Purchased From", "Item":"Created_By"}
+    ],
+    "detailsCategories": [
+      "Payment Details",
+      "Payment History"
+    ],
+    "modalColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Price", "Item":"price"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"Quantity Added", "Item":"quantityAdded"}
+    ]
   },
   "logs": {
     "logsCategories": [
@@ -40,7 +64,7 @@
       {"Header":"Paid Amount", "Item":"Paid_Amount"},
       {"Header":"Balance", "Item":"Balance"},
       {"Header":"Date Purchased", "Item":"Created_Date"},
-      {"Header":"Purchased To", "Item":"Created_By"}
+      {"Header":"Purchased From", "Item":"Created_By"}
     ],
     "modalColumns" : [
       {"Header":"Product Name", "Item":"productName"},
