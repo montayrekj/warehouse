@@ -32,12 +32,12 @@
               </tr>
               </thead>
               <tbody :class="tbodyClasses">
-              <tr v-for="(item, index) in table1.data" :key="index">
+              <tr v-for="(item) in table1.data" :key="item.productId">
                 <slot :row="item">
                   <td>
                     <div class="form-check">
                     <label class="form-check-label">
-                        <input class="form-check-input" type="checkbox" :value="item.id" v-model="selected">
+                        <input class="form-check-input" type="checkbox" :value="item.productId" v-model="selected">
                       <span class="form-check-sign"></span>
                       </label>
                     </div>
@@ -216,202 +216,10 @@ import { BaseTable } from "@/components";
 import { BaseRadio } from "@/components";
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier"];
+const entityColumns = ["productName", "productCode", "quantity", "unit",  "price", "supplier"];
 const modalColumns = ["Name", "Quantity", "Unit", "Price", "Supplier", ""]
-const tableData = [
-  {
-    id: 1,
-    name: "Ganador",
-    code: "GNDR",
-    quantity: "10",
-    unit: "Sack",
-    price: "54.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 2,
-    name: "Lion Ivory",
-    code: "LNIVRY",
-    quantity: "8",
-    unit: "Sack",
-    price: "50.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 3,
-    name: "NFA Rice",
-    code: "NFA",
-    quantity: "25",
-    unit: "Kilo",
-    price: "30.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 4,
-    name: "A Plus",
-    code: "APLS",
-    quantity: "15",
-    unit: "Sack",
-    price: "84.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 5,
-    name: "Pilit",
-    code: "PLT",
-    quantity: "50",
-    unit: "Kilo",
-    price: "45.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 6,
-    name: "Sinandomeng",
-    code: "SNDMNG",
-    quantity: "25",
-    unit: "Sack",
-    price: "51.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 7,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 8,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 9,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 10,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 11,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 12,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 13,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 14,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 15,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 16,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 17,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 18,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 19,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 20,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan"
-  },
-  {
-    id: 21,
-    name: "Ganador",
-    code: "GNDR",
-    quantity: "10",
-    unit: "Sack",
-    price: "53.00",
-    supplier: "Rabago's Bugasan"
-  }
-];
-
 export default {
   components: {
-    BaseTable,
     SweetModal,
     SweetModalTab,
     BaseRadio
@@ -420,7 +228,7 @@ export default {
     return {
       table1: {
         columns: [...tableColumns],
-        data: [...tableData],
+        data: this.products,
         modalColumns: [...modalColumns]
       },
       modalFlag: false,
@@ -437,7 +245,7 @@ export default {
       paidAmount: 0,
       balance: 0,
       chequeDueDate: null,
-      remarks: null
+      remarks: null,
     };
   },
   computed: {
@@ -449,9 +257,13 @@ export default {
       }
   },
   props: {
-    sample: Boolean
+    sample: Boolean,
+    products: Array,
   },
   watch: {
+    products() {
+      this.table1.data = this.products
+    },
     selected: function() {
       if(this.selected.length !== this.table1.data.length){
         this.selectAll = false;
@@ -461,16 +273,16 @@ export default {
     },
     search: function () {
       if(this.search != '') {
-        this.table1.data = [...tableData].filter(item => 
-          item.name.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.code.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.quantity.includes(this.search) ||
+        this.table1.data = this.products.filter(item => 
+          item.productName.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.productCode.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.quantity.toString().includes(this.search) ||
           item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.price.includes(this.search) ||
+          item.price.toString().includes(this.search) ||
           item.supplier.toUpperCase().includes(this.search.toUpperCase()));
       }
       else
-        this.table1.data = [...tableData];
+        this.table1.data = this.products;
     },
     paid: function() {
       if(this.paid == 'No') {
@@ -563,14 +375,25 @@ export default {
       return column === ""? "20%":""
     },
     hasValue(item, column) {
-      return item[column.toLowerCase()] !== "undefined";
+      var tc = [...tableColumns];
+      var ec = [...entityColumns];
+      var index = tc.indexOf(column)
+    
+      return item[ec[index]] !== "undefined";
     },
     itemValue(item, column) {
-      return item[column.toLowerCase()];
+      var tc = [...tableColumns];
+      var ec = [...entityColumns];
+      var index = tc.indexOf(column)
+
+      if(column === "Price")
+        return Number(item[ec[index]]).toFixed(2);
+      else
+        return item[ec[index]];
     },
     getItemById(id){
       for(var i = 0; i < this.table1.data.length; i++){
-        if(this.table1.data[i].id === id){
+        if(this.table1.data[i].productId === id){
           return this.table1.data[i];
         }
       }
@@ -582,7 +405,7 @@ export default {
       this.selected = [];
       if (!this.selectAll) {
           for (let i in this.table1.data) {
-            this.selected.push(this.table1.data[i].id);
+            this.selected.push(this.table1.data[i].productId);
         }
       } 
     },
@@ -590,9 +413,9 @@ export default {
       if(origin === "addStock") {
           for(var i = 0; i < this.selected.length; i++){
             for(var j = 0; j < this.table1.data.length; j++){
-              if(this.table1.data[j].id === this.selected[i]){
+              if(this.table1.data[j].productId === this.selected[i]){
                 this.table1.data[j].quantity = Number(this.table1.data[j].quantity) + Number(this.quantity[i]);
-                this.table1.data[j].quantity = this.table1.data[j].quantity.toString();
+                this.table1.data[j].quantity = this.table1.data[j].quantity;
                 break;
               }
             }
@@ -603,9 +426,9 @@ export default {
       } else if(origin === "removeStock") {
           for(var i = 0; i < this.selected.length; i++){
             for(var j = 0; j < this.table1.data.length; j++){
-              if(this.table1.data[j].id === this.selected[i]){
+              if(this.table1.data[j].productId === this.selected[i]){
                 this.table1.data[j].quantity = Number(this.table1.data[j].quantity) - Number(this.quantity[i]);
-                this.table1.data[j].quantity = this.table1.data[j].quantity.toString();
+                this.table1.data[j].quantity = this.table1.data[j].quantity;
                 break;
               }
             }
@@ -614,6 +437,7 @@ export default {
           this.quantity = [];
           this.$data.modalFlag = false;
       }
+      this.$emit("addStocks", this.table1.data)
     },
     quantityChange(event, i, index, origin){
       event.preventDefault();
@@ -635,7 +459,7 @@ export default {
         this.grandTotal += (item.price * this.quantity[i]);
       }
     }
-  }
+  },
 };
 </script>
 <style>

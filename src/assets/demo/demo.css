@@ -90,3 +90,7 @@ body {
 html {
   height: 100%
 }
+
+.btn-success {
+  background-image: linear-gradient(to bottom left, #32d47d, #00f2c3, #32d47d) !important
+}

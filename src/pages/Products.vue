@@ -95,82 +95,10 @@
 import { BaseTable } from "@/components";
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier", "Limit"];
-const tableData = [
-  {
-    id: 1,
-    name: "Ganador",
-    code: "GNDR",
-    quantity: "10",
-    unit: "Sack",
-    price: "54.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  },
-  {
-    id: 2,
-    name: "Lion Ivory",
-    code: "LNIVRY",
-    quantity: "8",
-    unit: "Sack",
-    price: "50.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  },
-  {
-    id: 3,
-    name: "NFA Rice",
-    code: "NFA",
-    quantity: "25",
-    unit: "Kilo",
-    price: "30.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  },
-  {
-    id: 4,
-    name: "A Plus",
-    code: "APLS",
-    quantity: "15",
-    unit: "Sack",
-    price: "84.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  },
-  {
-    id: 5,
-    name: "Pilit",
-    code: "PLT",
-    quantity: "50",
-    unit: "Kilo",
-    price: "45.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  },
-  {
-    id: 6,
-    name: "Sinandomeng",
-    code: "SNDMNG",
-    quantity: "25",
-    unit: "Sack",
-    price: "51.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  },
-  {
-    id: 7,
-    name: "Jasmine",
-    code: "JSMN",
-    quantity: "5",
-    unit: "Sack",
-    price: "58.00",
-    supplier: "Bugasan ni Juan",
-    limit: "5"
-  }
-];
+const entityColumns = ["productName", "productCode", "quantity", "unit",  "price", "supplier", "quantityLimit"];
 
 export default {
   components: {
-    BaseTable,
     SweetModal,
     SweetModalTab,
   },
@@ -178,7 +106,7 @@ export default {
     return {
       table1: {
         columns: [...tableColumns],
-        data: [...tableData]
+        data: this.products
       },
       modalFlag: false,
       type: '',
@@ -195,7 +123,8 @@ export default {
     };
   },
   props: {
-    sample: Boolean
+    sample: Boolean,
+    products: Array,
   },
   computed: {
     tableClass() {
@@ -207,31 +136,45 @@ export default {
     }
   },
   watch: {
+     products() {
+      this.table1.data = this.products
+    },
     productCode: function() {
       if(this.productCode !== null)
         this.productCode = this.productCode.toUpperCase();
     },
     search: function () {
       if(this.search != '') {
-        this.table1.data = [...tableData].filter(item => 
-          item.name.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.code.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.quantity.includes(this.search) ||
+        this.table1.data = this.products.filter(item => 
+          item.productName.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.productCode.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.quantity.toString().includes(this.search) ||
           item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.price.includes(this.search) ||
-          item.limit.includes(this.search) ||
+          item.price.toString().includes(this.search) ||
+          item.quantityLimit.toString().includes(this.search) ||
           item.supplier.toUpperCase().includes(this.search.toUpperCase()));
       }
       else
-        this.table1.data = [...tableData];
+        this.table1.data = this.products;
     }
   },
   methods: {
     hasValue(item, column) {
-      return item[column.toLowerCase()] !== "undefined";
+      var tc = [...tableColumns];
+      var ec = [...entityColumns];
+      var index = tc.indexOf(column)
+    
+      return item[ec[index]] !== "undefined";
     },
     itemValue(item, column) {
-      return item[column.toLowerCase()];
+      var tc = [...tableColumns];
+      var ec = [...entityColumns];
+      var index = tc.indexOf(column)
+
+      if(column === "Price")
+        return Number(item[ec[index]]).toFixed(2);
+      else
+        return item[ec[index]];
     },
     deleteWarn(index) {
       this.$emit("changeSample", !this.sample)
@@ -247,6 +190,7 @@ export default {
     },
     deleteProduct() {
       this.$emit("changeSample", !this.sample)
+      this.$emit("deleteProduct", this.table1.data[this.toBeDeleted].productId)
       this.table1.data.splice(this.toBeDeleted, 1)
       this.$refs.deleteWarning.close();
       this.modalFlag = false;
@@ -274,16 +218,15 @@ export default {
       } else {
         var price = Number(this.productPrice).toFixed(2);
         var item = {
-          id: Number(this.table1.data.length) + 1,
-          name: this.productName,
-          code: this.productCode,
+          productName: this.productName,
+          productCode: this.productCode,
           quantity: this.productQuantity.toString(),
           unit: this.productUnit,
           price: price.toString(),
           supplier: this.productSupplier,
-          limit: this.productLimit.toString()
+          quantityLimit: this.productLimit.toString()
         }
-
+        this.$emit("addProduct", item);
         this.table1.data.push(item)
         this.$refs.addProductModal.close();
         this.productName = null

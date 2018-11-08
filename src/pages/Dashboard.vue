@@ -113,7 +113,14 @@
   import LineChart from '@/components/Charts/LineChart';
   import * as chartConfigs from '@/components/Charts/config';
   import config from '@/config';
-
+  import axios from 'axios';
+  const entityColumns = [
+      "productName", 
+      "productCode", 
+      "quantity", 
+      "unit",  
+      "supplier"
+    ]
   const tableData = [
     {
       id: 1,
@@ -157,7 +164,7 @@
           categories: []
         },
         table: {
-          data: [...tableData],
+          data: [],
           activeIndex: 0
         },
         tbodyClasses: ''
@@ -229,14 +236,31 @@
         this.salesLineChart.activeIndex = index;
       },
       hasValue(item, column) {
-        return item[column.toLowerCase()] !== "undefined";
+        var tc = this.dashboardTableColumns;
+        var ec = [...entityColumns];
+        var index = tc.indexOf(column)
+      
+        return item[ec[index]] !== "undefined";
       },
       itemValue(item, column) {
-        return item[column.toLowerCase()];
-      }
+        var tc = this.dashboardTableColumns;
+        var ec = [...entityColumns];
+        var index = tc.indexOf(column)
+
+        if(column === "Price")
+          return Number(item[ec[index]]).toFixed(2);
+        else
+          return item[ec[index]];
+    },
     },
     mounted() {
       this.initChart(0);
+      axios
+        .post('http://localhost:8011/getProductsBelowLimit')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.table.data = response.data.data;
+        })
     }
   };
 </script>

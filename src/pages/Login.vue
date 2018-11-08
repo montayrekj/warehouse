@@ -41,11 +41,7 @@
 </template>
 <script>
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-  const user = {
-    username: "admin",
-    password: "test123",
-    userType: "admin"  
-  }
+  import axios from 'axios';
   export default {
     components: {
       SweetModal,
@@ -59,12 +55,20 @@
     },
     methods: {
       login () {
-        if(this.username === user.username && this.password === this.password){
-          localStorage.setItem('user', JSON.stringify(user));
-          window.location.href="/#/dashboard"
-        } else {
-          this.$refs.loginErrorModal.open();
-        }
+        var data = new FormData();
+        data.append('username', this.username)
+        data.append('password', this.password)
+        axios
+        .post('http://localhost:8011/login', data).then(response => {
+          if(response.data.statusCode === "OK"){
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+            window.location.href="/#/dashboard"
+          } else {
+            this.username = "";
+            this.password = "";
+            this.$refs.loginErrorModal.open();
+          }
+        })
       }
     }
   };
