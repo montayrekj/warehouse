@@ -7,11 +7,11 @@
               <div class="col-md-3">
                 <input type="text" placeholder="Search" v-model="search" class="form-control" />
               </div>
-              <div class="col-md-3"></div>
-              <div class="col-md-3 pull-right">
-              <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">Add Stocks</button></div>
-              <div class="col-md-3 pull-right">
-              <button class="btn btn-danger" style="width: 100%" v-on:click="toggleModal('removeStock')">Reduce Stocks</button></div>
+              <div class="col-md-5"></div>
+              <div class="col-md-2 pull-right">
+              <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">In</button></div>
+              <div class="col-md-2 pull-right">
+              <button class="btn btn-danger" style="width: 100%" v-on:click="toggleModal('removeStock')">Out</button></div>
             </div>
           </div>
           <div class="table-responsive">

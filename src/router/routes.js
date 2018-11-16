@@ -13,7 +13,7 @@ import Stocks from "@/pages/Stocks.vue";
 import Products from "@/pages/Products.vue";
 import Purchases from "@/pages/Purchases.vue";
 import Login from "@/pages/Login.vue";
-import PaymentBacklogs from "@/pages/PaymentBacklogs.vue";
+import Collections from "@/pages/Collections.vue";
 import Sales from "@/pages/Sales.vue";
 
 const routes = [
@@ -64,9 +64,9 @@ const routes = [
         component: Products
       },
       {
-        path: "paymentBacklogs",
-        name: "paymentBacklogs",
-        component: PaymentBacklogs
+        path: "reports/collections",
+        name: "collections",
+        component: Collections
       },
       {
         path: "purchases",

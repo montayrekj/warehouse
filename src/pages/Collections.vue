@@ -325,7 +325,7 @@ const tablePaymentHistory = [
         },
         search: '',
         tbodyClasses: '',
-        tableColumns: this.$t('paymentBacklogs.tableColumns'),
+        tableColumns: this.$t('collections.tableColumns'),
         viewDetailsModalFlag: false,
         addPaymentModalFlag: false,
         activeIndexDetails: 0,
@@ -344,8 +344,7 @@ const tablePaymentHistory = [
       search: function () { 
         if(this.search != '') {
           this.table.data = [...tableData].filter(item => 
-            item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) || 
-            this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase()) ||
+            item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) ||
             item.Total_Amount.toString().includes(this.search) || 
             item.Paid_Amount.toUpperCase().includes(this.search.toUpperCase()) ||  
             this.computeBalance(item.Total_Amount,item.Paid_Amount).toString().includes(this.search) || 
@@ -386,10 +385,10 @@ const tablePaymentHistory = [
         return this.type && `table-${this.type}`;
       },
       detailsCategories() {
-        return this.$t('paymentBacklogs.detailsCategories');
+        return this.$t('collections.detailsCategories');
       },
       modalColumns() {
-        return this.$t('paymentBacklogs.modalColumns');
+        return this.$t('collections.modalColumns');
       }
     },
     methods: {
@@ -401,13 +400,7 @@ const tablePaymentHistory = [
       },
       itemValue(item, column) {
         var temp = item[column.Item];
-        if(column.Item === "Products"){
-          temp = "";
-          for(var i = 0 ; i < item[column.Item].length; i++){
-            temp = temp + item[column.Item][i].productName + ", ";
-          }
-        }
-        else if(column.Item == "Balance")
+        if(column.Item == "Balance")
           return this.computeBalance(item["Total_Amount"], item["Paid_Amount"]);
 
         return temp;

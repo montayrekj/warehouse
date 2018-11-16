@@ -17,7 +17,8 @@
     "dashboard": "dashboard",
     "stocks": "Stocks",
     "products": "Products",
-    "paymentBacklogs": "Payment Backlogs",
+    "collections": "Collections",
+    "logs": "Logs",
     "purchases": "Purchases",
     "sales": "Sales"
   },
@@ -61,18 +62,17 @@
       {"Header":"Limit", "Item":"limit"}
     ]
   },
-  "paymentBacklogs": {
+  "collections": {
     "tableColumns" : [
-      {"Header":"Customer Name", "Item":"Customer_Name"}, 
-      {"Header":"Products Purchased", "Item":"Products"},
+      {"Header":"Customer Name", "Item":"Customer_Name"},
       {"Header":"Total Amount", "Item":"Total_Amount"},
       {"Header":"Paid Amount", "Item":"Paid_Amount"},
       {"Header":"Balance", "Item":"Balance"},
-      {"Header":"Date Purchased", "Item":"Created_Date"},
-      {"Header":"Purchased From", "Item":"Created_By"}
+      {"Header":"Ordered Date", "Item":"Created_Date"},
+      {"Header":"Ordered From", "Item":"Created_By"}
     ],
     "detailsCategories": [
-      "Payment Details",
+      "Details",
       "Payment History"
     ],
     "modalColumns" : [
@@ -87,8 +87,8 @@
   "purchases": {
     "tableColumns" : [
       {"Header":"Products Added", "Item":"Products"},
-      {"Header":"Date Added", "Item":"Created_Date"},
-      {"Header":"Facilitator", "Item":"Created_By"}
+      {"Header":"Added Date", "Item":"Created_Date"},
+      {"Header":"Added By", "Item":"Created_By"}
     ],
     "modalColumns" : [
       {"Header":"Product Name", "Item":"productName"},
@@ -106,12 +106,12 @@
     ],
     "tableColumns" : [
       {"Header":"Customer Name", "Item":"Customer_Name"}, 
-      {"Header":"Products Purchased", "Item":"Products"},
+      {"Header":"Products Ordered", "Item":"Products"},
       {"Header":"Total Amount", "Item":"Total_Amount"},
       {"Header":"Paid Amount", "Item":"Paid_Amount"},
       {"Header":"Balance", "Item":"Balance"},
-      {"Header":"Date Purchased", "Item":"Created_Date"},
-      {"Header":"Purchased From", "Item":"Created_By"}
+      {"Header":"Ordered Date", "Item":"Created_Date"},
+      {"Header":"Ordered From", "Item":"Created_By"}
     ],
     "modalColumns" : [
       {"Header":"Product Name", "Item":"productName"},

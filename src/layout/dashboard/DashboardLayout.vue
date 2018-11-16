@@ -5,9 +5,35 @@
         <sidebar-link to="/dashboard" :name="$t('sidebar.dashboard')" icon="tim-icons icon-chart-pie-36"/>
         <sidebar-link to="/stocks" :name="$t('sidebar.stocks')" icon="tim-icons icon-chart-bar-32"/>
         <sidebar-link to="/products" :name="$t('sidebar.products')" icon="tim-icons icon-bullet-list-67"/>
-        <sidebar-link to="/paymentBacklogs" :name="$t('sidebar.paymentBacklogs')" icon="tim-icons icon-wallet-43"/>
-        <sidebar-link to="/purchases" :name="$t('sidebar.purchases')" icon="tim-icons icon-notes"/>
-        <sidebar-link to="/sales" :name="$t('sidebar.sales')" icon="tim-icons icon-notes"/>
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleLogs()">
+            <i class="tim-icons icon-notes"></i>
+            <p>
+              Logs
+              <i v-if="!this.$sidebar.logsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.logsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.logsFlag">
+            <sidebar-link to="/purchases" :name="$t('sidebar.purchases')"/>
+            <sidebar-link to="/sales" :name="$t('sidebar.sales')"/>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleReports()">
+            <i class="tim-icons icon-wallet-43"></i>
+            <p>
+              Reports
+              <i v-if="!this.$sidebar.reportsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.reportsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.reportsFlag">
+            <sidebar-link to="/reports/collections" :name="$t('sidebar.collections')"/>
+          </ul>
+        </li>
+        
       </template>
     </side-bar>
     <div class="main-panel">
@@ -26,10 +52,11 @@
 import TopNavbar from "./TopNavbar.vue";
 import DashboardContent from "./Content.vue";
 import MobileMenu from "./MobileMenu";
+import router from "@/router/routes.js"
 export default {
   data() {
     return {
-      sample: false
+      sample: false,
     }
   },
   components: {
@@ -51,6 +78,18 @@ export default {
     },
     changeSample2(event) {
       this.sample = event
+    },
+    toggleLogs() {
+      this.$sidebar.toggleLogs(!this.$sidebar.logsFlag);
+      if(!this.$sidebar.logsFlag) {
+        window.location.href = "/#/dashboard"
+      }
+    },
+    toggleReports() {
+      this.$sidebar.toggleReports(!this.$sidebar.reportsFlag);
+      if(!this.$sidebar.reportsFlag) {
+        window.location.href = "/#/dashboard"
+      }
     }
   }
 };
