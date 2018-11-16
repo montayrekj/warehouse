@@ -11,9 +11,10 @@ import Maps from "@/pages/Maps.vue";
 import Typography from "@/pages/Typography.vue";
 import Stocks from "@/pages/Stocks.vue";
 import Products from "@/pages/Products.vue";
-import Logs from "@/pages/Logs.vue";
+import Purchases from "@/pages/Purchases.vue";
 import Login from "@/pages/Login.vue";
 import PaymentBacklogs from "@/pages/PaymentBacklogs.vue";
+import Sales from "@/pages/Sales.vue";
 
 const routes = [
   { path: "/login", component: Login },
@@ -68,10 +69,15 @@ const routes = [
         component: PaymentBacklogs
       },
       {
-        path: "logs",
-        name: "logs",
-        component: Logs
-      }   
+        path: "purchases",
+        name: "purchases",
+        component: Purchases
+      },
+      {
+        path: "sales",
+        name: "sales",
+        component: Sales
+      }
     ]
   },
   { path: "*", component: NotFound },

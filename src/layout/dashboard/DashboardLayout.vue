@@ -6,7 +6,8 @@
         <sidebar-link to="/stocks" :name="$t('sidebar.stocks')" icon="tim-icons icon-chart-bar-32"/>
         <sidebar-link to="/products" :name="$t('sidebar.products')" icon="tim-icons icon-bullet-list-67"/>
         <sidebar-link to="/paymentBacklogs" :name="$t('sidebar.paymentBacklogs')" icon="tim-icons icon-wallet-43"/>
-        <sidebar-link to="/logs" :name="$t('sidebar.logs')" icon="tim-icons icon-notes"/>
+        <sidebar-link to="/purchases" :name="$t('sidebar.purchases')" icon="tim-icons icon-notes"/>
+        <sidebar-link to="/sales" :name="$t('sidebar.sales')" icon="tim-icons icon-notes"/>
       </template>
     </side-bar>
     <div class="main-panel">

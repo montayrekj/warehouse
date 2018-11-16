@@ -18,15 +18,15 @@
               <thead class="text-primary">
               <tr>
                 <slot name="columns" style="text-align: center">
-                  <th v-for="column in table1.columns" :key="column">{{column}}</th>
+                  <th v-for="(column, index) in tableColumns" :key="index">{{column.Header}}</th>
                   <th style="display: inline-block;width: 100%;text-align: center;">Actions</th>
                 </slot>
               </tr>
               </thead>
               <tbody :class="tbodyClasses">
-              <tr v-for="(item, index) in table1.data" :key="index">
+              <tr v-for="(item, index) in table.data" :key="index">
                 <slot :row="item">
-                  <td v-for="(column, index) in table1.columns" :key="index" v-if="hasValue(item, column)">
+                  <td v-for="(column, index) in tableColumns" :key="index" v-if="hasValue(item, column)">
                     {{itemValue(item, column)}}
                   </td>
                   <td style="text-align: center">
@@ -61,8 +61,12 @@
           <input type="text" class="form-control" placeholder="Enter product unit..." v-model="productUnit" >
         </div>
         <div class="form-group">
-          <label for="productPrice">Price</label>
-          <input type="number" class="form-control" placeholder="0.00" v-model="productPrice" >
+          <label for="productBuyPrice">Buy Price</label>
+          <input type="number" class="form-control" placeholder="0.00" v-model="productBuyPrice" >
+        </div>
+        <div class="form-group">
+          <label for="productSellPrice">Sell Price</label>
+          <input type="number" class="form-control" placeholder="0.00" v-model="productSellPrice" >
         </div>
         <div class="form-group">
           <label for="productSupplier">Supplier</label>
@@ -93,76 +97,83 @@
 </template>
 <script>
 import { BaseTable } from "@/components";
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier", "Limit"];
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
+
 const tableData = [
   {
     id: 1,
-    name: "Ganador",
-    code: "GNDR",
+    productName: "Ganador",
+    productCode: "GNDR",
     quantity: "10",
     unit: "Sack",
-    price: "54.00",
+    buyPrice: 52.00,
+    sellPrice: 54.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   },
   {
     id: 2,
-    name: "Lion Ivory",
-    code: "LNIVRY",
+    productName: "Lion Ivory",
+    productCode: "LNIVRY",
     quantity: "8",
     unit: "Sack",
-    price: "50.00",
+    buyPrice: 52.00,
+    sellPrice: 50.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   },
   {
     id: 3,
-    name: "NFA Rice",
-    code: "NFA",
+    productName: "NFA Rice",
+    productCode: "NFA",
     quantity: "25",
     unit: "Kilo",
-    price: "30.00",
+    buyPrice: 52.00,
+    sellPrice: 30.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   },
   {
     id: 4,
-    name: "A Plus",
-    code: "APLS",
+    productName: "A Plus",
+    productCode: "APLS",
     quantity: "15",
     unit: "Sack",
-    price: "84.00",
+    buyPrice: 52.00,
+    sellPrice: 84.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   },
   {
     id: 5,
-    name: "Pilit",
-    code: "PLT",
+    productName: "Pilit",
+    productCode: "PLT",
     quantity: "50",
     unit: "Kilo",
-    price: "45.00",
+    buyPrice: 52.00,
+    sellPrice: 45.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   },
   {
     id: 6,
-    name: "Sinandomeng",
-    code: "SNDMNG",
+    productName: "Sinandomeng",
+    productCode: "SNDMNG",
     quantity: "25",
     unit: "Sack",
-    price: "51.00",
+    buyPrice: 52.00,
+    sellPrice: 51.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   },
   {
     id: 7,
-    name: "Jasmine",
-    code: "JSMN",
+    productName: "Jasmine",
+    productCode: "JSMN",
     quantity: "5",
     unit: "Sack",
-    price: "58.00",
+    buyPrice: 52.00,
+    sellPrice: 58.00,
     supplier: "Bugasan ni Juan",
     limit: "5"
   }
@@ -176,8 +187,7 @@ export default {
   },
   data() {
     return {
-      table1: {
-        columns: [...tableColumns],
+      table: {
         data: [...tableData]
       },
       modalFlag: false,
@@ -189,7 +199,8 @@ export default {
       productCode: null,
       productQuantity: null,
       productUnit: null,
-      productPrice: null,
+      productBuyPrice: null,
+      productSellPrice: null,
       productSupplier: null,
       productLimit: null
     };
@@ -201,9 +212,12 @@ export default {
     tableClass() {
       return this.type && `table-${this.type}`;
     },
+    tableColumns(){
+      return this.$t('products.tableColumns');
+    },
     toBeDeletedName() {
-      if(this.table1.data.length > 0)
-        return this.table1.data[this.toBeDeleted].name;
+      if(this.table.data.length > 0)
+        return this.table.data[this.toBeDeleted].name;
     }
   },
   watch: {
@@ -213,25 +227,26 @@ export default {
     },
     search: function () {
       if(this.search != '') {
-        this.table1.data = [...tableData].filter(item => 
+        this.table.data = [...tableData].filter(item => 
           item.name.toUpperCase().includes(this.search.toUpperCase()) || 
           item.code.toUpperCase().includes(this.search.toUpperCase()) || 
           item.quantity.includes(this.search) ||
           item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.price.includes(this.search) ||
+          item.buyPrice.includes(this.search) ||
+          item.sellPrice.includes(this.search) ||
           item.limit.includes(this.search) ||
           item.supplier.toUpperCase().includes(this.search.toUpperCase()));
       }
       else
-        this.table1.data = [...tableData];
+        this.table.data = [...tableData];
     }
   },
   methods: {
     hasValue(item, column) {
-      return item[column.toLowerCase()] !== "undefined";
+      return item[column.Item] !== "undefined";
     },
     itemValue(item, column) {
-      return item[column.toLowerCase()];
+      return item[column.Item];
     },
     deleteWarn(index) {
       this.$emit("changeSample", !this.sample)
@@ -247,7 +262,7 @@ export default {
     },
     deleteProduct() {
       this.$emit("changeSample", !this.sample)
-      this.table1.data.splice(this.toBeDeleted, 1)
+      this.table.data.splice(this.toBeDeleted, 1)
       this.$refs.deleteWarning.close();
       this.modalFlag = false;
       this.toBeDeleted = 0;
@@ -272,25 +287,28 @@ export default {
         this.$refs.addErrorModal.open();
         this.$refs.addProductModal.close();
       } else {
-        var price = Number(this.productPrice).toFixed(2);
+        var buyprice = Number(this.productBuyPrice).toFixed(2);
+        var sellprice = Number(this.productSellPrice).toFixed(2);
         var item = {
-          id: Number(this.table1.data.length) + 1,
-          name: this.productName,
-          code: this.productCode,
+          id: Number(this.table.data.length) + 1,
+          productName: this.productName,
+          productCode: this.productCode,
           quantity: this.productQuantity.toString(),
           unit: this.productUnit,
-          price: price.toString(),
+          buyPrice: buyprice.toString(),
+          sellPrice: sellprice.toString(),
           supplier: this.productSupplier,
           limit: this.productLimit.toString()
         }
 
-        this.table1.data.push(item)
+        this.table.data.push(item)
         this.$refs.addProductModal.close();
         this.productName = null
         this.productCode =  null;
         this.productQuantity =  null;
         this.productUnit = null;
-        this.productPrice = null;
+        this.productBuyPrice = null;
+        this.productSellPrice = null;
         this.modalFlag = false;
       }
     },
@@ -308,7 +326,10 @@ export default {
       if(this.productUnit === null){
         flag = false;
       } 
-      if(this.productPrice === null){
+      if(this.productBuyPrice === null){
+        flag = false;
+      }
+      if(this.productSellPrice === null){
         flag = false;
       }
       return flag;

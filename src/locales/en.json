@@ -18,7 +18,48 @@
     "stocks": "Stocks",
     "products": "Products",
     "paymentBacklogs": "Payment Backlogs",
-    "logs": "Logs"
+    "purchases": "Purchases",
+    "sales": "Sales"
+  },
+  "stocks": {
+    "tableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Product Code", "Item":"productCode"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Sell Price", "Item":"sellPrice"},
+      {"Header":"Supplier", "Item":"supplier"}
+    ],
+    "modalColumnsIn" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"", "Item":""}
+    ],
+    "modalColumnsOut" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Sell Price", "Item":"sellPrice"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"", "Item":""}
+    ]
+  },
+  "products": {
+    "tableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Product Code", "Item":"productCode"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Sell Price", "Item":"sellPrice"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"Limit", "Item":"limit"}
+    ]
   },
   "paymentBacklogs": {
     "tableColumns" : [
@@ -38,26 +79,32 @@
       {"Header":"Product Name", "Item":"productName"},
       {"Header":"Quantity", "Item":"quantity"},
       {"Header":"Unit", "Item":"unit"},
-      {"Header":"Price", "Item":"price"},
+      {"Header":"Sell Price", "Item":"sellPrice"},
       {"Header":"Supplier", "Item":"supplier"},
       {"Header":"Quantity Added", "Item":"quantityAdded"}
     ]
   },
-  "logs": {
-    "logsCategories": [
-      "In",
-      "Out"
-    ],
-    "detailsCategories": [
-      "Log Details",
-      "Payment History"
-    ],
-    "tableColumnsIn" : [
+  "purchases": {
+    "tableColumns" : [
       {"Header":"Products Added", "Item":"Products"},
       {"Header":"Date Added", "Item":"Created_Date"},
       {"Header":"Facilitator", "Item":"Created_By"}
     ],
-    "tableColumnsOut" : [
+    "modalColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"Quantity Added", "Item":"quantityAdded"}
+    ]
+  },
+  "sales": {
+    "detailsCategories": [
+      "Log Details",
+      "Payment History"
+    ],
+    "tableColumns" : [
       {"Header":"Customer Name", "Item":"Customer_Name"}, 
       {"Header":"Products Purchased", "Item":"Products"},
       {"Header":"Total Amount", "Item":"Total_Amount"},
@@ -70,7 +117,7 @@
       {"Header":"Product Name", "Item":"productName"},
       {"Header":"Quantity", "Item":"quantity"},
       {"Header":"Unit", "Item":"unit"},
-      {"Header":"Price", "Item":"price"},
+      {"Header":"Sell Price", "Item":"sellPrice"},
       {"Header":"Supplier", "Item":"supplier"},
       {"Header":"Quantity Added", "Item":"quantityAdded"}
     ]

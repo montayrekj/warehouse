@@ -12,11 +12,13 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "@vue/cli": "^3.1.1",
     "chart.js": "^2.7.2",
     "es6-promise": "^4.2.4",
     "sweet-modal-vue": "^2.0.0",
     "vue": "^2.5.17",
     "vue-chartjs": "^3.4.0",
+    "vue-collapse": "^1.0.31",
     "vue-i18n": "^8.0.0",
     "vue-router": "^3.0.1",
     "vue2-transitions": "^0.2.3"

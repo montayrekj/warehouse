@@ -8,22 +8,6 @@
               <div class="col-sm-3">
                 <input type="text" placeholder="Search" v-model="search" class="form-control" />
               </div>
-              <div class="col-sm-9">
-                <div class="btn-group btn-group-toggle"
-                     :class="'float-right'" data-toggle="buttons">
-                  <label v-for="(option, index) in logsCategories"
-                         :key="option"
-                         class="btn btn-sm btn-primary btn-simple"
-                         :class="{active: activeIndex === index}"
-                         :id="index">
-                    <input type="radio"
-                           @click="updateLogsTable(index)"
-                           name="options" autocomplete="off"
-                           :checked="activeIndex === index">
-                    {{option}}
-                  </label>
-                </div>
-              </div>
             </div>
           </template>
           <div>
@@ -64,8 +48,8 @@
       </div>
     </div>
 
-    <sweet-modal ref="logDetailsModal" hide-close-button overlay-theme="dark" modal-theme="dark">  
-      <div class="row" v-if="activeIndex === 1" style="padding-bottom: 20px">
+    <sweet-modal ref="viewDetailsModal" hide-close-button overlay-theme="dark" modal-theme="dark">  
+      <div class="row" style="padding-bottom: 20px">
         <div class="col-sm-12">
           <div class="btn-group btn-group-toggle"
                 :class="'float-right'" data-toggle="buttons">
@@ -84,7 +68,7 @@
         </div>
       </div>
       <div v-if="activeIndexDetails === 0">
-        <div class="row form-group" v-if="activeIndex === 1">
+        <div class="row form-group">
           <div class="col">
             <div class="div-content-align"><label style="font-size: 11px; color:rgba(255, 255, 255, 0.6)">Customer Name </label></div>
             <div class="div-content-align"><label class="control-label">{{ detailsData.Customer_Name }}</label></div>
@@ -114,7 +98,7 @@
             </table>
           </div>
         </card>
-        <div v-if="activeIndex === 1">
+        <div>
           <div class="row">
             <div class="col-md-4">
               <div class="col">
@@ -143,7 +127,7 @@
           </div>
         </div>
       </div>
-      <div v-if="activeIndex === 1 && activeIndexDetails === 1">
+      <div v-if="activeIndexDetails === 1">
         <card v-for="(history, index) in paymentHistory" :key="index" class="card-body-color">
           <div class="col">
             <div class="row">
@@ -151,27 +135,32 @@
                 <div><label class="label-content-size">Payment Method</label></div>
                 <div><label  class="label-content-color">{{ history.Payment_Method }}</label></div>
               </div>
+              <div class="col" v-if="history.Payment_Method.includes('Cash')">
+                <div><label class="label-content-size">Amount in Cash</label></div>
+                <div><label  class="label-content-color">{{ history.amountInCash }}</label></div>
+              </div>
+            </div>
+            <div class="row" v-if="history.Payment_Method.includes('Cheque')">
               <div class="col">
-                <div><label class="label-content-size">Payment Type</label></div>
-                <div><label  class="label-content-color">{{ history.Payment_Type }}</label></div>
+                <div><label class="label-content-size">Amount in Cheque</label></div>
+                <div><label class="label-content-color">{{ history.amountInCheque }}</label></div>
+              </div>
+              <div class="col">
+                <div><label class="label-content-size">Cheque Due Date</label></div>
+                <div><label class="label-content-color">{{ history.Cheque_Due_Date }}</label></div>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <div><label class="label-content-size">Paid Amount</label></div>
-                <div><label class="label-content-color">{{ history.Paid_Amount }}</label></div>
+                <div><label class="label-content-size">Total Paid Amount</label></div>
+                <div><label class="label-content-color">{{ (history.amountInCheque + history.amountInCash) }}</label></div>
               </div>
               <div class="col">
                 <div><label class="label-content-size">Balance</label></div>
                 <div><label class="label-content-color">{{ history.Balance}}</label></div>
               </div>
             </div>
-            <div class="row" v-if="history.Payment_Method === 'Cheque'">
-              <div class="col">
-                <div><label class="label-content-size">Cheque Due Date</label></div>
-                <div><label class="label-content-color">{{ history.Cheque_Due_Date }}</label></div>
-              </div>
-            </div>
+            
             <div style="text-align: right;"><label class="label-content-size label-content-style">{{history.Created_By + " - " + history.Created_Date}}</label></div>
           </div>
         </card>
@@ -185,43 +174,13 @@
 </template>
 <script>
 
-  import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
-  
-  const tableDataIn = [
-  {
-    id: 1,
-    Products: [
-    {productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"},
-    {productName: "Ganador", productCode: "GNDR", quantity: "10", unit: "Sack", price: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3" }],
-    Created_Date: "11/01/2018",
-    Created_By: "Admin"
-
-  },
-  {
-    id: 2,
-    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
-    Created_Date: "11/01/2018",
-    Created_By: "Admin"
-  },
-  {
-    id: 3,
-    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
-    Created_Date: "11/01/2018",
-    Created_By: "Admin"
-  },
-  {
-    id: 4,
-    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
-    Created_Date: "11/01/2018",
-    Created_By: "Admin"
-  }
-];
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
         
-const tableDataOut = [
+const tableData = [
   {
     id: 1,
     Customer_Name: "Teresita Tala P. Rabago",
-    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", sellPrice: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
     Total_Amount: "30.00",
     Paid_Amount: "1000",
     Created_Date: "11/01/2018",
@@ -230,7 +189,7 @@ const tableDataOut = [
   {
     id: 2,
     Customer_Name: "Teresita Tala P. Rabago",
-    Products: [{ productName: "NFA Rice", Product_Code: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Products: [{ productName: "NFA Rice", Product_Code: "NFA", quantity: "25", unit: "Kilo", sellPrice: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
     Total_Amount: "30.00",
     Paid_Amount: "1000",
     Created_Date: "11/01/2018",
@@ -239,7 +198,7 @@ const tableDataOut = [
   {
     id: 3,
     Customer_Name: "King Joshua M. Montayre",
-    Products: [{ productName: "Ganador", productCode: "GNDR", quantity: "25", unit: "Kilo", price: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Products: [{ productName: "Ganador", productCode: "GNDR", quantity: "25", unit: "Kilo", sellPrice: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
     Total_Amount: "1350.00",
     Paid_Amount: "1000",
     Created_Date: "11/03/2018",
@@ -252,8 +211,9 @@ const tablePaymentHistory = [
     id: 1,
     Payment_Method: "Cash",
     Payment_Type: "Partial",
-    Paid_Amount: "1000",
-    Balance: "45.00",
+    amountInCash: 1000,
+    amountInCheque: 0.00,
+    Balance: 45.00,
     Cheque_Due_Date: "",
     OutLogsId: 1,
     Created_Date: "11/01/2018",
@@ -262,9 +222,9 @@ const tablePaymentHistory = [
   {
     id: 2,
     Payment_Method: "Cheque",
-    Payment_Type: "Full",
-    Paid_Amount: "45.00",
-    Balance: "0",
+    amountInCash: 0,
+    amountInCheque: 45.00,
+    Balance: 0,
     Cheque_Due_Date: "11/03/2018",
     OutLogsId: 1,
     Created_Date: "11/01/2018",
@@ -272,10 +232,11 @@ const tablePaymentHistory = [
   },
   {
     id: 3,
-    Payment_Method: "Cheque",
+    Payment_Method: "Cash, Cheque",
     Payment_Type: "Full",
-    Paid_Amount: "1000",
-    Balance: "0",
+    amountInCash: 500.00,
+    amountInCheque: 500.00,
+    Balance: 0,
     Cheque_Due_Date: "11/04/2018",
     OutLogsId: 1,
     Created_Date: "11/01/2018",
@@ -291,13 +252,11 @@ const tablePaymentHistory = [
     data() {
       return {
         table: {
-          data: [...tableDataIn] 
+          data: [...tableData] 
         },
         search: '',
         tbodyClasses: '',
-        tableColumns: this.$t('logs.tableColumnsIn'),
         modalFlag: false,
-        activeIndex: 0,
         activeIndexDetails: 0,
         detailsData: [],
         paymentHistory: []
@@ -305,51 +264,37 @@ const tablePaymentHistory = [
     },
     watch: {
       search: function () {
-        switch(this.activeIndex){
-          case 0:
-                if(this.search != '') {
-                  this.table.data = [...tableDataIn].filter(item => 
-                    this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase())||
-                    item.Created_Date.toUpperCase().includes(this.search.toUpperCase()) ||
-                    item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
-                }
-                else
-                  this.table.data = [...tableDataIn];
-                break;
-          case 1:
-                if(this.search != '') {
-                  this.table.data = [...tableDataOut].filter(item => 
-                    item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) || 
-                    this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase()) ||
-                    item.Total_Amount.toString().includes(this.search) || 
-                    item.Paid_Amount.toUpperCase().includes(this.search.toUpperCase()) ||  
-                    this.computeBalance(item.Total_Amount,item.Paid_Amount).toString().includes(this.search) || 
-                    item.Created_Date.toUpperCase().includes(this.search.toUpperCase()) ||
-                    item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
-                }
-                else
-                  this.table.data = [...tableDataOut];
-                break;
-        }
+          if(this.search != '') {
+            this.table.data = [...tableData].filter(item => 
+              item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) || 
+              this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase()) ||
+              item.Total_Amount.toString().includes(this.search) || 
+              item.Paid_Amount.toUpperCase().includes(this.search.toUpperCase()) ||  
+              this.computeBalance(item.Total_Amount,item.Paid_Amount).toString().includes(this.search) || 
+              item.Created_Date.toUpperCase().includes(this.search.toUpperCase()) ||
+              item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
+          }
+          else
+            this.table.data = [...tableData];
       }
     },
     computed: {
       tableClass() {
         return this.type && `table-${this.type}`;
       },
-      logsCategories() {
-        return this.$t('logs.logsCategories');
+      tableColumns() {
+        return this.$t('sales.tableColumns');
       },
       detailsCategories() {
-        return this.$t('logs.detailsCategories');
+        return this.$t('sales.detailsCategories');
       },
       modalColumns() {
-        return this.$t('logs.modalColumns');
+        return this.$t('sales.modalColumns');
       }
     },
     methods: {
       hasValue(item, column) {
-        if(this.activeIndex == 1 && column.Item == 'Balance')
+        if(column.Item == 'Balance')
           return true;
         else
           return item[column.Item] !== "undefined";
@@ -362,25 +307,10 @@ const tablePaymentHistory = [
             temp = temp + item[column.Item][i].productName + ", ";
           }
         }
-        else if(this.activeIndex == 1 && column.Item == "Balance")
+        else if(column.Item == "Balance")
           return this.computeBalance(item["Total_Amount"], item["Paid_Amount"]);
 
         return temp;
-      },
-      updateLogsTable(index) {
-        this.search = "";
-        this.activeIndex = index;
-        this.activeIndexDetails = 0;
-        switch(index){
-          case 0:
-            this.tableColumns = this.$t('logs.tableColumnsIn');
-            this.table.data = [...tableDataIn];
-            break;
-          case 1:
-            this.tableColumns = this.$t('logs.tableColumnsOut');
-            this.table.data = [...tableDataOut];
-            break;
-        }
       },
       toggleModal(item) {
         this.detailsData = item;
@@ -388,10 +318,10 @@ const tablePaymentHistory = [
         if(!this.modalFlag) {
           this.paymentHistory = this.getPaymentHistory();
           this.modalFlag = true;
-          this.$refs.logDetailsModal.open();
+          this.$refs.viewDetailsModal.open();
         } else {
           this.modalFlag = false;
-          this.$refs.logDetailsModal.close();
+          this.$refs.viewDetailsModal.close();
         }
       },
       updateDetailsCategory(index) {

@@ -134,28 +134,32 @@
                 <div><label class="label-content-size">Payment Method</label></div>
                 <div><label  class="label-content-color">{{ history.Payment_Method }}</label></div>
               </div>
+              <div class="col" v-if="history.Payment_Method.includes('Cash')">
+                <div><label class="label-content-size">Amount in Cash</label></div>
+                <div><label  class="label-content-color">{{ history.amountInCash }}</label></div>
+              </div>
+            </div>
+            <div class="row" v-if="history.Payment_Method.includes('Cheque')">
               <div class="col">
-                <div><label class="label-content-size">Payment Type</label></div>
-                <div><label  class="label-content-color">{{ history.Payment_Type }}</label></div>
+                <div><label class="label-content-size">Amount in Cheque</label></div>
+                <div><label class="label-content-color">{{ history.amountInCheque }}</label></div>
+              </div>
+              <div class="col">
+                <div><label class="label-content-size">Cheque Due Date</label></div>
+                <div><label class="label-content-color">{{ history.Cheque_Due_Date }}</label></div>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <div><label class="label-content-size">Paid Amount</label></div>
-                <div><label class="label-content-color">{{ history.Paid_Amount }}</label></div>
+                <div><label class="label-content-size">Total Paid Amount</label></div>
+                <div><label class="label-content-color">{{ (history.amountInCheque + history.amountInCash) }}</label></div>
               </div>
               <div class="col">
                 <div><label class="label-content-size">Balance</label></div>
                 <div><label class="label-content-color">{{ history.Balance}}</label></div>
               </div>
             </div>
-            <div class="row" v-if="history.Payment_Method.includes('Cheque')">
-              <div class="col">
-                <div><label class="label-content-size">Cheque Due Date</label></div>
-                <div><label class="label-content-color">{{ history.Cheque_Due_Date }}</label></div>
-              </div>
-            </div>
-            <br>
+            
             <div style="text-align: right;"><label class="label-content-size label-content-style">{{history.Created_By + " - " + history.Created_Date}}</label></div>
           </div>
         </card>
@@ -175,7 +179,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-3" style="padding-top: 10px">
+            <div class="col-3" style="padding-top: 8px">
               <label class="control-label">Payment Method </label>
             </div>
             <base-checkbox :name="'Cash'" v-model="paymentMethodCash">Cash</base-checkbox>
@@ -184,7 +188,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-3" style="padding-top: 10px">
+            <div class="col-3" style="padding-top: 8px">
               <label class="control-label">Payment Type </label>
             </div>
             <base-radio :name="'Full'" v-model="paymentType" :disabled="true">Full</base-radio>
@@ -216,7 +220,7 @@
             </div>
             <div class="col-3">
               <input type="text" 
-              class="form-control" style="background-color: #1c2a38" v-model="chequeDueDate">
+              class="form-control" placeholder="mm/dd/yyyy" style="background-color: #1c2a38" v-model="chequeDueDate">
             </div>
           </div>
           <div class="row">
@@ -243,7 +247,7 @@ const tableData = [
   {
     id: 1,
     Customer_Name: "Teresita Tala P. Rabago",
-    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Products: [{ productName: "NFA Rice", productCode: "NFA", quantity: "25", unit: "Kilo", sellPrice: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
     Total_Amount: 30.00,
     Paid_Amount: 5,
     Created_Date: "11/01/2018",
@@ -252,7 +256,7 @@ const tableData = [
   {
     id: 2,
     Customer_Name: "Teresita Tala P. Rabago",
-    Products: [{ productName: "NFA Rice", Product_Code: "NFA", quantity: "25", unit: "Kilo", price: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Products: [{ productName: "NFA Rice", Product_Code: "NFA", quantity: "25", unit: "Kilo", sellPrice: "30.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
     Total_Amount: 30.00,
     Paid_Amount: 10,
     Created_Date: "11/01/2018",
@@ -261,7 +265,7 @@ const tableData = [
   {
     id: 3,
     Customer_Name: "King Joshua M. Montayre",
-    Products: [{ productName: "Ganador", productCode: "GNDR", quantity: "25", unit: "Kilo", price: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
+    Products: [{ productName: "Ganador", productCode: "GNDR", quantity: "25", unit: "Kilo", sellPrice: "54.00", supplier: "Bugasan ni Juan", quantityAdded: "3"}],
     Total_Amount: 1350.00,
     Paid_Amount: 1000,
     Created_Date: "11/03/2018",
@@ -274,34 +278,36 @@ const tablePaymentHistory = [
     id: 1,
     Payment_Method: "Cash",
     Payment_Type: "Partial",
-    Paid_Amount: 1000,
+    amountInCash: 1000,
+    amountInCheque: 0.00,
     Balance: 45.00,
     Cheque_Due_Date: "",
     OutLogsId: 1,
     Created_Date: "11/01/2018",
-    Created_By: "Maria Himaya Rabago"
+    Created_By: "Tala"
   },
   {
     id: 2,
     Payment_Method: "Cheque",
-    Payment_Type: "Full",
-    Paid_Amount: 45.00,
+    amountInCash: 0,
+    amountInCheque: 45.00,
     Balance: 0,
     Cheque_Due_Date: "11/03/2018",
     OutLogsId: 1,
     Created_Date: "11/01/2018",
-    Created_By: "Antonio Liwanag Rabago"
+    Created_By: "Admin"
   },
   {
     id: 3,
-    Payment_Method: "Cheque",
+    Payment_Method: "Cash, Cheque",
     Payment_Type: "Full",
-    Paid_Amount: 1000,
+    amountInCash: 500.00,
+    amountInCheque: 500.00,
     Balance: 0,
     Cheque_Due_Date: "11/04/2018",
     OutLogsId: 1,
     Created_Date: "11/01/2018",
-    Created_By: "Josaphat Magiting Rabago"
+    Created_By: "King"
   }
 ];
 
@@ -348,6 +354,19 @@ const tablePaymentHistory = [
         }
         else
           this.table.data = [...tableData];
+      },
+      paymentMethodCash: function() {
+        if(this.paymentMethodCash == false) {
+          this.amountInCash = 0;
+          this.balance = this.computeBalance(this.balance, this.amountInCash);
+        }
+      },
+      paymentMethodCheque: function() {
+        if(this.paymentMethodCheque == false) {
+          this.amountInCheque = 0;
+          this.chequeDueDate = null;
+          this.balance = this.computeBalance(this.balance, this.amountInCheque);
+        }
       },
       amountInCash: function () {
         this.balance = this.computeBalance(this.detailsData["Total_Amount"], (Number(this.detailsData["Paid_Amount"]) + Number(this.amountInCash) + Number(this.amountInCheque)));
