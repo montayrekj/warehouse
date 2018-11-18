@@ -94,3 +94,59 @@ html {
 .btn-success {
   background-image: linear-gradient(to bottom left, #32d47d, #00f2c3, #32d47d) !important
 }
+
+.stocksModal .sweet-content-content {
+  overflow: hidden
+}
+
+.stocksModal .card-body {
+  overflow: scroll
+}
+
+.card-body-color {
+  background-color: #2b3b4c
+}
+
+.label-content-color {
+  color: #fff !important
+}
+
+.label-content-size {
+  font-size: 10px
+}
+
+.label-content-style {
+  font-style: italic;
+}
+
+.label-title-content {
+  font-size: 11px !important;
+  color:rgba(255, 255, 255, 0.6) !important;
+}
+
+.div-content-align {
+  text-align: left
+}
+
+.list-group-item {
+  padding: 0.5rem;
+  background-color: #1c2a38;
+  border-color: #2b3553;
+  color: white;
+}
+
+.list-group-item:focus {
+  padding: 0.5rem;
+  background-color: #1c2a38;
+  border-color: #2b3553;
+  color: white;
+}
+
+.input-group .form-control {
+  border: 1px solid #2b3553 !important;
+}
+
+.input-group .form-control:focus {
+  border: 1px solid #e14eca !important;
+}
+

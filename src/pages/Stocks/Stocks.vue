@@ -7,11 +7,11 @@
               <div class="col-md-3">
                 <input type="text" placeholder="Search" v-model="search" class="form-control" />
               </div>
-              <div class="col-md-3"></div>
-              <div class="col-md-3 pull-right">
-              <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">Add Stocks</button></div>
-              <div class="col-md-3 pull-right">
-              <button class="btn btn-danger" style="width: 100%" v-on:click="toggleModal('removeStock')">Reduce Stocks</button></div>
+              <div class="col-md-5"></div>
+              <div class="col-md-2 pull-right">
+              <button class="btn btn-success" style="width: 100%" v-on:click="toggleModal('addStock')">In</button></div>
+              <div class="col-md-2 pull-right">
+              <button class="btn btn-danger" style="width: 100%" v-on:click="toggleModal('removeStock')">Out</button></div>
             </div>
           </div>
           <div class="table-responsive">
@@ -27,12 +27,12 @@
                     </label>
                     </div>
                   </th>
-                  <th v-for="column in table1.columns" :key="column">{{column}}</th>
+                  <th v-for="(column, index) in tableColumns" :key="index">{{column.Header}}</th>
                 </slot>
               </tr>
               </thead>
               <tbody :class="tbodyClasses">
-              <tr v-for="(item) in table1.data" :key="item.productId">
+              <tr v-for="(item) in table.data" :key="item.productId">
                 <slot :row="item">
                   <td>
                     <div class="form-check">
@@ -42,7 +42,7 @@
                       </label>
                     </div>
                   </td>
-                  <td v-for="(column, index) in table1.columns"
+                  <td v-for="(column, index) in tableColumns"
                       :key="index"
                       v-if="hasValue(item, column)">
                     {{itemValue(item, column)}}
@@ -61,44 +61,45 @@
         <button slot="button" v-on:click="closeErrorModal()" class="btn btn-sm btn-success">Fine!</button>
       </sweet-modal>
       <!-- Add Stocks Modal -->
-      <sweet-modal ref="addStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks">
-        <table class="table tablesorter" :class="tableClass">
-          <thead class="text-primary">
-          <tr>
-            <slot name="columns">
-              <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
-            </slot>
-          </tr>
-          </thead>
-          <tbody :class="tbodyClasses">
-          <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
-            <slot :row="i">
-              <td v-for="(column, index) in table1.modalColumns"
-                  :key="index"
-                  v-if="hasValue(getItemById(i), column)">
-                {{itemValue(getItemById(i), column)}}
-                <input v-if="quantityChangeColumn(column)" 
-                  type="number" 
-                  class="form-control" 
-                  id="stockQuantity" 
-                  style="background-color: #1c2a38"
-                  min="0"
-                  @change="quantityChange($event, i, indexTemp, 'addStock')"
-                  v-model="quantity[indexTemp]">
-              </td>
-            </slot>
-          </tr>
-          </tbody>
-        </table>
-
+      <sweet-modal ref="addStockModal" class="stocksModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks">
+        <div class="table-responsive">
+          <table class="table tablesorter" :class="tableClass">
+            <thead class="text-primary">
+            <tr>
+              <slot name="columns">
+                <th v-for="(column, index) in modalColumnsIn" :key="index" :width="getWidth(column.Header)">{{column.Header}}</th>
+              </slot>
+            </tr>
+            </thead>
+            <tbody :class="tbodyClasses">
+            <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+              <slot :row="i">
+                <td v-for="(column, index) in modalColumnsIn"
+                    :key="index"
+                    v-if="hasValue(getItemById(i), column)">
+                  {{itemValue(getItemById(i), column)}}
+                  <input v-if="quantityChangeColumn(column)" 
+                    type="number" 
+                    class="form-control" 
+                    id="stockQuantity" 
+                    style="background-color: #1c2a38"
+                    min="0"
+                    @change="quantityChange($event, i, indexTemp, 'addStock')"
+                    v-model="quantity[indexTemp]">
+                </td>
+              </slot>
+            </tr>
+            </tbody>
+          </table>
+        </div>
         <button slot="button" v-on:click="saveStock('addStock')" class="btn btn-sm btn-success" style="margin-right: 5px">Save</button>
         <button slot="button" v-on:click="toggleModal('addStock')" class="btn btn-sm btn-danger">Cancel</button>
       </sweet-modal>
 
       <!-- Remove Stocks Modal -->
-      <sweet-modal ref="removeStockModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
+      <sweet-modal ref="removeStockModal" class="stocksModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
         <div class="row form-group">
-          <div class="col-3" style="align-self:center">
+          <div class="col-3">
             <label class="control-label">Customer Name </label>
           </div>
           <div class="col-9">
@@ -106,34 +107,36 @@
           </div>
         </div>
         <card style="background-color: #2b3b4c">
-          <table class="table tablesorter" :class="tableClass">
-            <thead class="text-primary">
-            <tr>
-              <slot name="columns">
-                <th v-for="column in table1.modalColumns" :key="column" :width="getWidth(column)">{{column}}</th>
-              </slot>
-            </tr>
-            </thead>
-            <tbody :class="tbodyClasses">
-              <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
-                <slot :row="i">
-                  <td v-for="(column, index) in table1.modalColumns"
-                      :key="index"
-                      v-if="hasValue(getItemById(i), column)">
-                    {{itemValue(getItemById(i), column)}}
-                    <input v-if="quantityChangeColumn(column)" 
-                      type="number" 
-                      class="form-control" 
-                      id="stockQuantity" 
-                      style="background-color: #1c2a38"
-                      min="0"
-                      @change="quantityChange($event, i, indexTemp,'removeStock')"
-                      v-model="quantity[indexTemp]">
-                  </td>
-                </slot>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table tablesorter" :class="tableClass">
+              <thead class="text-primary">
+                <tr>
+                  <slot name="columns">
+                    <th v-for="(column, index) in modalColumnsOut" :key="index" :width="getWidth(column.Header)">{{column.Header}}</th>
+                  </slot>
+                </tr>
+              </thead>
+              <tbody :class="tbodyClasses">
+                <tr v-for="(i, indexTemp) in selected" :key="indexTemp">
+                  <slot :row="i">
+                    <td v-for="(column, index) in modalColumnsOut"
+                        :key="index"
+                        v-if="hasValue(getItemById(i), column)">
+                      {{itemValue(getItemById(i), column)}}
+                      <input v-if="quantityChangeColumn(column)" 
+                        type="number" 
+                        class="form-control" 
+                        id="stockQuantity" 
+                        style="background-color: #1c2a38"
+                        min="0"
+                        @change="quantityChange($event, i, indexTemp,'removeStock')"
+                        v-model="quantity[indexTemp]">
+                    </td>
+                  </slot>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </card>
         <div class="row">
           <div class= "col-4" style="padding-top: 10px">
@@ -146,63 +149,68 @@
         <br>
         <card style="background-color: #2b3b4c">
           <div class="row">
-            <div class="col-2" style="padding-top: 10px">
-              <label class="control-label">Paid </label>
-            </div>
-            <base-radio :name="'Yes'" v-model="paid">Yes</base-radio>
-            <div class="col-2">
-              <base-radio :name="'No'" v-model="paid">No</base-radio>
-            </div>
-          </div>
-          <div class="row" v-if="paid === 'Yes'">
-            <div class="col-3" style="padding-top: 10px">
+            <div class="col-3" style="padding-top: 8px">
               <label class="control-label">Payment Method </label>
             </div>
-            <base-radio :name="'Cash'" v-model="paymentMethod">Cash</base-radio>
+            <base-checkbox :name="'Cash'" v-model="paymentMethodCash">Cash</base-checkbox>
             <div class="col-2">
-              <base-radio :name="'Cheque'" v-model="paymentMethod">Cheque</base-radio>
+              <base-checkbox :name="'Cheque'" v-model="paymentMethodCheque">Cheque</base-checkbox>
             </div>
           </div>
-          <div class="row" v-if="paid === 'Yes'">
-            <div class="col-3" style="padding-top: 10px">
+          <div class="row">
+            <div class="col-3" style="padding-top: 8px">
               <label class="control-label">Payment Type </label>
             </div>
-            <base-radio :name="'Full'" v-model="paymentType">Full</base-radio>
+            <base-radio :name="'Full'" v-model="paymentType" :disabled="true">Full</base-radio>
             <div class="col-2">
-              <base-radio :name="'Partial'" v-model="paymentType">Partial</base-radio>
+              <base-radio :name="'Partial'" v-model="paymentType" :disabled="true">Partial</base-radio>
             </div>
           </div>
-          <div class="row" v-if="paid === 'Yes' && paymentType === 'Partial'">
+          <div class="row" v-if="paymentMethodCash == true && paymentType != ''">
             <div class="col-3" style="padding-top: 10px">
-              <label class="control-label">Paid Amount </label>
+              <label class="control-label">Amount in Cash </label>
             </div>
             <div class="col-3">
               <input type="number" 
               class="form-control" style="background-color: #1c2a38" 
-              min="0" v-model="paidAmount">
-            </div>
-            <div class="col-2" style="padding-top: 10px">
-              <label class="control-label">Balance </label>
-            </div>
-            <div class="col-3">
-              <input type="number" class="form-control" style="background-color: #1c2a38" min="0" v-model="balance" disabled>
+              placeholder="0" min="0" v-model="amountInCash">
             </div>
           </div>
-          <div class="row" v-if="paid === 'Yes' && paymentMethod === 'Cheque'">
+          <div class="row" v-if="paymentMethodCheque == true && paymentType != ''">
+            <div class="col-3" style="padding-top: 10px">
+              <label class="control-label">Amount in Cheque </label>
+            </div>
+            <div class="col-3">
+              <input type="number" 
+              class="form-control" style="background-color: #1c2a38" 
+              placeholder="0" min="0" v-model="amountInCheque">
+            </div>
             <div class="col-3" style="padding-top: 10px">
               <label class="control-label">Cheque Due Date </label>
             </div>
             <div class="col-3">
               <input type="text" 
-              class="form-control" style="background-color: #1c2a38" 
-              min="0" v-model="chequeDueDate">
+              class="form-control" placeholder="mm/dd/yyyy" style="background-color: #1c2a38" v-model="chequeDueDate">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-3" style="padding-top: 10px">
+              <label class="control-label">Balance </label>
+            </div>
+            <div class="col-3">
+              <input type="number" class="form-control" style="background-color: #1c2a38" v-model="balance" disabled>
             </div>
           </div>
           <div style="padding-top: 10px">
             <label class="control-label">Remarks</label>
           </div>
           <div>
-            <textarea class="form-control" style="background-color: #1c2a38" v-model="remarks">
+            <textarea class="form-control" 
+              style="background-color: #1c2a38; 
+                  border-radius: 5px;
+                  padding: 0.5rem 0.7rem;
+                  line-height: 1.125rem;" 
+              v-model="remarks">
             </textarea>
           </div>
         </card>
@@ -226,7 +234,7 @@ export default {
   },
   data() {
     return {
-      table1: {
+      table: {
         columns: [...tableColumns],
         data: this.products,
         modalColumns: [...modalColumns]
@@ -239,10 +247,11 @@ export default {
       quantity: [],
       search: '',
       grandTotal: 0,
-      paid: 'No',
-      paymentMethod: 'Cash',
-      paymentType: 'Full',
-      paidAmount: 0,
+      paymentMethodCash: false,
+      paymentMethodCheque: false,
+      paymentType: 'Partial',
+      amountInCash: 0,
+      amountInCheque: 0,
       balance: 0,
       chequeDueDate: null,
       remarks: null,
@@ -251,6 +260,15 @@ export default {
   computed: {
     tableClass() {
       return this.type && `table-${this.type}`;
+    },
+    tableColumns() {
+      return this.$t('stocks.tableColumns');
+    },
+    modalColumnsIn() {
+      return this.$t('stocks.modalColumnsIn');
+    },
+    modalColumnsOut() {
+      return this.$t('stocks.modalColumnsOut');
     },
     stocksPaid() {
         return this.$t('stocks.paid');
@@ -262,64 +280,56 @@ export default {
   },
   watch: {
     products() {
-      this.table1.data = this.products
+      this.table.data = this.products
     },
     selected: function() {
-      if(this.selected.length !== this.table1.data.length){
+      if(this.selected.length !== this.table.data.length){
         this.selectAll = false;
-      } else if(this.selected.length === this.table1.data.length){
+      } else if(this.selected.length === this.table.data.length){
         this.selectAll = true;
       }
     },
     search: function () {
       if(this.search != '') {
-        this.table1.data = this.products.filter(item => 
+        this.table.data = [...tableData].filter(item => 
           item.productName.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.productCode.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.quantity.toString().includes(this.search) ||
+          item.produtCode.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.quantity.includes(this.search) ||
           item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.price.toString().includes(this.search) ||
+          item.buyPrice.includes(this.search) ||
+          item.sellPrice.includes(this.search) ||
           item.supplier.toUpperCase().includes(this.search.toUpperCase()));
       }
       else
-        this.table1.data = this.products;
+        this.table.data = [...tableData];
     },
-    paid: function() {
-      if(this.paid == 'No') {
-        this.paymentMethod = 'Cash',
-        this.paymentType = 'Full',
-        this.paidAmount = 0;
-        this.balance = 0;
-        this.chequeDueDate = null;
+    paymentMethodCash: function() {
+      if(this.paymentMethodCash == false) {
+        this.amountInCash = 0;
+        this.balance = this.computeBalance(this.balance, this.amountInCash);
       }
     },
-    paymentMethod: function() {
-      this.paidAmount = 0;
-      this.balance = 0;
-      this.chequeDueDate = null;
+    paymentMethodCheque: function() {
+      if(this.paymentMethodCheque == false) {
+        this.amountInCheque = 0;
+        this.chequeDueDate = null;
+        this.balance = this.computeBalance(this.balance, this.amountInCheque);
+      }
     },
-    paymentType: function() {
-      this.paidAmount = 0;
-      this.balance = 0;
-      this.chequeDueDate = null;
-    } ,
-    paidAmount: function() {
-      if(this.paidAmount != '') {
-        if(this.grandTotal > this.paidAmount)
-          this.balance = this.grandTotal - this.paidAmount;
-        else
-          this.balance = 0;
-      } 
+    amountInCash: function () {
+      this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
+    },
+    amountInCheque: function () {
+      this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
+    },
+    balance: function() {
+      if(this.balance == 0)
+        this.paymentType = 'Full';
       else
-        this.balance = 0;
+        this.paymentType = 'Partial';
     },
     grandTotal: function() {
-      if(this.paidAmount != '' && this.paidAmount > 0) {
-        if(this.grandTotal > this.paidAmount)
-          this.balance = this.grandTotal - this.paidAmount;
-        else
-          this.balance = 0;
-      }
+      this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
     }
   },
   methods: {
@@ -345,6 +355,7 @@ export default {
           this.$data.modalFlag = false;
         }
       } else if(origin === "removeStock") {
+        this.setToDefaultValue();
         if(!this.$data.modalFlag) {
           if(this.selected.length > 0){
             this.$refs.removeStockModal.open()
@@ -375,47 +386,36 @@ export default {
       return column === ""? "20%":""
     },
     hasValue(item, column) {
-      var tc = [...tableColumns];
-      var ec = [...entityColumns];
-      var index = tc.indexOf(column)
-    
-      return item[ec[index]] !== "undefined";
+      return item[column.Item] !== "undefined";
     },
     itemValue(item, column) {
-      var tc = [...tableColumns];
-      var ec = [...entityColumns];
-      var index = tc.indexOf(column)
-
-      if(column === "Price")
-        return Number(item[ec[index]]).toFixed(2);
-      else
-        return item[ec[index]];
+      return item[column.Item];
     },
     getItemById(id){
-      for(var i = 0; i < this.table1.data.length; i++){
-        if(this.table1.data[i].productId === id){
-          return this.table1.data[i];
+      for(var i = 0; i < this.table.data.length; i++){
+        if(this.table.data[i].productId === id){
+          return this.table.data[i];
         }
       }
     },
     quantityChangeColumn(column){
-      return column === "";
+      return column.Header === "";
     },
     selectAllStocks() {
       this.selected = [];
       if (!this.selectAll) {
-          for (let i in this.table1.data) {
-            this.selected.push(this.table1.data[i].productId);
+          for (let i in this.table.data) {
+            this.selected.push(this.table.data[i].productId);
         }
       } 
     },
     saveStock(origin) {
       if(origin === "addStock") {
           for(var i = 0; i < this.selected.length; i++){
-            for(var j = 0; j < this.table1.data.length; j++){
-              if(this.table1.data[j].productId === this.selected[i]){
-                this.table1.data[j].quantity = Number(this.table1.data[j].quantity) + Number(this.quantity[i]);
-                this.table1.data[j].quantity = this.table1.data[j].quantity;
+            for(var j = 0; j < this.table.data.length; j++){
+              if(this.table.data[j].productId === this.selected[i]){
+                this.table.data[j].quantity = Number(this.table.data[j].quantity) + Number(this.quantity[i]);
+                this.table.data[j].quantity = this.table.data[j].quantity;
                 break;
               }
             }
@@ -425,10 +425,10 @@ export default {
           this.$data.modalFlag = false;
       } else if(origin === "removeStock") {
           for(var i = 0; i < this.selected.length; i++){
-            for(var j = 0; j < this.table1.data.length; j++){
-              if(this.table1.data[j].productId === this.selected[i]){
-                this.table1.data[j].quantity = Number(this.table1.data[j].quantity) - Number(this.quantity[i]);
-                this.table1.data[j].quantity = this.table1.data[j].quantity;
+            for(var j = 0; j < this.table.data.length; j++){
+              if(this.table.data[j].productId === this.selected[i]){
+                this.table.data[j].quantity = Number(this.table.data[j].quantity) - Number(this.quantity[i]);
+                this.table.data[j].quantity = this.table.data[j].quantity;
                 break;
               }
             }
@@ -437,7 +437,7 @@ export default {
           this.quantity = [];
           this.$data.modalFlag = false;
       }
-      this.$emit("addStocks", this.table1.data)
+      this.$emit("addStocks", this.table.data)
     },
     quantityChange(event, i, index, origin){
       event.preventDefault();
@@ -456,8 +456,28 @@ export default {
     computeGrandTotal(item) {
       this.grandTotal = 0;
       for(var i=0; i<this.quantity.length; i++) {
-        this.grandTotal += (item.price * this.quantity[i]);
+        this.grandTotal += (item.sellPrice * this.quantity[i]);
       }
+    },
+    setToDefaultValue() {
+      //sets field to defaut value
+      this.paymentMethodCash = false;
+      this.paymentMethodCheque = false;
+      this.paymentType = 'Partial';
+      this.amountInCash =  null;
+      this.amountInCheque = null;
+      this.chequeDueDate = null;
+    },
+    computeBalance(totalAmount, paidAmount)  {
+      var balance = 0;
+      totalAmount = Number(totalAmount);
+      paidAmount = Number(paidAmount);
+      if(paidAmount >= totalAmount)
+        balance = 0;
+      else
+        balance = totalAmount - paidAmount;
+
+      return balance;
     }
   },
 };

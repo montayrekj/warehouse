@@ -5,14 +5,17 @@ import NotFound from "@/pages/NotFoundPage.vue";
 // Admin pages
 import Dashboard from "@/pages/Dashboard.vue";
 import Profile from "@/pages/Profile.vue";
-import Notifications from "@/pages/Notifications.vue";
-import Icons from "@/pages/Icons.vue";
-import Maps from "@/pages/Maps.vue";
-import Typography from "@/pages/Typography.vue";
-import Stocks from "@/pages/Stocks.vue";
-import Products from "@/pages/Products.vue";
-import Logs from "@/pages/Logs.vue";
-import Login from "@/pages/Login.vue"
+import In from "@/pages/Stocks/In.vue";
+import Out from "@/pages/Stocks/Out.vue";
+import Products from "@/pages/Products/Products.vue";
+import AddProduct from "@/pages/Products/AddProduct.vue";
+import UpdateProduct from "@/pages/Products/UpdateProduct.vue";
+import Purchases from "@/pages/Logs/Purchases.vue";
+import Login from "@/pages/Login.vue";
+import Collections from "@/pages/Collections.vue";
+import Sales from "@/pages/Logs/Sales.vue";
+import PurchaseDetail from "@/pages/Logs/PurchaseDetail.vue"
+import SalesDetail from "@/pages/Logs/SalesDetail.vue"
 
 const routes = [
   { path: "/login", component: Login },
@@ -27,45 +30,60 @@ const routes = [
         component: Dashboard
       },
       {
+        path: "/stocks/in",
+        name: "stocks > add stocks",
+        component: In
+      },
+      {
+        path: "/stocks/out",
+        name: "stocks > sell stocks",
+        component: Out
+      },
+      {
         path: "profile",
         name: "profile",
         component: Profile
       },
       {
-        path: "notifications",
-        name: "notifications",
-        component: Notifications
+        path: "products/addProduct",
+        name: "products > add product",
+        component: AddProduct
       },
       {
-        path: "icons",
-        name: "icons",
-        component: Icons
+        path: "products/updateProduct/:id",
+        name: "products > update > ",
+        component: UpdateProduct
       },
       {
-        path: "maps",
-        name: "maps",
-        component: Maps
-      },
-      {
-        path: "typography",
-        name: "typography",
-        component: Typography
-      },
-      {
-        path: "stocks",
-        name: "stocks",
-        component: Stocks,
-      },
-      {
-        path: "products",
-        name: "products",
+        path: "products/viewProducts",
+        name: "products > view products",
         component: Products
       },
       {
-        path: "logs",
-        name: "logs",
-        component: Logs
-      }
+        path: "reports/collections",
+        name: "collections",
+        component: Collections
+      },
+      {
+        path: "logs/purchases",
+        name: "logs > purchases",
+        component: Purchases
+      },
+      {
+        path: "logs/purchases/:id",
+        name: "logs > purchases > ",
+        component: PurchaseDetail
+      },
+      {
+        path: "logs/sales",
+        name: "logs > sales",
+        component: Sales
+      },
+      {
+        path: "logs/sales/:id",
+        name: "logs > sales > ",
+        component: SalesDetail
+      },
     ]
   },
   { path: "*", component: NotFound },

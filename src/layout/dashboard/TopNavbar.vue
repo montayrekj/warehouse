@@ -11,7 +11,7 @@
             <span class="navbar-toggler-bar bar3"></span>
           </button>
         </div>
-        <span class="navbar-brand" >{{routeName}}</span>
+        <span class="navbar-brand" style="margin:0px">{{routeName()}}</span>
       </div>
       <button class="navbar-toggler" type="button"
               @click="toggleMenu"
@@ -38,16 +38,9 @@
                 </div>
                 <b class="caret d-none d-lg-block d-xl-block"></b>
                 <p class="d-lg-none">
-                  Log out
+                  Menu
                 </p>
               </a>
-              <li class="nav-link">
-                <a href="#/profile" class="nav-item dropdown-item">Profile</a>
-              </li>
-              <li class="nav-link">
-                <a href="#" class="nav-item dropdown-item">Settings</a>
-              </li>
-              <div class="dropdown-divider"></div>
               <li class="nav-link">
                 <a href="/#/login" @click="logout" class="nav-item dropdown-item">Log out</a>
               </li>
@@ -68,20 +61,22 @@
       Modal
     },
     computed: {
-      routeName() {
-        const { name } = this.$route;
-        return this.capitalizeFirstLetter(name);
-      },
       isRTL() {
         return this.$rtl.isRTL;
       }
+    },
+    watch: {
+      $route(to, from) {
+        alert("Hehe")
+      },
     },
     data() {
       return {
         activeNotifications: false,
         showMenu: false,
         searchModalVisible: false,
-        searchQuery: ''
+        searchQuery: '',
+        temp: "",
       };
     },
     methods: {
@@ -99,7 +94,12 @@
       },
       logout() {
         localStorage.removeItem('user');
-      }
+      },
+      routeName() {
+        const { name } = this.$route;
+        this.temp = this.capitalizeFirstLetter(name);
+        return this.temp + (this.$route.params.id != undefined? this.$route.params.id.toString(): "");
+      },
     }
   };
 </script>

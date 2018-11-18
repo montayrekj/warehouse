@@ -3,9 +3,65 @@
     <side-bar>
       <template slot="links">
         <sidebar-link to="/dashboard" :name="$t('sidebar.dashboard')" icon="tim-icons icon-chart-pie-36"/>
-        <sidebar-link to="/stocks" :name="$t('sidebar.stocks')" icon="tim-icons icon-chart-bar-32"/>
-        <sidebar-link to="/products" :name="$t('sidebar.products')" icon="tim-icons icon-bullet-list-67"/>
-        <sidebar-link to="/logs" :name="$t('sidebar.logs')" icon="tim-icons icon-notes"/>
+        <!--sidebar-link to="/stocks" :name="$t('sidebar.stocks')" icon="tim-icons icon-chart-bar-32"/-->
+        <!--sidebar-link to="/products" :name="$t('sidebar.products')" icon="tim-icons icon-bullet-list-67"/-->
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleProducts()">
+            <i class="tim-icons icon-chart-bar-32"></i>
+            <p>
+              Products
+              <i v-if="!this.$sidebar.productsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.productsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.productsFlag">
+            <sidebar-link to="/products/addProduct" :name="$t('sidebar.addProduct')"/>
+            <sidebar-link to="/products/viewProducts" :name="$t('sidebar.viewProducts')"/>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleStocks()">
+            <i class="tim-icons icon-chart-bar-32"></i>
+            <p>
+              Stocks
+              <i v-if="!this.$sidebar.stocksFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.stocksFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.stocksFlag">
+            <sidebar-link to="/stocks/in" :name="$t('sidebar.in')"/>
+            <sidebar-link to="/stocks/out" :name="$t('sidebar.out')"/>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleLogs()">
+            <i class="tim-icons icon-notes"></i>
+            <p>
+              Logs
+              <i v-if="!this.$sidebar.logsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.logsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.logsFlag">
+            <sidebar-link to="/logs/purchases" :name="$t('sidebar.purchases')"/>
+            <sidebar-link to="/logs/sales" :name="$t('sidebar.sales')"/>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleReports()">
+            <i class="tim-icons icon-map-big"></i>
+            <p>
+              Reports
+              <i v-if="!this.$sidebar.reportsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.reportsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.reportsFlag">
+            <sidebar-link to="/reports/collections" :name="$t('sidebar.collections')"/>
+          </ul>
+        </li>
+        
       </template>
     </side-bar>
     <div class="main-panel">
@@ -24,10 +80,11 @@
 import TopNavbar from "./TopNavbar.vue";
 import DashboardContent from "./Content.vue";
 import MobileMenu from "./MobileMenu";
+import router from "@/router/routes.js"
 export default {
   data() {
     return {
-      sample: false
+      sample: false,
     }
   },
   components: {
@@ -49,6 +106,18 @@ export default {
     },
     changeSample2(event) {
       this.sample = event
+    },
+    toggleLogs() {
+      this.$sidebar.toggleLogs(!this.$sidebar.logsFlag);
+    },
+    toggleReports() {
+      this.$sidebar.toggleReports(!this.$sidebar.reportsFlag);
+    },
+    toggleStocks() {
+      this.$sidebar.toggleStocks(!this.$sidebar.stocksFlag);
+    },
+    toggleProducts() {
+      this.$sidebar.toggleProducts(!this.$sidebar.productsFlag);
     }
   }
 };

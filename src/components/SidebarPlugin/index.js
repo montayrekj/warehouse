@@ -4,6 +4,22 @@ import SidebarLink from "./SidebarLink";
 const SidebarStore = {
   showSidebar: false,
   sidebarLinks: [],
+  logsFlag: false,
+  reportsFlag: false,
+  stocksFlag: false,
+  productsFlag: false,
+  toggleLogs(value) {
+    this.logsFlag = value;
+  },
+  toggleReports(value) {
+    this.reportsFlag = value;
+  },
+  toggleStocks(value) {
+    this.stocksFlag = value;
+  },
+  toggleProducts(value) {
+    this.productsFlag = value;
+  },
   displaySidebar(value) {
     this.showSidebar = value;
   }
