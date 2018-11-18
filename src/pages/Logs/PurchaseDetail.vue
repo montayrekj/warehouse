@@ -31,6 +31,7 @@
 </template>
 <script>
 import axios from 'axios';
+import config from '@/config'
 export default {
   data() {
     return {
@@ -63,7 +64,7 @@ export default {
     var formData = new FormData();
     formData.append("id", this.$route.params.id)
     axios
-        .post('http://localhost:8011/getPurchasesLogsById', formData)
+        .post(config.backend_host + '/getPurchasesLogsById', formData)
         .then(response => {
           if(response.data.statusCode === "OK"){
             this.table.data = response.data.data.purchasesLogsItem

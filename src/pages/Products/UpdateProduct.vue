@@ -68,6 +68,7 @@
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 import axios from 'axios';
+import config from '@/config'
 export default {
   components: {
     SweetModal,
@@ -190,7 +191,7 @@ export default {
     var formData = new FormData();
     formData.append("id", this.$route.params.id)
     axios
-        .post('http://localhost:8011/getProductById', formData)
+        .post(config.backend_host + '/getProductById', formData)
         .then(response => {
           if(response.data.statusCode === "OK"){
             console.log(response.data.data)

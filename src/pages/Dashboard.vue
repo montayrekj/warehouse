@@ -256,7 +256,7 @@
     mounted() {
       this.initChart(0);
       axios
-        .post('http://localhost:8011/getProductsBelowLimit')
+        .post(config.backend_host + '/getProductsBelowLimit')
         .then(response => {
           if(response.data.statusCode === "OK")
             this.table.data = response.data.data;

@@ -22,6 +22,7 @@
   import {FadeTransition} from 'vue2-transitions';
   import axios from 'axios';
   import moment from 'moment';
+  import config from '@/config'
   export default {
     data() {
       return {
@@ -46,7 +47,7 @@
       addStocks(event) {
         event[0].modifiedBy = this.userId;
         axios
-        .post('http://localhost:8011/addStocks', event).then(response => {
+        .post(config.backend_host + '/addStocks', event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
@@ -56,7 +57,7 @@
       removeStocks(event) {
         event[0].modifiedBy = this.userId;
         axios
-        .post('http://localhost:8011/removeStocks', event).then(response => {
+        .post(config.backend_host + '/removeStocks', event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
@@ -76,7 +77,7 @@
         data.append('createdBy', Number(this.userId))
 
         axios
-        .post('http://localhost:8011/addProduct', data).then(response => {
+        .post(config.backend_host + '/addProduct', data).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
@@ -98,7 +99,7 @@
         data.append('createdBy', Number(this.userId))
 
         axios
-        .post('http://localhost:8011/updateProduct', data).then(response => {
+        .post(config.backend_host + '/updateProduct', data).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
@@ -111,7 +112,7 @@
         data.append('userId', Number(this.userId));
 
         axios
-        .post('http://localhost:8011/deleteProduct', data).then(response => {
+        .post(config.backend_host + '/deleteProduct', data).then(response => {
           if(response.data.statusCode !== "OK"){
               this.getProducts();
           }
@@ -120,7 +121,7 @@
       //End of props events
       getProducts() {
         axios
-        .post('http://localhost:8011/getProducts')
+        .post(config.backend_host + '/getProducts')
         .then(response => {
           if(response.data.statusCode === "OK")
             this.products = response.data.data;
@@ -133,14 +134,14 @@
 
       //Get All Products
        axios
-        .post('http://localhost:8011/getProducts')
+        .post(config.backend_host + '/getProducts')
         .then(response => {
           if(response.data.statusCode === "OK")
             this.products = response.data.data;
         })
 
         axios
-        .post('http://localhost:8011/getPurchasesLogs')
+        .post(config.backend_host + '/getPurchasesLogs')
         .then(response => {
           if(response.data.statusCode === "OK")
             for(var i = 0; i < response.data.data.length; i++) {
@@ -150,7 +151,7 @@
         })
 
         axios
-        .post('http://localhost:8011/getSalesLogs')
+        .post(config.backend_host + '/getSalesLogs')
         .then(response => {
           if(response.data.statusCode === "OK")
             for(var i = 0; i < response.data.data.length; i++) {
@@ -160,7 +161,7 @@
         })
 
         axios
-        .post('http://localhost:8011/getSuppliers')
+        .post(config.backend_host + '/getSuppliers')
         .then(response => {
           if(response.data.statusCode === "OK")
             this.suppliers = response.data.data.map(arr => arr.supplierName);

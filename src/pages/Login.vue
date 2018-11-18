@@ -42,6 +42,7 @@
 <script>
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
   import axios from 'axios';
+  import config from '@/config'
   export default {
     components: {
       SweetModal,
@@ -59,7 +60,7 @@
         data.append('username', this.username)
         data.append('password', this.password)
         axios
-        .post('http://localhost:8011/login', data).then(response => {
+        .post(config.backend_host + "/login", data).then(response => {
           if(response.data.statusCode === "OK"){
             localStorage.setItem('user', JSON.stringify(response.data.data));
             window.location.href="/#/dashboard"
