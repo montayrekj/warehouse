@@ -2,12 +2,6 @@
     <div class="row" style="max-height: calc(100vh - 88px);">
       <div class="col-12">
         <card style="max-height: calc(100vh - 88px); overflow: auto">
-          <div class="row">
-              <div class="col-md-9"></div>
-              <div class="col-md-3 pull-right">
-                <button class="btn btn-success" style="width: 100%" @click="save">Add</button>
-              </div>
-          </div>
           <div class="table-responsive">
             <table class="table tablesorter">
               <thead class="text-primary">
@@ -49,6 +43,14 @@
                   <td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               </tbody>
+              <tfoot>
+                <tr>
+                  <td></td><td></td><td></td><td></td><td></td><td></td>
+                  <td>
+                    <button class="btn btn-success" style="width: 100%; margin-top: 15px" @click="save">Add</button>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </card>
@@ -84,7 +86,7 @@ export default {
   },
   computed: {
     tableColumns() {
-      return this.$t('in.tableColumns');
+      return this.$t('AddStocks.tableColumns');
     }
   },
   methods: {

@@ -7,7 +7,7 @@
         <!--sidebar-link to="/products" :name="$t('sidebar.products')" icon="tim-icons icon-bullet-list-67"/-->
         <li class="nav-item">
           <a class="nav-link" @click="toggleProducts()">
-            <i class="tim-icons icon-chart-bar-32"></i>
+            <i class="tim-icons icon-bullet-list-67"></i>
             <p>
               Products
               <i v-if="!this.$sidebar.productsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
@@ -29,22 +29,22 @@
             </p>
           </a>
           <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.stocksFlag">
-            <sidebar-link to="/stocks/in" :name="$t('sidebar.in')"/>
-            <sidebar-link to="/stocks/out" :name="$t('sidebar.out')"/>
+            <sidebar-link to="/stocks/addStocks" :name="$t('sidebar.addStocks')"/>
+            <sidebar-link to="/stocks/viewAddedStocks" :name="$t('sidebar.viewAddedStocks')"/>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" @click="toggleLogs()">
+          <a class="nav-link" @click="toggleOrders()">
             <i class="tim-icons icon-notes"></i>
             <p>
-              Logs
-              <i v-if="!this.$sidebar.logsFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
-              <i v-if="this.$sidebar.logsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+              Orders
+              <i v-if="!this.$sidebar.ordersFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.ordersFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
             </p>
           </a>
-          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.logsFlag">
-            <sidebar-link to="/logs/purchases" :name="$t('sidebar.purchases')"/>
-            <sidebar-link to="/logs/sales" :name="$t('sidebar.sales')"/>
+          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.ordersFlag">
+            <sidebar-link to="/orders/placeOrder" :name="$t('sidebar.placeOrder')"/>
+            <sidebar-link to="/orders/viewOrders" :name="$t('sidebar.viewOrders')"/>
           </ul>
         </li>
 
@@ -107,8 +107,8 @@ export default {
     changeSample2(event) {
       this.sample = event
     },
-    toggleLogs() {
-      this.$sidebar.toggleLogs(!this.$sidebar.logsFlag);
+    toggleOrders() {
+      this.$sidebar.toggleOrders(!this.$sidebar.ordersFlag);
     },
     toggleReports() {
       this.$sidebar.toggleReports(!this.$sidebar.reportsFlag);

@@ -4,16 +4,17 @@
       <!-- your content here -->
       <router-view 
         :sample="sample" 
-        @changeSample="changeSample"
-        @addStocks="addStocks"
-        @removeStocks="removeStocks"
         :products="products"  
         :purchases="purchases"
         :sales="sales"
         :suppliers="suppliers"
+        :customers="customers"
         @deleteProduct="deleteProduct"
         @addProduct="addProduct"
         @updateProduct="updateProduct"
+        @changeSample="changeSample"
+        @addStocks="addStocks"
+        @removeStocks="removeStocks"
       ></router-view>
     </fade-transition>
   </div>
@@ -30,6 +31,7 @@
         purchases: [],
         sales: [],
         suppliers: [],
+        customers: [],
         userId: null,
       }
     },
@@ -54,10 +56,11 @@
           }
         })
       },
-      removeStocks(event) {
+      removeStocks(event, customerName) {
         event[0].modifiedBy = this.userId;
+        customerName = "/" + customerName
         axios
-        .post(config.backend_host + '/removeStocks', event).then(response => {
+        .post(config.backend_host +'/removeStocks' + customerName, event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
@@ -86,7 +89,6 @@
       },
       updateProduct(event){
         var data = new FormData();
-        console.log(event)
         data.append('productId', event.productId)
         data.append('productName', event.productName);
         data.append('productCode', event.productCode);
@@ -165,6 +167,13 @@
         .then(response => {
           if(response.data.statusCode === "OK")
             this.suppliers = response.data.data.map(arr => arr.supplierName);
+        })
+
+        axios
+        .post(config.backend_host + '/getCustomers')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.customers = response.data.data.map(arr => arr.customerName);
         })
     },
   };

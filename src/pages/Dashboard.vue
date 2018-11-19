@@ -121,34 +121,6 @@
       "unit",  
       "supplier"
     ]
-  const tableData = [
-    {
-      id: 1,
-      name: "Ganador",
-      code: "GNDR",
-      quantity: "0",
-      unit: "Sack",
-      supplier: "Rabago's Merchandise"
-
-    },
-    {
-      id: 2,
-      name: "Lion Ivory",
-      code: "LNIVRY",
-      quantity: "2",
-      unit: "Sack",
-      supplier: "Bugasan ni Juan"
-    },
-    {
-      id: 3,
-      name: "NFA Rice",
-      code: "NFA",
-      quantity: "0",
-      unit: "Kilo",
-      supplier: "Bayanihan Market"
-    }
-  ];
-
   export default {
     components: {
       LineChart

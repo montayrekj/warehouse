@@ -8,5 +8,9 @@ module.exports = {
       localeDir: 'locales',
       enableInSFC: false
     }
+  },
+
+  devServer: {
+    https: true
   }
 };

@@ -4,18 +4,22 @@ import NotFound from "@/pages/NotFoundPage.vue";
 
 // Admin pages
 import Dashboard from "@/pages/Dashboard.vue";
-import Profile from "@/pages/Profile.vue";
-import In from "@/pages/Stocks/In.vue";
-import Out from "@/pages/Stocks/Out.vue";
+
 import Products from "@/pages/Products/Products.vue";
 import AddProduct from "@/pages/Products/AddProduct.vue";
 import UpdateProduct from "@/pages/Products/UpdateProduct.vue";
-import Purchases from "@/pages/Logs/Purchases.vue";
+
+import AddStocks from "@/pages/Stocks/AddStocks.vue";
+import ViewAddedStocks from "@/pages/Stocks/ViewAddedStocks.vue";
+import AddedStocksDetails from "@/pages/Stocks/AddedStocksDetails.vue"
+
+import PlaceOrder from "@/pages/Orders/PlaceOrder.vue";
+import ViewOrders from "@/pages/Orders/ViewOrders.vue";
+import PlacedOrderDetails from "@/pages/Orders/PlacedOrderDetails.vue";
+
+import Collections from "@/pages/Reports/Collections.vue";
+
 import Login from "@/pages/Login.vue";
-import Collections from "@/pages/Collections.vue";
-import Sales from "@/pages/Logs/Sales.vue";
-import PurchaseDetail from "@/pages/Logs/PurchaseDetail.vue"
-import SalesDetail from "@/pages/Logs/SalesDetail.vue"
 
 const routes = [
   { path: "/login", component: Login },
@@ -28,21 +32,6 @@ const routes = [
         path: "dashboard",
         name: "dashboard",
         component: Dashboard
-      },
-      {
-        path: "/stocks/in",
-        name: "stocks > add stocks",
-        component: In
-      },
-      {
-        path: "/stocks/out",
-        name: "stocks > sell stocks",
-        component: Out
-      },
-      {
-        path: "profile",
-        name: "profile",
-        component: Profile
       },
       {
         path: "products/addProduct",
@@ -60,30 +49,40 @@ const routes = [
         component: Products
       },
       {
+        path: "/stocks/addStocks",
+        name: "stocks > add stocks",
+        component: AddStocks
+      },
+      {
+        path: "stocks/viewAddedStocks",
+        name: "stocks > view added stocks",
+        component: ViewAddedStocks
+      },
+      {
+        path: "stocks/viewAddedStocks/:id",
+        name: "stocks > view added stocks > ",
+        component: AddedStocksDetails
+      },
+      {
+        path: "orders/placeOrder",
+        name: "orders > place order",
+        component: PlaceOrder
+      },
+      {
+        path: "/orders/viewOrders",
+        name: "orders > view orders ",
+        component: ViewOrders
+      },
+      {
+        path: "/orders/viewOrders/:id",
+        name: "orders > view orders > ",
+        component: PlacedOrderDetails
+      },
+      {
         path: "reports/collections",
         name: "collections",
         component: Collections
-      },
-      {
-        path: "logs/purchases",
-        name: "logs > purchases",
-        component: Purchases
-      },
-      {
-        path: "logs/purchases/:id",
-        name: "logs > purchases > ",
-        component: PurchaseDetail
-      },
-      {
-        path: "logs/sales",
-        name: "logs > sales",
-        component: Sales
-      },
-      {
-        path: "logs/sales/:id",
-        name: "logs > sales > ",
-        component: SalesDetail
-      },
+      }
     ]
   },
   { path: "*", component: NotFound },

@@ -29,7 +29,7 @@
                       <td v-for="(column, index) in tableColumns"
                           :key="index"
                           v-if="hasValue(item, column)" style="text-align: center;">
-                        <a v-bind:href="'/#/logs/sales/' + item.salesLogsId" v-if="column.Header === 'Id'">{{itemValue(item, column)}}</a>
+                        <a v-bind:href="'/#/orders/viewOrders/' + item.salesLogsId" v-if="column.Header === 'Id'">{{itemValue(item, column)}}</a>
                         <label v-if="column.Header !== 'Id'">{{itemValue(item, column)}}</label>
                       </td>
                     </slot>
@@ -68,87 +68,73 @@ export default {
     sales: function() {
       this.table.data = this.sales;
     },
-    search: function () {
-        if(this.search != '') {
-          this.table.data = [...tableData].filter(item => 
-            item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) || 
-            this.itemValue(item, {Item: 'Products'}).toUpperCase().includes(this.search.toUpperCase()) ||
-            item.Total_Amount.toString().includes(this.search) || 
-            item.Paid_Amount.toUpperCase().includes(this.search.toUpperCase()) ||  
-            this.computeBalance(item.Total_Amount,item.Paid_Amount).toString().includes(this.search) || 
-            item.Created_Date.toUpperCase().includes(this.search.toUpperCase()) ||
-            item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
-        }
-        else
-          this.table.data = [...tableData];
-    },
     searchId: function () {
       if(this.searchId != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.id.toString().includes(this.searchId));
+        this.table.data = this.sales.filter(item => 
+          item.salesLogsId.toString().includes(this.searchId));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchId");
     },
     searchCustomerName: function () {
       if(this.searchCustomerName != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.Customer_Name.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
+        this.table.data = this.sales.filter(item => 
+          item.customer.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchCustomerName");
     },
     searchTotalAmount: function () {
       if(this.searchTotalAmount != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.Total_Amount.toString().includes(this.searchTotalAmount));
+        this.table.data = this.sales.filter(item => 
+          item.totalAmount.toString().includes(this.searchTotalAmount));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchTotalAmount");
     },
     searchPaidAmount: function () {
       if(this.searchPaidAmount != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.Paid_Amount.toString().includes(this.searchPaidAmount));
+        this.table.data = this.sales.filter(item => 
+          item.paidAmount.toString().includes(this.searchPaidAmount));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchPaidAmount");
     },
     searchBalance: function () {
       if(this.searchBalance != '') {
-        this.table.data = [...tableData].filter(item => 
-          this.computeBalance(item.Total_Amount,item.Paid_Amount).toString().includes(this.searchBalance));
+        this.table.data = this.sales.filter(item => 
+          this.computeBalance(item.totalAmount,item.paidAmount).toString().includes(this.searchBalance));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchBalance");
     },
     searchOrderedDate: function () {
       if(this.searchOrderedDate != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.Created_Date.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
+        this.table.data = this.sales.filter(item => 
+          item.createdDate.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchOrderedDate");
     },
     searchOrderedFrom: function () {
       if(this.searchOrderedFrom != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.Created_By.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
+        this.table.data = this.sales.filter(item => 
+          item.createdBy.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.sales;
 
       this.updateFilteredTable("searchOrderedFrom");
     }
@@ -158,7 +144,7 @@ export default {
       return this.type && `table-${this.type}`;
     },
     tableColumns() {
-      return this.$t('sales.tableColumns');
+      return this.$t('ViewOrders.tableColumns');
     }
   },
   methods: {
@@ -189,37 +175,37 @@ export default {
     updateFilteredTable(column) {
       if(this.searchId != '' && column != "searchId"){
         this.table.data = this.table.data.filter(item =>
-          item.id.toString().includes(this.searchId));
+          item.salesLogsId.toString().includes(this.searchId));
       }
 
       if(this.searchCustomerName != '' && column != "searchCustomerName"){
         this.table.data = this.table.data.filter(item =>
-          item.Customer_Name.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
+          item.customer.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
       }
 
       if(this.searchTotalAmount != '' && column != "searchTotalAmount"){
         this.table.data = this.table.data.filter(item =>
-          item.Total_Amount.toString().includes(this.searchTotalAmount));
+          item.totalAmount.toString().includes(this.searchTotalAmount));
       }
 
       if(this.searchPaidAmount != ''&& column != "searchPaidAmount"){
         this.table.data = this.table.data.filter(item =>
-          item.Paid_Amount.toString().includes(this.searchPaidAmount));
+          item.paidAmount.toString().includes(this.searchPaidAmount));
       }
 
       if(this.searchBalance != '' && column != "searchBalance"){
         this.table.data = this.table.data.filter(item =>
-          this.computeBalance(item.Total_Amount,item.Paid_Amount).toString().includes(this.searchBalance));
+          this.computeBalance(item.totalAmount,item.paidAmount).toString().includes(this.searchBalance));
       }
 
       if(this.searchOrderedDate != '' && column != "searchOrderedDate"){
         this.table.data = this.table.data.filter(item =>
-          item.Created_Date.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
+          item.createdDate.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
       }
 
       if(this.searchOrderedFrom != '' && column != "searchOrderedFrom"){
         this.table.data = this.table.data.filter(item =>
-          item.Created_By.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
+          item.createdBy.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
       }
     }
   }

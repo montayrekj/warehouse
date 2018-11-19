@@ -1,19 +1,29 @@
 <template>
     <div class="row" style="max-height: calc(100vh - 88px);">
-      <div class="col-12">
-        <card style="max-height: calc(100vh - 88px); overflow: auto">
-          <div class="row">
-              <div class="col-md-9"></div>
-              <div class="col-md-3 pull-right">
-                <button class="btn btn-danger" style="width: 100%" @click="save">Sell</button>
-              </div>
+      <div class="col-12" style="max-height: calc(100vh - 88px); overflow: auto">
+        <card>
+          <div class="row form-group">
+            <div class="col-2" style="padding-top: 10px">
+              <label class="control-label" style="font-size: 15px">Customer Name </label>
+            </div>
+            <div class="col-5">
+              <vue-bootstrap-typeahead 
+                v-model="customerName"
+                :data="customers"
+                style="border: 0px;"
+                :minMatchingChars="0"
+                placeholder="Enter product supplier..."
+                @hit="selectCustomer"
+              />
+            </div>
           </div>
+          <br>
           <div class="table-responsive">
             <table class="table tablesorter">
               <thead class="text-primary">
               <tr>
                 <slot name="columns" >
-                  <th v-for="(column, index) in tableColumns" :key="index" style="text-align: center;">{{column.Header}}</th>
+                  <th v-for="(column, index) in tableColumns" :key="index" v-bind:style="theadStyle(column)">{{column.Header}}</th>
                   <th></th>
                 </slot>
               </tr>
@@ -24,7 +34,14 @@
                     <td v-for="(column, index) in tableColumns"
                         :key="index"
                         v-if="hasValue(item, column)" style="text-align: center">
-                      {{itemValue(item, column)}}
+                      <span v-if="column.Header != 'Sell Price'">{{itemValue(item, column)}}</span>
+                      <input v-if="column.Header == 'Sell Price'" 
+                        type="number" 
+                        class="form-control" 
+                        id="stockQuantity" 
+                        style="background-color: #1c2a38"
+                        min="0"
+                        v-model="item.sellPrice">
                       <input v-if="quantityChangeColumn(column)" 
                         type="number" 
                         class="form-control" 
@@ -49,6 +66,15 @@
                   <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               </tbody>
+              <tfoot class="text-primary">
+                <tr>
+                  <td></td><td></td><td></td><td></td>
+                  <td style="text-align:center; font-weight:bold; padding-top: 40px">TOTAL AMOUNT</td>
+                  <td style="text-align:center; font-weight:bold; padding-top: 40px">{{totalAmount}}</td>
+                  <td></td>
+                  <td style="padding-top: 40px"><button class="btn btn-success" style="width: 100%;" @click="save()">Place Order</button></td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </card>
@@ -56,7 +82,11 @@
     </div>
 </template>
 <script>
+import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 export default {
+  components: {
+    VueBootstrapTypeahead
+  },
   data() {
     return {
       table: {
@@ -64,11 +94,15 @@ export default {
       },
       selected: [],
       quantity: [],
-      selectValue: 0
+      selectValue: 0,
+      totalAmount: 0,
+      customerName: "",
+      customerSelected: "",
     }
   },
   props: {
-    products: Array
+    products: Array,
+    customers: Array,
   },
   watch: {
     products() {
@@ -79,15 +113,20 @@ export default {
       for(var i = 0; i < this.selected.length; i++){
         this.table.data = this.table.data.filter(product => product.productId !== this.selected[i].productId);
       }
-      
     }
   },
   computed: {
     tableColumns() {
-      return this.$t('out.tableColumns');
+      return this.$t('PlaceOrder.tableColumns');
     }
   },
   methods: {
+    theadStyle(column) {
+      if(column.Header == "Sell Price" || column.Header == 'Quantity Sold')
+        return "text-align: center; width: 100px"
+      else 
+        return "text-align: center;"
+    },
     hasValue(item, column) {
       return item[column.Item] !== "undefined";
     },
@@ -95,7 +134,7 @@ export default {
       return item[column.Item];
     },
     quantityChangeColumn(column){
-      return column.Header === "Quantity Added";
+      return column.Header === "Quantity Sold";
     },
     quantityChange(event, id, index){
       event.preventDefault();
@@ -104,7 +143,7 @@ export default {
       if(val < 0){
         this.quantity[index] = 0;
       }
-      //this.computeGrandTotal(item);
+      this.computeTotalAmount();
       this.$forceUpdate();
     },
     getItemById(id){
@@ -123,14 +162,24 @@ export default {
     removeSelected(index){
       this.selected.splice(index, 1)
       this.quantity.splice(index, 1)
+      this.computeTotalAmount();
     },
     save() {
       for(var i = 0; i < this.selected.length; i++) {
         this.selected[i].quantity = Number(this.quantity[i]);
       }
-      this.$emit("removeStocks", this.selected)
+      this.$emit("removeStocks", this.selected, this.customerSelected)
+    },
+    computeTotalAmount() {
+      this.totalAmount = 0;
+      for(var i=0; i < this.selected.length; i++) {
+        this.totalAmount += (this.selected[i].sellPrice * this.quantity[i]);
+      }
+    },
+    selectCustomer() {
+      this.customerSelected = this.customerName;
     }
-  },
+  }
 };
 </script>
 <style>

@@ -1,4 +1,10 @@
 {
+  "userType": {
+    "regionalManager": "0",
+    "accounting": "1",
+    "checker": "2",
+    "admin": "3"
+  },
   "dashboard": {
     "chartCategories": [
       "Weekly",
@@ -15,86 +21,14 @@
   "sidebar": {
     "title": "Warehouse",
     "dashboard": "dashboard",
-    "products": "Products",
-    "collections": "Collections",
-    "logs": "Logs",
-    "purchases": "Purchases",
-    "sales": "Sales",
-    "in": "Add Stocks",
-    "out": "Sell Stocks",
     "addProduct": "Add Product",
-    "viewProducts": "View Products"
-  },
-  "in": {
-    "tableColumns" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Product Code", "Item":"productCode"},
-      {"Header":"Quantity", "Item":"quantity"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"Quantity Added", "Item":""}
-    ]
-  },
-  "out": {
-    "tableColumns" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Product Code", "Item":"productCode"},
-      {"Header":"Quantity", "Item":"quantity"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Sell Price", "Item":"sellPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"Quantity Added", "Item":""}
-    ]
-  },
-  "purchasesLogs": {
-    "tableColumns" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Product Code", "Item":"productCode"},
-      {"Header":"Quantity Added", "Item":"quantityAdded"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Supplier", "Item":"supplier"}
-    ]
-  },
-  "salesLogs": {
-    "tableColumns" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Product Code", "Item":"productCode"},
-      {"Header":"Quantity Sold", "Item":"quantitySold"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Supplier", "Item":"supplier"}
-    ]
-  },
-  "stocks": {
-    "tableColumns" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Product Code", "Item":"productCode"},
-      {"Header":"Quantity", "Item":"quantity"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Sell Price", "Item":"sellPrice"},
-      {"Header":"Supplier", "Item":"supplier"}
-    ],
-    "modalColumnsIn" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Quantity", "Item":"quantity"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"", "Item":""}
-    ],
-    "modalColumnsOut" : [
-      {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Quantity", "Item":"quantity"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Buy Price", "Item":"buyPrice"},
-      {"Header":"Sell Price", "Item":"sellPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"", "Item":""}
-    ]
+    "viewProducts": "View Products",
+    "addStocks": "Add Stocks",
+    "viewAddedStocks": "View Added Stocks",
+    "placeOrder": "Place Order",
+    "viewOrders": "View Orders",
+    "collections": "Collections"
+    
   },
   "products": {
     "tableColumns" : [
@@ -108,48 +42,47 @@
       {"Header":"Limit", "Item":"quantityLimit"}
     ]
   },
-  "collections": {
+  "AddStocks": {
     "tableColumns" : [
-      {"Header":"Customer Name", "Item":"Customer_Name"},
-      {"Header":"Total Amount", "Item":"Total_Amount"},
-      {"Header":"Paid Amount", "Item":"Paid_Amount"},
-      {"Header":"Balance", "Item":"Balance"},
-      {"Header":"Ordered Date", "Item":"Created_Date"},
-      {"Header":"Ordered From", "Item":"Created_By"}
-    ],
-    "detailsCategories": [
-      "Details",
-      "Payment History"
-    ],
-    "modalColumns" : [
       {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Quantity", "Item":"quantity"},
-      {"Header":"Unit", "Item":"unit"},
-      {"Header":"Sell Price", "Item":"sellPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"Quantity Added", "Item":"quantityAdded"}
-    ]
-  },
-  "purchases": {
-    "tableColumns" : [
-      {"Header":"Id", "Item":"purchasesLogsId"},
-      {"Header":"Added Date", "Item":"createdDate"},
-      {"Header":"Added By", "Item":"createdBy"}
-    ],
-    "modalColumns" : [
-      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Product Code", "Item":"productCode"},
       {"Header":"Quantity", "Item":"quantity"},
       {"Header":"Unit", "Item":"unit"},
       {"Header":"Buy Price", "Item":"buyPrice"},
       {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"Quantity Added", "Item":"quantityAdded"}
+      {"Header":"Quantity Added", "Item":""}
     ]
   },
-  "sales": {
-    "detailsCategories": [
-      "Log Details",
-      "Payment History"
-    ],
+  "ViewAddedStocks": {
+    "tableColumns" : [
+      {"Header":"Id", "Item":"purchasesLogsId"},
+      {"Header":"Added Date", "Item":"createdDate"},
+      {"Header":"Added By", "Item":"createdBy"}
+    ]
+  },
+  "AddedStocksDetail": {
+    "tableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Product Code", "Item":"productCode"},
+      {"Header":"Quantity Added", "Item":"quantityAdded"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Supplier", "Item":"supplier"}
+    ]
+  },
+  "PlaceOrder": {
+    "tableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Product Code", "Item":"productCode"},
+      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Unit", "Item":"unit"},
+      {"Header":"Buy Price", "Item":"buyPrice"},
+      {"Header":"Sell Price", "Item":"sellPrice"},
+      {"Header":"Supplier", "Item":"supplier"},
+      {"Header":"Quantity Sold", "Item":""}
+    ]
+  },
+  "ViewOrders": {
     "tableColumns" : [
       {"Header":"Id", "Item":"salesLogsId"},
       {"Header":"Customer Name", "Item":"customer"},
@@ -158,14 +91,26 @@
       {"Header":"Balance", "Item":"Balance"},
       {"Header":"Ordered Date", "Item":"createdDate"},
       {"Header":"Ordered From", "Item":"createdBy"}
-    ],
-    "modalColumns" : [
+    ]
+  },
+  "PlacedOrderDetails": {
+    "tableColumns" : [
       {"Header":"Product Name", "Item":"productName"},
-      {"Header":"Quantity", "Item":"quantity"},
+      {"Header":"Product Code", "Item":"productCode"},
+      {"Header":"Quantity Sold", "Item":"quantitySold"},
       {"Header":"Unit", "Item":"unit"},
       {"Header":"Sell Price", "Item":"sellPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
-      {"Header":"Quantity Added", "Item":"quantityAdded"}
+      {"Header":"Supplier", "Item":"supplier"}
+    ]
+  },
+  "collections": {
+    "tableColumns" : [
+      {"Header":"Id", "Item":"id"},
+      {"Header":"Customer Name", "Item":"customer"},
+      {"Header":"Term Amount", "Item":"termAmount"},
+      {"Header":"Term Due Date", "Item":"termDueDate"},
+      {"Header":"Ordered Date", "Item":"createdDate"},
+      {"Header":"Ordered From", "Item":"createdBy"}
     ]
   }
 }

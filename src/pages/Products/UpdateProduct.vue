@@ -19,8 +19,8 @@
           </div>
           <div class="row">
             <div class="form-group col-md-6">
-              <label for="productQuantity">Quantity</label>
-              <input type="number" class="form-control" placeholder="0" v-model="productQuantity" >
+              <label for="productQuantity">Quantity (Edit in Add Stocks)</label>
+              <input type="number" class="form-control" placeholder="0" v-model="productQuantity" disabled>
             </div>
             <div class="form-group col-md-6">
               <label for="productUnit">Unit</label>
@@ -194,7 +194,6 @@ export default {
         .post(config.backend_host + '/getProductById', formData)
         .then(response => {
           if(response.data.statusCode === "OK"){
-            console.log(response.data.data)
             this.productId = response.data.data.productId;
             this.productName = response.data.data.productName;
             this.productCode = response.data.data.productCode;

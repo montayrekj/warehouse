@@ -25,7 +25,7 @@
                       <td v-for="(column, index) in tableColumns"
                           :key="index"
                           v-if="hasValue(item, column)" style="text-align: center;">
-                        <a v-bind:href="'/#/logs/purchases/' + item.purchasesLogsId" v-if="column.Header === 'Id'">{{itemValue(item, column)}}</a>
+                        <a v-bind:href="'/#/stocks/viewAddedStocks/' + item.purchasesLogsId" v-if="column.Header === 'Id'">{{itemValue(item, column)}}</a>
                         <label v-if="column.Header !== 'Id'">{{itemValue(item, column)}}</label>
                       </td>
                     </slot>
@@ -121,7 +121,7 @@
         return this.type && `table-${this.type}`;
       },
       tableColumns() {
-        return this.$t('purchases.tableColumns');
+        return this.$t('ViewAddedStocks.tableColumns');
       }
     },
     methods: {

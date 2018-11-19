@@ -42,7 +42,7 @@ export default {
   },
   computed: {
     tableColumns() {
-      return this.$t('salesLogs.tableColumns');
+      return this.$t('AddedStocksDetail.tableColumns');
     }
   },
   methods: {
@@ -61,14 +61,13 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$route)
     var formData = new FormData();
     formData.append("id", this.$route.params.id)
     axios
-        .post(config.backend_host + '/getSalesLogsById', formData)
+        .post(config.backend_host + '/getPurchasesLogsById', formData)
         .then(response => {
           if(response.data.statusCode === "OK"){
-            this.table.data = response.data.data.salesLogsItem
+            this.table.data = response.data.data.purchasesLogsItem
           }
         })
   }
