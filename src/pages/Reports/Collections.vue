@@ -25,7 +25,7 @@
                         <label v-if="column.Header !== 'Id'">{{itemValue(item, column)}}</label>
                       </td>
                       <td>
-                        <button class="btn btn-success" style="width: 100%;">Collected</button>
+                        <button class="btn btn-success" style="width: 100%;" @click="collect(item.salesLogsId)">Collect</button>
                       </td>
                     </slot>
                   </tr>
@@ -72,17 +72,23 @@ export default {
   data() {
     return {
       table: {
-        data: [...tableData] 
+        data: this.collections
       },
       search: '',
       tbodyClasses: '',
       tableColumns: this.$t('collections.tableColumns')
     };
   },
+  props: {
+    collections: Array
+  },
   watch: {
+    collections() {
+      this.table.data = this.collections;
+    },
     search: function () { 
       if(this.search != '') {
-        this.table.data = [...tableData].filter(item => 
+        this.table.data = this.collections.filter(item => 
           item.Customer_Name.toUpperCase().includes(this.search.toUpperCase()) ||
           item.Total_Amount.toString().includes(this.search) || 
           item.Paid_Amount.toUpperCase().includes(this.search.toUpperCase()) ||  
@@ -91,7 +97,7 @@ export default {
           item.Created_By.toUpperCase().includes(this.search.toUpperCase()));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.collections;
     }
   },
   computed: {
@@ -123,6 +129,9 @@ export default {
         balance = totalAmount - paidAmount;
 
       return balance;
+    },
+    collect(id) {
+      this.$emit('collectCollection', id);
     }
   }
 };

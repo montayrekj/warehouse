@@ -28,16 +28,20 @@
             </div>
           </div>
           <div class="row">
-            <div class="form-group col-md-12">
-              <label for="supplier">Supplier</label>
+            <div class="col-md-12">
+            <label for="supplier">Supplier</label>
+            </div>
+            <div class="col-md-12">
+              
               <vue-bootstrap-typeahead 
                 v-model="productSupplier"
                 :data="suppliers"
-                style="border: 0px;"
+                style="border: 0px;width:98%; display: inline-block;"
                 :minMatchingChars="0"
                 placeholder="Enter product supplier..."
                 @hit="selectSupplier"
               />
+              <i class="tim-icons icon-simple-add text-success add-customer" @click="addSupplier"></i>
             </div>
           </div>
           <div class="row">
@@ -58,6 +62,28 @@
           </div>
         </card>
       </div>
+      <sweet-modal ref="addSupplierModal" hide-close-button overlay-theme="dark" modal-theme="dark">
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="customerName" class="add-customer-label pull-left">Supplier Name</label>
+            <input type="text" class="form-control" placeholder="Enter supplier name..." v-model="supplier.name" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="address" class="add-customer-label pull-left">Supplier Address</label>
+            <input type="text" class="form-control" placeholder="Enter address..." v-model="supplier.address" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="contactNo" class="add-customer-label pull-left">Supplier Contact No.</label>
+            <input type="text" class="form-control" placeholder="Enter contact no..." v-model="supplier.contactNo" >
+          </div>
+        </div>
+          <button slot="button" class="btn btn-danger" @click="closeAddSupplierModal" style="margin-right:5px">Cancel</button>
+          <button slot="button" class="btn btn-success" @click="save" style="width:130px; margin-left:5px;">Add</button>
+      </sweet-modal>
       <!--Add Product Required Error Modal -->
       <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" modal-theme="dark">
         {{this.errorMessage}}
@@ -90,6 +116,11 @@ export default {
       supplier: "",
       supplierSelected: "",
       errorMessage: "",
+      supplier: {
+        name: "",
+        address: "",
+        contactNo: "",
+      }
     };
   },
   computed: {
@@ -171,6 +202,16 @@ export default {
     },
     selectSupplier() {
       this.supplierSelected = this.productSupplier;
+    },
+    addSupplier() {
+      this.$refs.addSupplierModal.open();
+    },
+    closeAddSupplierModal() {
+      this.$refs.addSupplierModal.close();
+    },
+    save() {
+      this.$emit("addSupplier", this.supplier);
+      this.$refs.addSupplierModal.close();
     }
   }
 };

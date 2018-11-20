@@ -9,12 +9,18 @@
         :sales="sales"
         :suppliers="suppliers"
         :customers="customers"
+        :collections="collections"
         @deleteProduct="deleteProduct"
         @addProduct="addProduct"
         @updateProduct="updateProduct"
         @changeSample="changeSample"
         @addStocks="addStocks"
         @removeStocks="removeStocks"
+        @addCustomer="addCustomer"
+        @addSupplier="addSupplier"
+        @regionalManagerApproved="regionalManagerApproved"
+        @accountingApproved="accountingApproved"
+        @collectCollection="collectCollection"
       ></router-view>
     </fade-transition>
   </div>
@@ -32,6 +38,7 @@
         sales: [],
         suppliers: [],
         customers: [],
+        collections: [],
         userId: null,
       }
     },
@@ -52,7 +59,7 @@
         .post(config.backend_host + '/addStocks', event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
-              window.location.href = "/#/products/viewProducts"
+              window.location.href = "/#/stocks/viewAddedStocks"
           }
         })
       },
@@ -63,7 +70,7 @@
         .post(config.backend_host +'/removeStocks' + customerName, event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
-              window.location.href = "/#/products/viewProducts"
+              window.location.href = "/#/orders/viewOrders"
           }
         })
       },
@@ -84,6 +91,34 @@
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
+          }
+        })
+      },
+      addCustomer(event) {
+        var data = new FormData();
+        data.append("customerName", event.name);
+        data.append("customerAddress", event.address);
+        data.append("customerContactNo", event.contactNo);
+        data.append("userId", this.userId);
+
+        axios
+        .post(config.backend_host + '/addCustomer', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              this.getCustomers();
+          }
+        })
+      },
+      addSupplier(event) {
+        var data = new FormData();
+        data.append("supplierName", event.name);
+        data.append("supplierAddress", event.address);
+        data.append("supplierContactNo", event.contactNo);
+        data.append("userId", this.userId);
+
+        axios
+        .post(config.backend_host + '/addSupplier', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              this.getSuppliers();
           }
         })
       },
@@ -120,6 +155,44 @@
           }
         })
       },
+      regionalManagerApproved(event){
+        var data = new FormData();
+        data.append('salesLogsId', event.salesLogsId);
+        data.append('approved', event.approved);
+
+        axios
+        .post(config.backend_host + '/regionalManagerApproved', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              window.location.href="/#/orders/viewOrders"
+          }
+        })
+      },
+      accountingApproved(event){
+        var data = new FormData();
+        data.append('salesLogsId', event.salesLogsId);
+        data.append('approved', event.approved);
+        data.append('cashAmount', event.cashAmount);
+        data.append('termAmount', event.termAmount);
+        data.append('termDueDate', event.termDueDate);
+
+        axios
+        .post(config.backend_host + '/accountingApproved', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              window.location.href="/#/orders/viewOrders"
+          }
+        })
+      },
+      collectCollection(event) {
+        var data = new FormData();
+        data.append('salesLogsId', event);
+
+        axios
+        .post(config.backend_host + '/collect', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              window.location.reload();
+          }
+        })
+      },
       //End of props events
       getProducts() {
         axios
@@ -127,6 +200,22 @@
         .then(response => {
           if(response.data.statusCode === "OK")
             this.products = response.data.data;
+        })
+      },
+      getCustomers() {
+        axios
+        .post(config.backend_host + '/getCustomers')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.customers = response.data.data.map(arr => arr.customerName);
+        })
+      },
+      getSuppliers() {
+        axios
+        .post(config.backend_host + '/getSuppliers')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.suppliers = response.data.data.map(arr => arr.supplierName);
         })
       }
     }, 
@@ -162,18 +251,19 @@
             this.sales = response.data.data;
         })
 
-        axios
-        .post(config.backend_host + '/getSuppliers')
-        .then(response => {
-          if(response.data.statusCode === "OK")
-            this.suppliers = response.data.data.map(arr => arr.supplierName);
-        })
+        this.getSuppliers();
 
-        axios
-        .post(config.backend_host + '/getCustomers')
+        this.getCustomers();
+
+         axios
+        .post(config.backend_host + '/getCollections')
         .then(response => {
           if(response.data.statusCode === "OK")
-            this.customers = response.data.data.map(arr => arr.customerName);
+            for(var i = 0; i < response.data.data.length; i++) {
+              response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+              response.data.data[i].termDueDate = moment(response.data.data[i].termDueDate).format("MM/DD/YYYY");
+            }
+            this.collections = response.data.data;
         })
     },
   };

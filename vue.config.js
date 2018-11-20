@@ -9,8 +9,4 @@ module.exports = {
       enableInSFC: false
     }
   },
-
-  devServer: {
-    https: true
-  }
 };

@@ -3,18 +3,19 @@
       <div class="col-12" style="max-height: calc(100vh - 88px); overflow: auto">
         <card>
           <div class="row form-group">
-            <div class="col-2" style="padding-top: 10px">
+            <div class="col-md-2" style="padding-top: 10px;">
               <label class="control-label" style="font-size: 15px">Customer Name </label>
             </div>
-            <div class="col-5">
+            <div class="col-md-4">
               <vue-bootstrap-typeahead 
                 v-model="customerName"
                 :data="customers"
-                style="border: 0px;"
+                style="border: 0px; display: inline-block; width: 85%"
                 :minMatchingChars="0"
-                placeholder="Enter product supplier..."
+                placeholder="Enter customer name..."
                 @hit="selectCustomer"
               />
+              <i class="tim-icons icon-simple-add text-success add-customer" @click="addCustomer"></i>
             </div>
           </div>
           <br>
@@ -63,34 +64,71 @@
                       <option v-for="(item) in table.data" :key="item.productId" :value="item.productId">{{item.productName}}</option>
                     </select>
                   </td>
-                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               </tbody>
-              <tfoot class="text-primary">
-                <tr>
-                  <td></td><td></td><td></td><td></td>
-                  <td style="text-align:center; font-weight:bold; padding-top: 40px">TOTAL AMOUNT</td>
-                  <td style="text-align:center; font-weight:bold; padding-top: 40px">{{totalAmount}}</td>
-                  <td></td>
-                  <td style="padding-top: 40px"><button class="btn btn-success" style="width: 100%;" @click="save()">Place Order</button></td>
-                </tr>
-              </tfoot>
             </table>
+          </div>
+          <div class="dropdown-divider" style="border-top: 1px solid #3d3f52"></div>
+          <div class="row">
+            <div class="col-xl-7"></div>
+            <div class="col-xl-2">
+              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px;color: #bfbfc5;">TOTAL AMOUNT</label>
+              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount}}</label>
+            </div>
+            <div class="col-xl-1"></div>
+            <div class="col-xl-2">
+              <button class="btn btn-success" style="width: 100%" @click="order()">Place Order</button>
+            </div>  
           </div>
         </card>
       </div>
+      <sweet-modal ref="addCustomerModal" hide-close-button overlay-theme="dark" modal-theme="dark">
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="customerName" class="add-customer-label pull-left">Customer Name</label>
+            <input type="text" class="form-control" placeholder="Enter customer name..." v-model="customer.name" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="address" class="add-customer-label pull-left">Customer Address</label>
+            <input type="text" class="form-control" placeholder="Enter address..." v-model="customer.address" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="contactNo" class="add-customer-label pull-left">Customer Contact No.</label>
+            <input type="text" class="form-control" placeholder="Enter contact no..." v-model="customer.contactNo" >
+          </div>
+        </div>
+          <button slot="button" class="btn btn-danger" @click="closeAddCustomerModal" style="margin-right:5px">Cancel</button>
+          <button slot="button" class="btn btn-success" @click="save" style="width:130px; margin-left:5px;">Add</button>
+      </sweet-modal>
+      <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+        {{this.errorMessage}}
+      </sweet-modal>
     </div>
 </template>
 <script>
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
+
 export default {
   components: {
-    VueBootstrapTypeahead
+    VueBootstrapTypeahead,
+    SweetModal,
+    SweetModalTab
   },
   data() {
     return {
       table: {
         data: this.products,
+      },
+      customer: {
+        name: "",
+        address: "",
+        contactNo: "",
       },
       selected: [],
       quantity: [],
@@ -98,6 +136,7 @@ export default {
       totalAmount: 0,
       customerName: "",
       customerSelected: "",
+      errorMessage: "",
     }
   },
   props: {
@@ -142,14 +181,17 @@ export default {
       var item = this.getItemById(id);
       if(val < 0){
         this.quantity[index] = 0;
+      } else if(val > Number(item.quantity)){
+          this.quantity[index] = item.quantity;
       }
+
       this.computeTotalAmount();
       this.$forceUpdate();
     },
     getItemById(id){
       for(var i = 0; i < this.table.data.length; i++){
-        if(this.table.data[i].productId === id){
-          return this.table.data[i];
+        if(this.products[i].productId == id){
+          return this.products[i];
         }
       }
     },
@@ -164,11 +206,37 @@ export default {
       this.quantity.splice(index, 1)
       this.computeTotalAmount();
     },
-    save() {
-      for(var i = 0; i < this.selected.length; i++) {
-        this.selected[i].quantity = Number(this.quantity[i]);
+    order() {
+      if(this.validateOrder()) {
+        for(var i = 0; i < this.selected.length; i++) {
+          this.selected[i].quantity = Number(this.quantity[i]);
+        }
+        this.$emit("removeStocks", this.selected, this.customerSelected)
+      } else {
+        this.$refs.errorModal.open();
       }
-      this.$emit("removeStocks", this.selected, this.customerSelected)
+    },
+    validateOrder() {
+      var flag = true;
+      if(this.customerSelected == "") {
+        flag = false;
+        this.errorMessage = "Please select customer!"
+        return flag;
+      } 
+      if(this.selected.length == 0) {
+        flag = false;
+        this.errorMessage = "Please select product/s!"
+        return flag;
+      } else {
+        for(var i = 0; i < this.quantity.length; i++) {
+          if(this.quantity[i] == 0) {
+            flag = false;
+          this.errorMessage = "Please specify quantity sold!"
+          return flag;
+          }
+        }
+      }
+      return flag;
     },
     computeTotalAmount() {
       this.totalAmount = 0;
@@ -178,6 +246,16 @@ export default {
     },
     selectCustomer() {
       this.customerSelected = this.customerName;
+    },
+    addCustomer() {
+      this.$refs.addCustomerModal.open();
+    },
+    closeAddCustomerModal() {
+      this.$refs.addCustomerModal.close();
+    },
+    save() {
+      this.$emit("addCustomer", this.customer);
+      this.$refs.addCustomerModal.close();
     }
   }
 };

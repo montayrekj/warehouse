@@ -43,15 +43,14 @@
                   <td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               </tbody>
-              <tfoot>
-                <tr>
-                  <td></td><td></td><td></td><td></td><td></td><td></td>
-                  <td>
-                    <button class="btn btn-success" style="width: 100%; margin-top: 15px" @click="save">Add</button>
-                  </td>
-                </tr>
-              </tfoot>
             </table>
+          </div>
+          <div class="dropdown-divider" style="border-top: 1px solid #3d3f52"></div>
+          <div class="row">
+            <div class="col-xl-9"></div>
+            <div class="col-xl-3">
+              <button class="btn btn-success" style="width: 100%; margin-top: 15px" @click="save">Add</button>
+            </div>  
           </div>
         </card>
       </div>

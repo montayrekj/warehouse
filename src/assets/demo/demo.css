@@ -150,3 +150,43 @@ html {
   border: 1px solid #e14eca !important;
 }
 
+.add-customer {
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px
+}
+
+.add-customer:hover {
+  cursor: pointer;
+}
+
+.add-customer-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.color-grey {
+  color: rgba(178, 178, 178, 0.8) !important;
+}
+
+.input-calendar-color {
+  background: #1c2a38 !important;
+  color: #c8cbce !important;
+  cursor: pointer !important;
+}
+
+.vdp-datepicker__calendar {
+  position: absolute;
+  z-index: 100;
+  background: #1d253b;
+  width: 300px;
+  border: 1px solid #2b3354;
+  color: #b5b9be;
+}
+
+.vdp-datepicker__calendar header .prev:not(.disabled):hover, .vdp-datepicker__calendar header .next:not(.disabled):hover, .vdp-datepicker__calendar header .up:not(.disabled):hover {
+  background: #2b3354;
+}
+

@@ -105,7 +105,7 @@
   },
   "collections": {
     "tableColumns" : [
-      {"Header":"Id", "Item":"id"},
+      {"Header":"Id", "Item":"salesLogsId"},
       {"Header":"Customer Name", "Item":"customer"},
       {"Header":"Term Amount", "Item":"termAmount"},
       {"Header":"Term Due Date", "Item":"termDueDate"},

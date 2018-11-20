@@ -42,7 +42,7 @@
                 </p>
               </a>
               <li class="nav-link">
-                <a href="/#/login" @click="logout" class="nav-item dropdown-item">Log out</a>
+                <a href="#" @click="logout" class="nav-item dropdown-item">Log out</a>
               </li>
             </base-dropdown>
           </ul>
@@ -94,6 +94,7 @@
       },
       logout() {
         localStorage.removeItem('user');
+        window.location.reload();
       },
       routeName() {
         const { name } = this.$route;
