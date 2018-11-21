@@ -21,6 +21,7 @@
         @regionalManagerApproved="regionalManagerApproved"
         @accountingApproved="accountingApproved"
         @collectCollection="collectCollection"
+        @checkerConfirmOrder="checkerConfirmOrder"
       ></router-view>
     </fade-transition>
   </div>
@@ -177,6 +178,15 @@
 
         axios
         .post(config.backend_host + '/accountingApproved', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              window.location.href="/#/orders/viewOrders"
+          }
+        })
+      },
+      checkerConfirmOrder(event) {
+        console.log(event)
+        axios
+        .post(config.backend_host + '/checkerConfirmOrder', event).then(response => {
           if(response.data.statusCode === "OK"){
               window.location.href="/#/orders/viewOrders"
           }

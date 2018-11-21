@@ -35,47 +35,47 @@ const routes = [
       },
       {
         path: "products/addProduct",
-        name: "products > add product",
+        name: "add product",
         component: AddProduct
       },
       {
         path: "products/updateProduct/:id",
-        name: "products > update > ",
+        name: "update > ",
         component: UpdateProduct
       },
       {
         path: "products/viewProducts",
-        name: "products > view products",
+        name: "view products",
         component: Products
       },
       {
         path: "/stocks/addStocks",
-        name: "stocks > add stocks",
+        name: "add stocks",
         component: AddStocks
       },
       {
         path: "stocks/viewAddedStocks",
-        name: "stocks > view added stocks",
+        name: "view added stocks",
         component: ViewAddedStocks
       },
       {
         path: "stocks/viewAddedStocks/:id",
-        name: "stocks > view added stocks > ",
+        name: "view added stocks > ",
         component: AddedStocksDetails
       },
       {
         path: "orders/placeOrder",
-        name: "orders > place order",
+        name: "place order",
         component: PlaceOrder
       },
       {
         path: "/orders/viewOrders",
-        name: "orders > view orders ",
+        name: "view orders ",
         component: ViewOrders
       },
       {
         path: "/orders/viewOrders/:id",
-        name: "orders > view orders > ",
+        name: "view orders > ",
         component: PlacedOrderDetails
       },
       {

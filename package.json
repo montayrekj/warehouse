@@ -25,6 +25,8 @@
     "vue-collapse": "^1.0.31",
     "vue-i18n": "^8.0.0",
     "vue-router": "^3.0.1",
+    "vue-step-progress": "^0.2.2",
+    "vue-stepper": "^1.4.0",
     "vue2-transitions": "^0.2.3",
     "vuejs-datepicker": "^1.5.4"
   },

@@ -152,10 +152,13 @@ html {
 
 .add-customer {
   font-weight: bold;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   padding-left: 5px;
-  padding-right: 5px
+  padding-right: 5px;
+  margin-left: 15px;
+  border: 1px solid;
+  border-radius: 30px;
 }
 
 .add-customer:hover {
@@ -188,5 +191,18 @@ html {
 
 .vdp-datepicker__calendar header .prev:not(.disabled):hover, .vdp-datepicker__calendar header .next:not(.disabled):hover, .vdp-datepicker__calendar header .up:not(.disabled):hover {
   background: #2b3354;
+}
+
+.step-progress__wrapper {
+  width: 80%;
+}
+
+.step-progress__step-label {
+  font-size: 1rem;
+  white-space: normal
+}
+
+.step-progress__bar {
+  margin-bottom: 60px
 }
 

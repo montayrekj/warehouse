@@ -76,9 +76,9 @@
       {"Header":"Product Code", "Item":"productCode"},
       {"Header":"Quantity", "Item":"quantity"},
       {"Header":"Unit", "Item":"unit"},
+      {"Header":"Supplier", "Item":"supplier"},
       {"Header":"Buy Price", "Item":"buyPrice"},
       {"Header":"Sell Price", "Item":"sellPrice"},
-      {"Header":"Supplier", "Item":"supplier"},
       {"Header":"Quantity Sold", "Item":""}
     ]
   },
@@ -101,6 +101,11 @@
       {"Header":"Unit", "Item":"unit"},
       {"Header":"Sell Price", "Item":"sellPrice"},
       {"Header":"Supplier", "Item":"supplier"}
+    ],
+    "checkerTableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity Sold", "Item":"quantitySold"},
+      {"Header":"Quantity Left", "Item":"quantityLeft"}
     ]
   },
   "collections": {

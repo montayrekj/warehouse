@@ -94,7 +94,8 @@
       },
       logout() {
         localStorage.removeItem('user');
-        window.location.reload();
+        //window.location.reload();
+        window.location.href="/?#/login"
       },
       routeName() {
         const { name } = this.$route;

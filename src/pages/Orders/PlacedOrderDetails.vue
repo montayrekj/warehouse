@@ -37,7 +37,6 @@
             <tr style="position: sticky; top: 0;">
               <slot name="columns" >
                 <th v-for="(column, index) in tableColumns" :key="index" style="text-align: center;">{{column.Header}}</th>
-                <th></th>
               </slot>
             </tr>
             </thead>
@@ -55,13 +54,17 @@
           </table>
         </div>
         <div class="dropdown-divider" style="border-top: 1px solid #3d3f52"></div>
-          <div class="row">
-            <div class="col-xl-8"></div>
-            <div class="col-xl-3">
-              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px;color: #bfbfc5;">TOTAL AMOUNT</label>
-              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount}}</label>
-            </div>  
-          </div>
+        <div class="row">
+          <div class="col-xl-8"></div>
+          <div class="col-xl-3">
+            <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px;color: #bfbfc5;">TOTAL AMOUNT</label>
+            <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount}}</label>
+          </div>  
+        </div>
+      </card>
+      <card>
+        <h3>Order Status</h3>
+        <step-progress :steps="steps" :current-step="currentStep"></step-progress>
       </card>
       <card v-if="showCardByUserType(regionalManager)">
         <h3>Regional Manager</h3>
@@ -114,6 +117,45 @@
       </card>
       <card v-if="showCardByUserType(checker)">
         <h3>Checker</h3>
+        <div class="table-responsive">
+          <table class="table tablesorter">
+            <thead class="text-primary">
+            <tr>
+              <slot name="columns" >
+                <th v-for="(column, index) in checkerTableColumns" :key="index" style="text-align: center;">{{column.Header}}</th>
+                <th style="text-align: center">Quantity Out</th>
+              </slot>
+            </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item,indexTemp) in table.data" :key="indexTemp">
+                <slot :row="item">
+                  <td v-for="(column, index) in checkerTableColumns"
+                      :key="index"
+                      v-if="hasValue(item, column)" style="text-align: center"
+                      :style="column.Header == 'Quantity Left'? 'width: 20%':''">
+                    <span v-if="column.Header != 'Quantity Left'">{{itemValue(item, column)}}</span>
+                    <input v-if="column.Header == 'Quantity Left'" 
+                        type="number" 
+                        class="form-control color-grey" 
+                        id="stockQuantity" min="0" v-model="quantityLeft[indexTemp]" disabled>
+                  </td>
+                  <td width="20%">
+                    <input type="number" class="form-control" id="stockQuantity" style="background-color: #1c2a38;" min="0" 
+                    v-model="quantityOut[indexTemp]" @focus="setQuantityIndex(indexTemp)">
+                  </td>
+                </slot>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dropdown-divider" style="border-top: 1px solid #3d3f52"></div>
+        <div class="row">
+          <div class="col-xl-10"></div>
+          <div class="col-xl-2" style="margin-top: 20px;">
+            <button class="btn btn-success" @click="confirmChecker()" style="width:100%;">Confirm</button>
+          </div>
+        </div>
       </card>
     </div>
   </div>
@@ -125,17 +167,21 @@ import axios from 'axios';
 import config from '@/config'
 import moment from 'moment';
 import DatePicker from 'vuejs-datepicker'
+import StepProgress from 'vue-step-progress';
+import 'vue-step-progress/dist/main.css';
 
 import { POINT_CONVERSION_COMPRESSED } from 'constants';
 export default {
   components: {
-    DatePicker
+    DatePicker,
+    StepProgress
   },
   data() {
     return {
       table: {
         data: [],
       },
+      salesLogsModel: null,
       customerName: "",
       orderedFrom: "",
       orderedDate: "",
@@ -143,11 +189,36 @@ export default {
       termDueDate: new Date(),
       userType: null,
       purchaseOrderStatus: null,
+      quantityLeft: [],
+      quantityOut: [],
+      quantityIndex: null,
+      steps: [
+        'Regional Manager', 'Accounting', 'Checker'
+      ],
+      currentStep: 0,
+    }
+  },
+  watch: {
+    quantityOut() {
+      if(this.quantityIndex != null) {
+        this.quantityLeft[this.quantityIndex] = this.table.data[this.quantityIndex].quantityLeft;
+        var val = this.quantityOut[this.quantityIndex];
+        if(val < 0){
+          this.quantityOut[this.quantityIndex] = 0;
+        } else if(val > Number(this.table.data[this.quantityIndex].quantityLeft)){
+          this.quantityOut[this.quantityIndex] = this.table.data[this.quantityIndex].quantityLeft;
+        }
+        this.quantityLeft[this.quantityIndex] = this.quantityLeft[this.quantityIndex] - this.quantityOut[this.quantityIndex];
+        this.$forceUpdate();
+      }
     }
   },
   computed: {
     tableColumns() {
       return this.$t('PlacedOrderDetails.tableColumns');
+    },
+    checkerTableColumns() {
+      return this.$t('PlacedOrderDetails.checkerTableColumns');
     },
     regionalManager() {
       return this.$t('userType.regionalManager')
@@ -182,7 +253,6 @@ export default {
     showCardByUserType(type){
       //return userType == this.userType;
       var temp = false;
-      alert(this.userType)
       if(this.userType != null){
         switch(this.userType.toString()){
           case this.regionalManager:
@@ -200,12 +270,15 @@ export default {
               temp = true;
             }
             break;
-          case this.admin: alert("4")
+          case this.admin:
             break;
         }
       }
       //if(this.userType == userType)
       return (this.userType == type) && temp;
+    },
+    setQuantityIndex(index){
+      this.quantityIndex = index;
     },
     rmApprove(flag) {
       var item = {
@@ -225,6 +298,14 @@ export default {
         termDueDate: dateString.toString()
       }
       this.$emit('accountingApproved', item);
+    },
+    confirmChecker() {
+      for(var i = 0; i < this.table.data.length; i++) {
+        this.table.data[i].quantityLeft = this.quantityLeft[i];
+      }
+
+      this.salesLogsModel.salesLogsItem = this.table.data;
+      this.$emit('checkerConfirmOrder', this.salesLogsModel);
     }
   },
   mounted() {
@@ -234,11 +315,20 @@ export default {
         .post(config.backend_host + '/getSalesLogsById', formData)
         .then(response => {
           if(response.data.statusCode === "OK"){
+            this.salesLogsModel = response.data.data;
             this.table.data = response.data.data.salesLogsItem;
+            for(var i = 0; i < this.table.data.length; i++) {
+              this.quantityLeft.push(this.table.data[i].quantityLeft)
+              this.quantityOut.push(0);
+            }
             this.orderedFrom = response.data.data.createdBy;
             this.customerName = response.data.data.customer;
             this.orderedDate =  moment(response.data.data.createdDate).format("MM/DD/YYYY");
             this.purchaseOrderStatus = response.data.data.purchaseOrderStatus;
+            this.currentStep = this.purchaseOrderStatus;
+            if(this.purchaseOrderStatus === 3){
+              this.steps[2] = "Complete"
+            }
           }
         })
 

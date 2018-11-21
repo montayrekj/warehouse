@@ -13,8 +13,7 @@
                 style="border: 0px; display: inline-block; width: 85%"
                 :minMatchingChars="0"
                 placeholder="Enter customer name..."
-                @hit="selectCustomer"
-              />
+                @hit="selectCustomer"/>
               <i class="tim-icons icon-simple-add text-success add-customer" @click="addCustomer"></i>
             </div>
           </div>
@@ -145,10 +144,10 @@ export default {
   },
   watch: {
     products() {
-      this.table.data = this.products.filter(product => product.quantity !== 0);
+      this.table.data = this.products.filter(product => Number(product.quantity) > 0);
     },
     selected() {
-      this.table.data = this.products.filter(product => product.quantity !== 0);
+      this.table.data = this.products.filter(product => Number(product.quantity) > 0);
       for(var i = 0; i < this.selected.length; i++){
         this.table.data = this.table.data.filter(product => product.productId !== this.selected[i].productId);
       }
