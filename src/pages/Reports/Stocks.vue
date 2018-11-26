@@ -7,7 +7,7 @@
             <div class="col-12">
               <div style="padding-bottom: 10px; width: 100%">
                 <div class="row">
-                  <div class="col-md-3" style="margin-bottom: 10px;">
+                  <div class="col-md-3" style="margin-bottom: 10px">
                     <input type="text" placeholder="Search" v-model="search" class="form-control" />
                   </div>
                   <div class="col-md-7"></div>
@@ -27,7 +27,6 @@
                   <tr>
                     <slot name="columns" style="text-align: center">
                       <th v-for="(column, index) in tableColumns" :key="index" style="text-align:center">{{column.Header}}</th>
-                      <th style="text-align:center">Action</th>
                     </slot>
                   </tr>
                   </thead>
@@ -37,11 +36,8 @@
                       <td v-for="(column, index) in tableColumns"
                           :key="index"
                           v-if="hasValue(item, column)" style="text-align:center">
-                        <a href="#" v-if="column.Header === 'Order Id'">{{itemValue(item, column)}}</a>
-                        <label v-if="column.Header !== 'Order Id'">{{itemValue(item, column)}}</label>
-                      </td>
-                      <td>
-                        <button class="btn btn-success" style="width: 100%;" @click="toggleConfirmModal(item.orderId)">Collect</button>
+                        <a href="#" v-if="column.Header === 'Id'">{{itemValue(item, column)}}</a>
+                        <label v-if="column.Header !== 'Id'">{{itemValue(item, column)}}</label>
                       </td>
                     </slot>
                   </tr>
@@ -53,15 +49,10 @@
         </card>
       </div>
     </div>
-    <sweet-modal ref="confirmModal" hide-close-button overlay-theme="dark" modal-theme="dark" icon="warning">
-      Are you sure you have collected the term?
-      <button slot="button" class="btn btn-success" @click="collect" style="width: 130px; margin-right:5px;">Yes</button>
-      <button slot="button" class="btn btn-danger" @click="toggleConfirmModal(0)" style="width: 130px; margin-left:5px">No</button>
-    </sweet-modal>
   </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+ 
 import moment from 'moment';
 
 var pdfMake = require('pdfmake/build/pdfmake.js');
@@ -69,48 +60,39 @@ var pdfFonts = require('pdfmake/build/vfs_fonts.js');
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export default {
-  components: {
-    SweetModal,
-    SweetModalTab
-  },
   data() {
     return {
       table: {
-        data: this.collections
+        data: this.stocks
       },
       search: '',
-      tbodyClasses: '',
-      confirmModalFlag: false,
-      selectedOrderId: null
+      tbodyClasses: ''
     };
   },
   props: {
-    collections: Array
+    stocks: Array
   },
   watch: {
-    collections() {
-      this.table.data = this.collections;
+    stocks() {
+      this.table.data = this.stocks;
     },
     search: function () { 
       if(this.search != '') {
-        this.table.data = this.collections.filter(item => 
-          item.orderId.toString().includes(this.search) ||
-          item.customer.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.termAmount.toString().includes(this.search) ||
-          item.termDueDate.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.createdDate.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.createdBy.toUpperCase().includes(this.search.toUpperCase()));
+        this.table.data = this.stocks.filter(item => 
+          item.productName.toUpperCase().includes(this.search.toUpperCase()) ||
+          item.quantityIn.toString().includes(this.search) || 
+          item.quantityOut.toString().includes(this.search));
       }
       else
-        this.table.data = this.collections;
+        this.table.data = this.stocks;
     }
   },
   computed: {
     tableClass() {
       return this.type && `table-${this.type}`;
     },
-    tableColumns(){
-      return this.$t('Collections.tableColumns');
+    tableColumns() {
+      return this.$t('Stocks.tableColumns');
     }
   },
   methods: {
@@ -122,41 +104,14 @@ export default {
     },
     itemValue(item, column) {
       var temp = item[column.Item];
-      if(column.Item == "Balance")
-        return this.computeBalance(item["Total_Amount"], item["Paid_Amount"]);
 
       return temp;
-    },
-    computeBalance(totalAmount, paidAmount)  {
-      var balance = 0;
-      totalAmount = Number(totalAmount);
-      paidAmount = Number(paidAmount);
-      if(paidAmount >= totalAmount)
-        balance = 0;
-      else
-        balance = totalAmount - paidAmount;
-
-      return balance;
-    },
-    collect() {
-      this.$emit('collectCollection', Number(this.selectedOrderId));
-    },
-    toggleConfirmModal(orderId) {
-      if(!this.confirmModalFlag) {
-        this.confirmModalFlag = true;
-        this.selectedOrderId = orderId;
-        this.$refs.confirmModal.open();
-      } else {
-        this.confirmModalFlag = false;
-        this.selectedOrderId = null;
-        this.$refs.confirmModal.close();
-      }
     },
     exportToPDF() {
       var docDefinition = {
         header: {
           columns: [
-            {text: "Collections' Report", alignment: 'left', margin: 10, color: '#aaa'},
+            {text: "Stocks Report", alignment: 'left', margin: 10, color: '#aaa'},
             {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
           ]
         },
@@ -171,7 +126,7 @@ export default {
             {
                 table: {
                     headerRows: 1,
-                    widths: [ '*', '*', '*', '*', '*', '*'],
+                    widths: [ '*', '*', '*'],
 
                     body: []
                 }
@@ -193,18 +148,15 @@ export default {
       //Table Body
       for(var i=0;i<this.table.data.length;i++){
           var object = {
-            orderId: this.table.data[i].orderId,
-            customer: this.table.data[i].customer,
-            termAmount: this.table.data[i].termAmount,
-            termDueDate: this.table.data[i].termDueDate,
-            createdDate: this.table.data[i].createdDate,
-            createdBy: this.table.data[i].createdBy
+            productName: this.table.data[i].productName,
+            quantityIn: this.table.data[i].quantityIn,
+            quantityOut: this.table.data[i].quantityOut
           }
           docDefinition.content[1].table.body.push(Object.values(object));  
       }
 
       //Download PDF
-      pdfMake.createPdf(docDefinition).download('Collections Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      pdfMake.createPdf(docDefinition).download('Stocks Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
     }
   }
 };

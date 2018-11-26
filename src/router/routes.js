@@ -14,10 +14,13 @@ import ViewAddedStocks from "@/pages/Stocks/ViewAddedStocks.vue";
 import AddedStocksDetails from "@/pages/Stocks/AddedStocksDetails.vue"
 
 import PlaceOrder from "@/pages/Orders/PlaceOrder.vue";
-import ViewOrders from "@/pages/Orders/ViewOrders.vue";
+import ViewActiveOrders from "@/pages/Orders/ViewActiveOrders.vue";
+import ViewCompletedOrders from "@/pages/Orders/ViewCompletedOrders.vue";
 import PlacedOrderDetails from "@/pages/Orders/PlacedOrderDetails.vue";
 
 import Collections from "@/pages/Reports/Collections.vue";
+import Sales from "@/pages/Reports/Sales.vue";
+import Stocks from "@/pages/Reports/Stocks.vue";
 
 import Login from "@/pages/Login.vue";
 
@@ -69,9 +72,14 @@ const routes = [
         component: PlaceOrder
       },
       {
-        path: "/orders/viewOrders",
-        name: "view orders ",
-        component: ViewOrders
+        path: "/orders/viewActiveOrders",
+        name: "view active orders ",
+        component: ViewActiveOrders
+      },
+      {
+        path: "/orders/viewCompletedOrders",
+        name: "view completed orders ",
+        component: ViewCompletedOrders
       },
       {
         path: "/orders/viewOrders/:id",
@@ -82,6 +90,16 @@ const routes = [
         path: "reports/collections",
         name: "collections",
         component: Collections
+      },
+      {
+        path: "reports/sales",
+        name: "sales",
+        component: Sales
+      },
+      {
+        path: "reports/stocks",
+        name: "stocks",
+        component: Stocks
       }
     ]
   },

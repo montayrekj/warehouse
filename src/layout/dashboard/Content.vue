@@ -6,10 +6,12 @@
         :sample="sample" 
         :products="products"  
         :purchases="purchases"
-        :sales="sales"
+        :orders="orders"
         :suppliers="suppliers"
         :customers="customers"
         :collections="collections"
+        :stocks="stocks"
+        :sales="sales"
         @deleteProduct="deleteProduct"
         @addProduct="addProduct"
         @updateProduct="updateProduct"
@@ -36,10 +38,12 @@
       return {
         products: [],
         purchases: [],
-        sales: [],
+        orders: [],
         suppliers: [],
         customers: [],
         collections: [],
+        sales: [],
+        stocks:[],
         userId: null,
       }
     },
@@ -158,7 +162,7 @@
       },
       regionalManagerApproved(event){
         var data = new FormData();
-        data.append('salesLogsId', event.salesLogsId);
+        data.append('orderId', event.orderId);
         data.append('approved', event.approved);
 
         axios
@@ -170,11 +174,12 @@
       },
       accountingApproved(event){
         var data = new FormData();
-        data.append('salesLogsId', event.salesLogsId);
+        data.append('orderId', event.orderId);
         data.append('approved', event.approved);
         data.append('cashAmount', event.cashAmount);
         data.append('termAmount', event.termAmount);
         data.append('termDueDate', event.termDueDate);
+        data.append('userId', this.userId);
 
         axios
         .post(config.backend_host + '/accountingApproved', data).then(response => {
@@ -184,7 +189,6 @@
         })
       },
       checkerConfirmOrder(event) {
-        console.log(event)
         axios
         .post(config.backend_host + '/checkerConfirmOrder', event).then(response => {
           if(response.data.statusCode === "OK"){
@@ -194,7 +198,8 @@
       },
       collectCollection(event) {
         var data = new FormData();
-        data.append('salesLogsId', event);
+        data.append('orderId', event);
+        data.append('userId', this.userId);
 
         axios
         .post(config.backend_host + '/collect', data).then(response => {
@@ -244,36 +249,59 @@
         axios
         .post(config.backend_host + '/getPurchasesLogs')
         .then(response => {
-          if(response.data.statusCode === "OK")
+          if(response.data.statusCode === "OK"){
             for(var i = 0; i < response.data.data.length; i++) {
               response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
             }
             this.purchases = response.data.data;
+          }
         })
 
         axios
-        .post(config.backend_host + '/getSalesLogs')
+        .post(config.backend_host + '/getOrders')
         .then(response => {
-          if(response.data.statusCode === "OK")
+          if(response.data.statusCode === "OK"){
             for(var i = 0; i < response.data.data.length; i++) {
               response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
             }
-            this.sales = response.data.data;
+            this.orders = response.data.data;
+          }
         })
 
         this.getSuppliers();
 
         this.getCustomers();
 
-         axios
+        axios
         .post(config.backend_host + '/getCollections')
         .then(response => {
-          if(response.data.statusCode === "OK")
+          if(response.data.statusCode === "OK"){
             for(var i = 0; i < response.data.data.length; i++) {
               response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
               response.data.data[i].termDueDate = moment(response.data.data[i].termDueDate).format("MM/DD/YYYY");
             }
             this.collections = response.data.data;
+          }
+        })
+
+        axios
+        .post(config.backend_host + '/getSales')
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            for(var i = 0; i < response.data.data.length; i++) {
+              response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+              response.data.data[i].termDueDate = moment(response.data.data[i].termDueDate).format("MM/DD/YYYY");
+            }
+            this.sales = response.data.data;
+          }
+        })
+
+        axios
+        .post(config.backend_host + '/getStocks')
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            this.stocks = response.data.data;
+          }
         })
     },
   };

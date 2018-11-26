@@ -2,6 +2,10 @@
   <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
     <div class="col-12">
       <card>
+        <h3>Order Status</h3>
+        <step-progress :steps="steps" :current-step="currentStep"></step-progress>
+      </card>
+      <card>
         <h3>Order Details</h3>
         <div class="row">
           <div class="col-md-7">
@@ -61,10 +65,6 @@
             <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount}}</label>
           </div>  
         </div>
-      </card>
-      <card>
-        <h3>Order Status</h3>
-        <step-progress :steps="steps" :current-step="currentStep"></step-progress>
       </card>
       <card v-if="showCardByUserType(regionalManager)">
         <h3>Regional Manager</h3>
@@ -161,8 +161,6 @@
   </div>
 </template>
 <script>
-
-
 import axios from 'axios';
 import config from '@/config'
 import moment from 'moment';
@@ -171,7 +169,14 @@ import StepProgress from 'vue-step-progress';
 import 'vue-step-progress/dist/main.css';
 
 import { POINT_CONVERSION_COMPRESSED } from 'constants';
+
+var pdfMake = require('pdfmake/build/pdfmake.js');
+var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 export default {
+  
+
   components: {
     DatePicker,
     StepProgress
@@ -282,7 +287,7 @@ export default {
     },
     rmApprove(flag) {
       var item = {
-        salesLogsId: this.$route.params.id,
+        orderId: this.$route.params.id,
         approved: flag
       }
       this.$emit('regionalManagerApproved', item);
@@ -291,7 +296,7 @@ export default {
       var date = this.termDueDate;
       var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear();
       var item = {
-        salesLogsId: this.$route.params.id,
+        orderId: this.$route.params.id,
         approved: flag,
         cashAmount: this.cashAmount,
         termAmount: this.termAmount,
@@ -306,13 +311,84 @@ export default {
 
       this.salesLogsModel.salesLogsItem = this.table.data;
       this.$emit('checkerConfirmOrder', this.salesLogsModel);
+      this.createPDF("Customer's Copy");
+      this.createPDF("Guard's Copy");
+    },
+    createPDF(title) {
+      var user = JSON.parse(localStorage.getItem("user"))
+      var signature = "Customer's Signature Over Printed Name"
+      var docDefinition = {
+        header: {
+          columns: [
+            {text: title, alignment: 'left', margin: 10, color: '#aaa'},
+            {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+          ]
+        },
+        footer: {
+            text: "© Hexamindz Corporation",
+            alignment: 'right',
+            color: '#aaa',
+            margin: [0,0,10,0]
+        },
+        content: [
+            {
+              text: 'Checker: ' + user.username,
+              alignment: 'left'
+            },
+            {text: ' ', lineHeight: 1},
+            {
+                table: {
+                    headerRows: 1,
+                    widths: [ '*', '*', '*'],
+
+                    body: []
+                }
+            },
+            {text: ' ', lineHeight: 4},
+            {text: signature, 
+                alignment: 'right', 
+                decoration: 'overline', 
+                decorationStyle: 'solid',
+                    decorationColor: 'black',
+                    color: 'white',
+                    lineHeight: 0.5
+            },
+            {text: signature, 
+                alignment: 'right', 
+            }
+        ]
+      };
+      var col = []
+      //Table Header
+      var checkerTableCol = this.$t('PlacedOrderDetails.pdfTableColumns');
+      for(var i = 0; i < checkerTableCol.length; i++) {
+        var obj = {
+          text: checkerTableCol[i].Header,
+          bold: true
+        }
+        col.push(obj);
+      }
+      docDefinition.content[2].table.body.push(col);
+
+      //Table Body
+      for(var i=0;i<this.table.data.length;i++){
+          var object = {
+            productName: this.table.data[i].productName,
+            quantitySold: this.quantityOut[i],
+            quantityLeft: this.quantityLeft[i],
+          }
+          docDefinition.content[2].table.body.push(Object.values(object));  
+      }
+
+      //Download PDF
+      pdfMake.createPdf(docDefinition).download(title+'.pdf');
     }
   },
   mounted() {
     var formData = new FormData();
     formData.append("id", this.$route.params.id)
     axios
-        .post(config.backend_host + '/getSalesLogsById', formData)
+        .post(config.backend_host + '/getOrderById', formData)
         .then(response => {
           if(response.data.statusCode === "OK"){
             this.salesLogsModel = response.data.data;

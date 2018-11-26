@@ -48,7 +48,7 @@
                         id="stockQuantity" 
                         style="background-color: #1c2a38"
                         min="0"
-                        @change="quantityChange($event, item.productId, indexTemp)"
+                        @focus="setQuantityIndex(indexTemp)"
                         v-model="quantity[indexTemp]">
                     </td>
                     <td>
@@ -70,10 +70,10 @@
           </div>
           <div class="dropdown-divider" style="border-top: 1px solid #3d3f52"></div>
           <div class="row">
-            <div class="col-xl-7"></div>
-            <div class="col-xl-2">
+            <div class="col-xl-6"></div>
+            <div class="col-xl-3">
               <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px;color: #bfbfc5;">TOTAL AMOUNT</label>
-              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount}}</label>
+              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount.toFixed(2)}}</label>
             </div>
             <div class="col-xl-1"></div>
             <div class="col-xl-2">
@@ -131,8 +131,9 @@ export default {
       },
       selected: [],
       quantity: [],
+      quantityIndex: null,
       selectValue: 0,
-      totalAmount: 0,
+      totalAmount: 0.0,
       customerName: "",
       customerSelected: "",
       errorMessage: "",
@@ -143,6 +144,20 @@ export default {
     customers: Array,
   },
   watch: {
+    quantity() {
+      if(this.quantityIndex != null) {
+        var val = this.quantity[this.quantityIndex]
+        var item = this.selected[this.quantityIndex];
+        if(val < 0){
+          this.quantity[this.quantityIndex] = 0;
+        } else if(val > Number(item.quantity)){
+          this.quantity[this.quantityIndex] = item.quantity;
+        }
+
+        this.computeTotalAmount();
+        this.$forceUpdate();
+      }
+    },
     products() {
       this.table.data = this.products.filter(product => Number(product.quantity) > 0);
     },
@@ -174,6 +189,9 @@ export default {
     quantityChangeColumn(column){
       return column.Header === "Quantity Sold";
     },
+    setQuantityIndex(index){
+      this.quantityIndex = index;
+    },
     quantityChange(event, id, index){
       event.preventDefault();
       var val = Number(event.target.value);
@@ -188,7 +206,7 @@ export default {
       this.$forceUpdate();
     },
     getItemById(id){
-      for(var i = 0; i < this.table.data.length; i++){
+      for(var i = 0; i < this.products.length; i++){
         if(this.products[i].productId == id){
           return this.products[i];
         }

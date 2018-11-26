@@ -26,8 +26,11 @@
     "addStocks": "Add Stocks",
     "viewAddedStocks": "View Added Stocks",
     "placeOrder": "Place Order",
-    "viewOrders": "View Orders",
-    "collections": "Collections"
+    "viewActiveOrders": "View Active Orders",
+    "viewCompletedOrders": "View Completed Orders",
+    "collections": "Collections",
+    "sales": "Sales",
+    "stocks": "Stocks"
     
   },
   "products": {
@@ -82,9 +85,20 @@
       {"Header":"Quantity Sold", "Item":""}
     ]
   },
-  "ViewOrders": {
+  "ViewActiveOrders": {
     "tableColumns" : [
-      {"Header":"Id", "Item":"salesLogsId"},
+      {"Header":"Order Id", "Item":"orderId"},
+      {"Header":"Customer Name", "Item":"customer"},
+      {"Header":"Total Amount", "Item":"totalAmount"},
+      {"Header":"Paid Amount", "Item":"paidAmount"},
+      {"Header":"Balance", "Item":"Balance"},
+      {"Header":"Ordered Date", "Item":"createdDate"},
+      {"Header":"Ordered From", "Item":"createdBy"}
+    ]
+  },
+  "ViewCompletedOrders": {
+    "tableColumns" : [
+      {"Header":"Order Id", "Item":"orderId"},
       {"Header":"Customer Name", "Item":"customer"},
       {"Header":"Total Amount", "Item":"totalAmount"},
       {"Header":"Paid Amount", "Item":"paidAmount"},
@@ -106,16 +120,37 @@
       {"Header":"Product Name", "Item":"productName"},
       {"Header":"Quantity Sold", "Item":"quantitySold"},
       {"Header":"Quantity Left", "Item":"quantityLeft"}
+    ],
+    "pdfTableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity Out", "Item":"quantityOut"},
+      {"Header":"Quantity Left", "Item":"quantityLeft"}
     ]
   },
-  "collections": {
+  "Collections": {
     "tableColumns" : [
-      {"Header":"Id", "Item":"salesLogsId"},
+      {"Header":"Order Id", "Item":"orderId"},
       {"Header":"Customer Name", "Item":"customer"},
       {"Header":"Term Amount", "Item":"termAmount"},
       {"Header":"Term Due Date", "Item":"termDueDate"},
       {"Header":"Ordered Date", "Item":"createdDate"},
       {"Header":"Ordered From", "Item":"createdBy"}
+    ]
+  },
+  "Sales": {
+    "tableColumns" : [
+      {"Header":"Customer Name", "Item":"customer"},
+      {"Header":"Type", "Item":"salesType"},
+      {"Header":"Paid Amount", "Item":"amount"},
+      {"Header":"Paid Date", "Item":"createdDate"},
+      {"Header":"Paid to", "Item":"createdBy"}
+    ]
+  },
+  "Stocks": {
+    "tableColumns" : [
+      {"Header":"Product Name", "Item":"productName"},
+      {"Header":"Quantity In", "Item":"quantityIn"},
+      {"Header":"Quantity Out", "Item":"quantityOut"}
     ]
   }
 }

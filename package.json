@@ -17,6 +17,7 @@
     "chart.js": "^2.7.2",
     "es6-promise": "^4.2.4",
     "moment": "^2.22.2",
+    "pdfmake": "^0.1.39",
     "sweet-modal-vue": "^2.0.0",
     "v-autocomplete": "^1.8.2",
     "vue": "^2.5.17",
@@ -28,7 +29,8 @@
     "vue-step-progress": "^0.2.2",
     "vue-stepper": "^1.4.0",
     "vue2-transitions": "^0.2.3",
-    "vuejs-datepicker": "^1.5.4"
+    "vuejs-datepicker": "^1.5.4",
+    "vuejs-paginator": "^2.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",

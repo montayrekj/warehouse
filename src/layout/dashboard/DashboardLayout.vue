@@ -44,7 +44,8 @@
           </a>
           <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.ordersFlag">
             <sidebar-link to="/orders/placeOrder" :name="$t('sidebar.placeOrder')"/>
-            <sidebar-link to="/orders/viewOrders" :name="$t('sidebar.viewOrders')"/>
+            <sidebar-link to="/orders/viewActiveOrders" :name="$t('sidebar.viewActiveOrders')"/>
+            <sidebar-link to="/orders/viewCompletedOrders" :name="$t('sidebar.viewCompletedOrders')"/>
           </ul>
         </li>
 
@@ -59,6 +60,8 @@
           </a>
           <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.reportsFlag">
             <sidebar-link to="/reports/collections" :name="$t('sidebar.collections')"/>
+            <sidebar-link to="/reports/sales" :name="$t('sidebar.sales')"/>
+            <sidebar-link to="/reports/stocks" :name="$t('sidebar.stocks')"/>
           </ul>
         </li>
         

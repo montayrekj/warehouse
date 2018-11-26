@@ -29,8 +29,8 @@
                       <td v-for="(column, index) in tableColumns"
                           :key="index"
                           v-if="hasValue(item, column)" style="text-align: center;">
-                        <a v-bind:href="'/#/orders/viewOrders/' + item.salesLogsId" v-if="column.Header === 'Id'">{{itemValue(item, column)}}</a>
-                        <label v-if="column.Header !== 'Id'">{{itemValue(item, column)}}</label>
+                        <a v-bind:href="'/#/orders/viewOrders/' + item.orderId" v-if="column.Header === 'Order Id'">{{itemValue(item, column)}}</a>
+                        <label v-if="column.Header !== 'Order Id'">{{itemValue(item, column)}}</label>
                       </td>
                     </slot>
                   </tr>
@@ -45,11 +45,15 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
+import moment from 'moment';
+import config from '@/config'
+
 export default {
   data() {
     return {
       table: {
-        data: this.sales
+        data: this.orders
       },
       tbodyClasses: '',
       searchId: '',
@@ -58,43 +62,41 @@ export default {
       searchPaidAmount: '',
       searchBalance: '',
       searchOrderedDate: '',
-      searchOrderedFrom: ''
+      searchOrderedFrom: '',
+      orders: []
     };
   },
-  props: {
-    sales: Array
-  },
   watch: {
-    sales: function() {
-      this.table.data = this.sales;
+    orders: function() {
+      this.table.data = this.orders;
     },
     searchId: function () {
       if(this.searchId != '') {
-        this.table.data = this.sales.filter(item => 
-          item.salesLogsId.toString().includes(this.searchId));
+        this.table.data = this.orders.filter(item => 
+          item.orderId.toString().includes(this.searchId));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchId");
     },
     searchCustomerName: function () {
       if(this.searchCustomerName != '') {
-        this.table.data = this.sales.filter(item => 
+        this.table.data = this.orders.filter(item => 
           item.customer.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchCustomerName");
     },
     searchTotalAmount: function () {
       if(this.searchTotalAmount != '') {
-        this.table.data = this.sales.filter(item => 
+        this.table.data = this.orders.filter(item => 
           item.totalAmount.toString().includes(this.searchTotalAmount));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchTotalAmount");
     },
@@ -104,17 +106,17 @@ export default {
           item.paidAmount.toString().includes(this.searchPaidAmount));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchPaidAmount");
     },
     searchBalance: function () {
       if(this.searchBalance != '') {
-        this.table.data = this.sales.filter(item => 
+        this.table.data = this.orders.filter(item => 
           this.computeBalance(item.totalAmount,item.paidAmount).toString().includes(this.searchBalance));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchBalance");
     },
@@ -124,17 +126,17 @@ export default {
           item.createdDate.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchOrderedDate");
     },
     searchOrderedFrom: function () {
       if(this.searchOrderedFrom != '') {
-        this.table.data = this.sales.filter(item => 
+        this.table.data = this.orders.filter(item => 
           item.createdBy.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
       }
       else
-        this.table.data = this.sales;
+        this.table.data = this.orders;
 
       this.updateFilteredTable("searchOrderedFrom");
     }
@@ -144,7 +146,7 @@ export default {
       return this.type && `table-${this.type}`;
     },
     tableColumns() {
-      return this.$t('ViewOrders.tableColumns');
+      return this.$t('ViewCompletedOrders.tableColumns');
     }
   },
   methods: {
@@ -175,7 +177,7 @@ export default {
     updateFilteredTable(column) {
       if(this.searchId != '' && column != "searchId"){
         this.table.data = this.table.data.filter(item =>
-          item.salesLogsId.toString().includes(this.searchId));
+          item.orderId.toString().includes(this.searchId));
       }
 
       if(this.searchCustomerName != '' && column != "searchCustomerName"){
@@ -208,6 +210,22 @@ export default {
           item.createdBy.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
       }
     }
+  },
+  mounted() {
+    var formData = new FormData();
+    formData.append("active", true);
+
+    axios
+    .post(config.backend_host + '/getActiveOrders', formData)
+    .then(response => {
+      if(response.data.statusCode === "OK"){
+        console.log(response.data.data)
+        for(var i = 0; i < response.data.data.length; i++) {
+          response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+        }
+        this.orders = response.data.data;
+      }
+    })
   }
 };
 </script>

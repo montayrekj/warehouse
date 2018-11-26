@@ -34,13 +34,20 @@
                            menu-classes="dropdown-navbar">
               <a slot="title" href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
                 <div class="photo">
-                  <img src="img/anime3.png">
+                  <i class="tim-icons icon-button-power pull-right" style="padding-right: 2px; padding-top: 4px"></i>
                 </div>
                 <b class="caret d-none d-lg-block d-xl-block"></b>
                 <p class="d-lg-none">
                   Menu
                 </p>
               </a>
+              <li class="nav-link">
+                <span style="padding: 0.25rem 1.5rem; display: block; color: #333;">Hello, <b>{{user}}</b></span>
+              </li>
+              <div class="dropdown-divider"></div>
+              <li class="nav-link">
+                <a href="#" class="nav-item dropdown-item">Edit Profile</a>
+              </li>
               <li class="nav-link">
                 <a href="#" @click="logout" class="nav-item dropdown-item">Log out</a>
               </li>
@@ -63,11 +70,6 @@
     computed: {
       isRTL() {
         return this.$rtl.isRTL;
-      }
-    },
-    watch: {
-      $route(to, from) {
-        alert("Hehe")
       },
     },
     data() {
@@ -77,6 +79,7 @@
         searchModalVisible: false,
         searchQuery: '',
         temp: "",
+        user: "",
       };
     },
     methods: {
@@ -94,7 +97,6 @@
       },
       logout() {
         localStorage.removeItem('user');
-        //window.location.reload();
         window.location.href="/?#/login"
       },
       routeName() {
@@ -102,6 +104,10 @@
         this.temp = this.capitalizeFirstLetter(name);
         return this.temp + (this.$route.params.id != undefined? this.$route.params.id.toString(): "");
       },
+    }, 
+    mounted() {
+      var userObj = JSON.parse(localStorage.getItem("user"));
+      this.user = userObj.username;
     }
   };
 </script>
