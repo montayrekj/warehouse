@@ -1,8 +1,57 @@
 <template>
   <div>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
+        <card>
+          <h4>Advanced Search</h4>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Order Id</label>
+              <input type="text" class="form-control" placeholder="Enter order id..." v-model="searchOrderId" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Customer Name</label>
+              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchCustomerName" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Total Amount</label>
+              <input type="text" class="form-control"  placeholder="Enter total amount..." v-model="searchTotalAmount" >
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Payment Status</label>
+              <select class="form-control" v-model="searchPaymentStatus">
+                <option value="selectPaymentStatus" disabled selected>Select payment status...</option>
+                <option value="Unpaid">Unpaid</option>
+                <option value="Partial">Partial</option>
+                <option value="Full">Full</option>
+              </select>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Ordered Date</label>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchOrderedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchOrderedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Ordered From</label>
+              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchOrderedFrom" >
+            </div>
+          </div>
+          <div class="row" style="margin-top: 20px">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+              <button class="btn btn-success" style="width: 100%">Search</button>
+            </div>
+          </div>
+        </card>
+        <card type="chart">
           <div>
             <div class="col-12">
               <div class="table-responsive">
@@ -15,15 +64,6 @@
                   </tr>
                   </thead>
                   <tbody :class="tbodyClasses">
-                  <tr>
-                    <td> <input type="text" placeholder="Search" v-model="searchId" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchCustomerName" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchTotalAmount" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchPaidAmount" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchBalance" class="form-control"/> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchOrderedDate" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchOrderedFrom" class="form-control" /> </td>
-                  </tr>
                   <tr v-for="(item, index) in table.data" :key="index">
                     <slot :row="item">
                       <td v-for="(column, index) in tableColumns"
@@ -45,188 +85,87 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import moment from 'moment';
-import config from '@/config'
 
-export default {
-  data() {
-    return {
-      table: {
-        data: this.orders
+  import DatePicker from 'vuejs-datepicker';
+  import axios from 'axios';
+  import moment from 'moment';
+  import config from '@/config'
+
+  export default {
+    components: {
+      DatePicker
+    },
+    data() {
+      return {
+        table: {
+          data: this.orders
+        },
+        tbodyClasses: '',
+        searchOrderId: '',
+        searchCustomerName: '',
+        searchTotalAmount: '',
+        searchPaymentStatus: 'selectPaymentStatus',
+        searchOrderedDateFrom: '',
+        searchOrderedDateTo: '',
+        searchOrderedFrom: '',
+        orders: []
+      };
+    },
+    watch: {
+      orders: function() {
+        this.table.data = this.orders;
+      }
+    },
+    computed: {
+      tableClass() {
+        return this.type && `table-${this.type}`;
       },
-      tbodyClasses: '',
-      searchId: '',
-      searchCustomerName: '',
-      searchTotalAmount: '',
-      searchPaidAmount: '',
-      searchBalance: '',
-      searchOrderedDate: '',
-      searchOrderedFrom: '',
-      orders: []
-    };
-  },
-  watch: {
-    orders: function() {
-      this.table.data = this.orders;
+      tableColumns() {
+        return this.$t('ViewCompletedOrders.tableColumns');
+      }
     },
-    searchId: function () {
-      if(this.searchId != '') {
-        this.table.data = this.orders.filter(item => 
-          item.orderId.toString().includes(this.searchId));
-      }
-      else
-        this.table.data = this.orders;
+    methods: {
+      hasValue(item, column) {
+        if(column.Item == 'Balance')
+          return true;
+        else
+          return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        var temp = item[column.Item];
+        if(column.Item == "Balance")
+          return this.computeBalance(item["totalAmount"], item["paidAmount"]);
 
-      this.updateFilteredTable("searchId");
+        return temp;
+      },
+      computeBalance(totalAmount, paidAmount)  {
+        var balance = 0;
+        totalAmount = Number(totalAmount);
+        paidAmount = Number(paidAmount);
+        if(paidAmount >= totalAmount)
+          balance = 0;
+        else
+          balance = totalAmount - paidAmount;
+
+        return balance;
+      }
     },
-    searchCustomerName: function () {
-      if(this.searchCustomerName != '') {
-        this.table.data = this.orders.filter(item => 
-          item.customer.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
-      }
-      else
-        this.table.data = this.orders;
+    mounted() {
+      var formData = new FormData();
+      formData.append("active", true);
 
-      this.updateFilteredTable("searchCustomerName");
-    },
-    searchTotalAmount: function () {
-      if(this.searchTotalAmount != '') {
-        this.table.data = this.orders.filter(item => 
-          item.totalAmount.toString().includes(this.searchTotalAmount));
-      }
-      else
-        this.table.data = this.orders;
-
-      this.updateFilteredTable("searchTotalAmount");
-    },
-    searchPaidAmount: function () {
-      if(this.searchPaidAmount != '') {
-        this.table.data = this.sales.filter(item => 
-          item.paidAmount.toString().includes(this.searchPaidAmount));
-      }
-      else
-        this.table.data = this.orders;
-
-      this.updateFilteredTable("searchPaidAmount");
-    },
-    searchBalance: function () {
-      if(this.searchBalance != '') {
-        this.table.data = this.orders.filter(item => 
-          this.computeBalance(item.totalAmount,item.paidAmount).toString().includes(this.searchBalance));
-      }
-      else
-        this.table.data = this.orders;
-
-      this.updateFilteredTable("searchBalance");
-    },
-    searchOrderedDate: function () {
-      if(this.searchOrderedDate != '') {
-        this.table.data = this.sales.filter(item => 
-          item.createdDate.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
-      }
-      else
-        this.table.data = this.orders;
-
-      this.updateFilteredTable("searchOrderedDate");
-    },
-    searchOrderedFrom: function () {
-      if(this.searchOrderedFrom != '') {
-        this.table.data = this.orders.filter(item => 
-          item.createdBy.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
-      }
-      else
-        this.table.data = this.orders;
-
-      this.updateFilteredTable("searchOrderedFrom");
-    }
-  },
-  computed: {
-    tableClass() {
-      return this.type && `table-${this.type}`;
-    },
-    tableColumns() {
-      return this.$t('ViewCompletedOrders.tableColumns');
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      if(column.Item == 'Balance')
-        return true;
-      else
-        return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      var temp = item[column.Item];
-      if(column.Item == "Balance")
-        return this.computeBalance(item["totalAmount"], item["paidAmount"]);
-
-      return temp;
-    },
-    computeBalance(totalAmount, paidAmount)  {
-      var balance = 0;
-      totalAmount = Number(totalAmount);
-      paidAmount = Number(paidAmount);
-      if(paidAmount >= totalAmount)
-        balance = 0;
-      else
-        balance = totalAmount - paidAmount;
-
-      return balance;
-    },
-    updateFilteredTable(column) {
-      if(this.searchId != '' && column != "searchId"){
-        this.table.data = this.table.data.filter(item =>
-          item.orderId.toString().includes(this.searchId));
-      }
-
-      if(this.searchCustomerName != '' && column != "searchCustomerName"){
-        this.table.data = this.table.data.filter(item =>
-          item.customer.toUpperCase().includes(this.searchCustomerName.toUpperCase()));
-      }
-
-      if(this.searchTotalAmount != '' && column != "searchTotalAmount"){
-        this.table.data = this.table.data.filter(item =>
-          item.totalAmount.toString().includes(this.searchTotalAmount));
-      }
-
-      if(this.searchPaidAmount != ''&& column != "searchPaidAmount"){
-        this.table.data = this.table.data.filter(item =>
-          item.paidAmount.toString().includes(this.searchPaidAmount));
-      }
-
-      if(this.searchBalance != '' && column != "searchBalance"){
-        this.table.data = this.table.data.filter(item =>
-          this.computeBalance(item.totalAmount,item.paidAmount).toString().includes(this.searchBalance));
-      }
-
-      if(this.searchOrderedDate != '' && column != "searchOrderedDate"){
-        this.table.data = this.table.data.filter(item =>
-          item.createdDate.toUpperCase().includes(this.searchOrderedDate.toUpperCase()));
-      }
-
-      if(this.searchOrderedFrom != '' && column != "searchOrderedFrom"){
-        this.table.data = this.table.data.filter(item =>
-          item.createdBy.toUpperCase().includes(this.searchOrderedFrom.toUpperCase()));
-      }
-    }
-  },
-  mounted() {
-    var formData = new FormData();
-    formData.append("active", true);
-
-    axios
-    .post(config.backend_host + '/getActiveOrders', formData)
-    .then(response => {
-      if(response.data.statusCode === "OK"){
-        for(var i = 0; i < response.data.data.length; i++) {
-          response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+      axios
+      .post(config.backend_host + '/getActiveOrders', formData)
+      .then(response => {
+        if(response.data.statusCode === "OK"){
+          for(var i = 0; i < response.data.data.length; i++) {
+            response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+          }
+          this.orders = response.data.data;
         }
-        this.orders = response.data.data;
-      }
-    })
-  }
-};
+      })
+    }
+  };
 </script>
 <style>
 </style>

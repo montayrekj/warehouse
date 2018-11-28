@@ -10,26 +10,26 @@
         <div class="row">
           <div class="col-md-7">
             <div style="padding-top: 10px">
-              <label class="control-label" style="font-size: 15px">Customer Name </label>
+              <label class="control-label" style="font-size: 14px">Customer Name </label>
             </div>
             <div style="padding-top: 10px;">
-              <label class="label-content-color" style="font-size: 18px;"> {{customerName}}</label>
+              <label class="label-content-color" style="font-size: 16px; font-style: italic"> {{customerName}}</label>
             </div>
           </div>
           <div class="col-md-3">
             <div style="padding-top: 10px;">
-              <label class="control-label" style="font-size: 15px">Ordered from </label>
+              <label class="control-label" style="font-size: 14px">Ordered from </label>
             </div>
             <div style="padding-top: 10px;">
-              <label class="label-content-color" style="font-size: 18px;"> {{orderedFrom}}</label>
+              <label class="label-content-color" style="font-size: 16px; font-style: italic"> {{orderedFrom}}</label>
             </div>
           </div>
           <div class="col-md-2">
             <div style="padding-top: 10px">
-              <label class="control-label" style="font-size: 15px">Ordered Date </label>
+              <label class="control-label" style="font-size: 14px">Ordered Date </label>
             </div>
             <div style="padding-top: 10px;">
-              <label class="label-content-color" style="font-size: 18px;">{{orderedDate}}</label>
+              <label class="label-content-color" style="font-size: 16px; font-style: italic">{{orderedDate}}</label>
             </div>
           </div>
         </div>
@@ -161,270 +161,270 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import config from '@/config'
-import moment from 'moment';
-import DatePicker from 'vuejs-datepicker'
-import StepProgress from 'vue-step-progress';
-import 'vue-step-progress/dist/main.css';
+  import axios from 'axios';
+  import config from '@/config'
+  import moment from 'moment';
+  import DatePicker from 'vuejs-datepicker'
+  import StepProgress from 'vue-step-progress';
+  import 'vue-step-progress/dist/main.css';
 
-import { POINT_CONVERSION_COMPRESSED } from 'constants';
+  import { POINT_CONVERSION_COMPRESSED } from 'constants';
 
-var pdfMake = require('pdfmake/build/pdfmake.js');
-var pdfFonts = require('pdfmake/build/vfs_fonts.js');
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  var pdfMake = require('pdfmake/build/pdfmake.js');
+  var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-export default {
-  
+  export default {
+    
 
-  components: {
-    DatePicker,
-    StepProgress
-  },
-  data() {
-    return {
-      table: {
-        data: [],
+    components: {
+      DatePicker,
+      StepProgress
+    },
+    data() {
+      return {
+        table: {
+          data: [],
+        },
+        salesLogsModel: null,
+        customerName: "",
+        orderedFrom: "",
+        orderedDate: "",
+        cashAmount: 0.0,
+        termDueDate: new Date(),
+        userType: null,
+        purchaseOrderStatus: null,
+        quantityLeft: [],
+        quantityOut: [],
+        quantityIndex: null,
+        steps: [
+          'Regional Manager', 'Accounting', 'Checker'
+        ],
+        currentStep: 0,
+      }
+    },
+    watch: {
+      quantityOut() {
+        if(this.quantityIndex != null) {
+          this.quantityLeft[this.quantityIndex] = this.table.data[this.quantityIndex].quantityLeft;
+          var val = this.quantityOut[this.quantityIndex];
+          if(val < 0){
+            this.quantityOut[this.quantityIndex] = 0;
+          } else if(val > Number(this.table.data[this.quantityIndex].quantityLeft)){
+            this.quantityOut[this.quantityIndex] = this.table.data[this.quantityIndex].quantityLeft;
+          }
+          this.quantityLeft[this.quantityIndex] = this.quantityLeft[this.quantityIndex] - this.quantityOut[this.quantityIndex];
+          this.$forceUpdate();
+        }
+      }
+    },
+    computed: {
+      tableColumns() {
+        return this.$t('PlacedOrderDetails.tableColumns');
       },
-      salesLogsModel: null,
-      customerName: "",
-      orderedFrom: "",
-      orderedDate: "",
-      cashAmount: 0.0,
-      termDueDate: new Date(),
-      userType: null,
-      purchaseOrderStatus: null,
-      quantityLeft: [],
-      quantityOut: [],
-      quantityIndex: null,
-      steps: [
-        'Regional Manager', 'Accounting', 'Checker'
-      ],
-      currentStep: 0,
-    }
-  },
-  watch: {
-    quantityOut() {
-      if(this.quantityIndex != null) {
-        this.quantityLeft[this.quantityIndex] = this.table.data[this.quantityIndex].quantityLeft;
-        var val = this.quantityOut[this.quantityIndex];
-        if(val < 0){
-          this.quantityOut[this.quantityIndex] = 0;
-        } else if(val > Number(this.table.data[this.quantityIndex].quantityLeft)){
-          this.quantityOut[this.quantityIndex] = this.table.data[this.quantityIndex].quantityLeft;
+      checkerTableColumns() {
+        return this.$t('PlacedOrderDetails.checkerTableColumns');
+      },
+      regionalManager() {
+        return this.$t('userType.regionalManager')
+      },
+      accounting() {
+        return this.$t('userType.accounting')
+      },
+      checker() {
+        return this.$t('userType.checker')
+      },
+      admin() {
+        return this.$t('userType.admin')
+      },
+      totalAmount() {
+        var total = 0.0;
+        for(var i = 0; i < this.table.data.length; i++) {
+          total += this.table.data[i].sellPrice * this.table.data[i].quantitySold;
         }
-        this.quantityLeft[this.quantityIndex] = this.quantityLeft[this.quantityIndex] - this.quantityOut[this.quantityIndex];
-        this.$forceUpdate();
+        return total.toFixed(2);
+      },
+      termAmount() {
+        return this.totalAmount - this.cashAmount;
       }
-    }
-  },
-  computed: {
-    tableColumns() {
-      return this.$t('PlacedOrderDetails.tableColumns');
     },
-    checkerTableColumns() {
-      return this.$t('PlacedOrderDetails.checkerTableColumns');
-    },
-    regionalManager() {
-      return this.$t('userType.regionalManager')
-    },
-    accounting() {
-      return this.$t('userType.accounting')
-    },
-    checker() {
-      return this.$t('userType.checker')
-    },
-    admin() {
-      return this.$t('userType.admin')
-    },
-    totalAmount() {
-      var total = 0.0;
-      for(var i = 0; i < this.table.data.length; i++) {
-        total += this.table.data[i].sellPrice * this.table.data[i].quantitySold;
-      }
-      return total.toFixed(2);
-    },
-    termAmount() {
-      return this.totalAmount - this.cashAmount;
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      return item[column.Item];
-    },
-    showCardByUserType(type){
-      //return userType == this.userType;
-      var temp = false;
-      if(this.userType != null){
-        switch(this.userType.toString()){
-          case this.regionalManager:
-            if(this.purchaseOrderStatus == config.PO_STATUS_PENDING){
-              temp = true;
-            }
-            break;
-          case this.accounting:
-            if(this.purchaseOrderStatus == config.PO_STATUS_RM_APPROVED){
-              temp = true;
-            }
-            break;
-          case this.checker:
-            if(this.purchaseOrderStatus == config.PO_STATUS_ACCT_APPROVED){
-              temp = true;
-            }
-            break;
-          case this.admin:
-            break;
-        }
-      }
-      //if(this.userType == userType)
-      return (this.userType == type) && temp;
-    },
-    setQuantityIndex(index){
-      this.quantityIndex = index;
-    },
-    rmApprove(flag) {
-      var item = {
-        orderId: this.$route.params.id,
-        approved: flag
-      }
-      this.$emit('regionalManagerApproved', item);
-    },
-    acctApprove(flag) {
-      var date = this.termDueDate;
-      var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear();
-      var item = {
-        orderId: this.$route.params.id,
-        approved: flag,
-        cashAmount: this.cashAmount,
-        termAmount: this.termAmount,
-        termDueDate: dateString.toString()
-      }
-      this.$emit('accountingApproved', item);
-    },
-    confirmChecker() {
-      for(var i = 0; i < this.table.data.length; i++) {
-        this.table.data[i].quantityLeft = this.quantityLeft[i];
-      }
-
-      this.salesLogsModel.salesLogsItem = this.table.data;
-      this.$emit('checkerConfirmOrder', this.salesLogsModel);
-      this.createPDF("Customer's Copy");
-      this.createPDF("Guard's Copy");
-    },
-    createPDF(title) {
-      var user = JSON.parse(localStorage.getItem("user"))
-      var signature = "Customer's Signature Over Printed Name"
-      var docDefinition = {
-        header: {
-          columns: [
-            {text: title, alignment: 'left', margin: 10, color: '#aaa'},
-            {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
-          ]
-        },
-        footer: {
-            text: "© Hexamindz Corporation",
-            alignment: 'right',
-            color: '#aaa',
-            margin: [0,0,10,0]
-        },
-        content: [
-            {
-              text: 'Checker: ' + user.username,
-              alignment: 'left'
-            },
-            {text: ' ', lineHeight: 1},
-            {
-                table: {
-                    headerRows: 1,
-                    widths: [ '*', '*', '*'],
-
-                    body: []
-                }
-            },
-            {text: ' ', lineHeight: 4},
-            {text: signature, 
-                alignment: 'right', 
-                decoration: 'overline', 
-                decorationStyle: 'solid',
-                    decorationColor: 'black',
-                    color: 'white',
-                    lineHeight: 0.5
-            },
-            {text: signature, 
-                alignment: 'right', 
-            }
-        ]
-      };
-      var col = []
-      //Table Header
-      var checkerTableCol = this.$t('PlacedOrderDetails.pdfTableColumns');
-      for(var i = 0; i < checkerTableCol.length; i++) {
-        var obj = {
-          text: checkerTableCol[i].Header,
-          bold: true
-        }
-        col.push(obj);
-      }
-      docDefinition.content[2].table.body.push(col);
-
-      //Table Body
-      for(var i=0;i<this.table.data.length;i++){
-          var object = {
-            productName: this.table.data[i].productName,
-            quantitySold: this.quantityOut[i],
-            quantityLeft: this.quantityLeft[i],
-          }
-          docDefinition.content[2].table.body.push(Object.values(object));  
-      }
-
-
-      pdfMake.createPdf(docDefinition).download(title+'.pdf');
-      var data;
-      pdfMake.createPdf(docDefinition).getBase64(function(encodedString) {
-          data = encodedString;
-          var formData = new FormData();
-          formData.append("file", data);
-          axios
-            .post(config.backend_host + '/sendGatePass', formData)
-            .then(response => {
-              if(response.data.statusCode === "OK"){
-                
+    methods: {
+      hasValue(item, column) {
+        return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        return item[column.Item];
+      },
+      showCardByUserType(type){
+        //return userType == this.userType;
+        var temp = false;
+        if(this.userType != null){
+          switch(this.userType.toString()){
+            case this.regionalManager:
+              if(this.purchaseOrderStatus == config.PO_STATUS_PENDING){
+                temp = true;
               }
-            })
-      });
-    }
-  },
-  mounted() {
-    var formData = new FormData();
-    formData.append("id", this.$route.params.id)
-    axios
-        .post(config.backend_host + '/getOrderById', formData)
-        .then(response => {
-          if(response.data.statusCode === "OK"){
-            this.salesLogsModel = response.data.data;
-            this.table.data = response.data.data.salesLogsItem;
-            for(var i = 0; i < this.table.data.length; i++) {
-              this.quantityLeft.push(this.table.data[i].quantityLeft)
-              this.quantityOut.push(0);
-            }
-            this.orderedFrom = response.data.data.createdBy;
-            this.customerName = response.data.data.customer;
-            this.orderedDate =  moment(response.data.data.createdDate).format("MM/DD/YYYY");
-            this.purchaseOrderStatus = response.data.data.purchaseOrderStatus;
-            this.currentStep = this.purchaseOrderStatus;
-            if(this.purchaseOrderStatus === 3){
-              this.steps[2] = "Complete"
-            }
+              break;
+            case this.accounting:
+              if(this.purchaseOrderStatus == config.PO_STATUS_RM_APPROVED){
+                temp = true;
+              }
+              break;
+            case this.checker:
+              if(this.purchaseOrderStatus == config.PO_STATUS_ACCT_APPROVED){
+                temp = true;
+              }
+              break;
+            case this.admin:
+              break;
           }
-        })
+        }
+        //if(this.userType == userType)
+        return (this.userType == type) && temp;
+      },
+      setQuantityIndex(index){
+        this.quantityIndex = index;
+      },
+      rmApprove(flag) {
+        var item = {
+          orderId: this.$route.params.id,
+          approved: flag
+        }
+        this.$emit('regionalManagerApproved', item);
+      },
+      acctApprove(flag) {
+        var date = this.termDueDate;
+        var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear();
+        var item = {
+          orderId: this.$route.params.id,
+          approved: flag,
+          cashAmount: this.cashAmount,
+          termAmount: this.termAmount,
+          termDueDate: dateString.toString()
+        }
+        this.$emit('accountingApproved', item);
+      },
+      confirmChecker() {
+        for(var i = 0; i < this.table.data.length; i++) {
+          this.table.data[i].quantityLeft = this.quantityLeft[i];
+        }
 
-    var user = JSON.parse(localStorage.getItem("user"))
-    this.userType = Number(user.usertype);
-  }
-};
+        this.salesLogsModel.salesLogsItem = this.table.data;
+        this.$emit('checkerConfirmOrder', this.salesLogsModel);
+        this.createPDF("Customer's Copy");
+        this.createPDF("Guard's Copy");
+      },
+      createPDF(title) {
+        var user = JSON.parse(localStorage.getItem("user"))
+        var signature = "Customer's Signature Over Printed Name"
+        var docDefinition = {
+          header: {
+            columns: [
+              {text: title, alignment: 'left', margin: 10, color: '#aaa'},
+              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+            ]
+          },
+          footer: {
+              text: "© Hexamindz Corporation",
+              alignment: 'right',
+              color: '#aaa',
+              margin: [0,0,10,0]
+          },
+          content: [
+              {
+                text: 'Checker: ' + user.username,
+                alignment: 'left'
+              },
+              {text: ' ', lineHeight: 1},
+              {
+                  table: {
+                      headerRows: 1,
+                      widths: [ '*', '*', '*'],
+
+                      body: []
+                  }
+              },
+              {text: ' ', lineHeight: 4},
+              {text: signature, 
+                  alignment: 'right', 
+                  decoration: 'overline', 
+                  decorationStyle: 'solid',
+                      decorationColor: 'black',
+                      color: 'white',
+                      lineHeight: 0.5
+              },
+              {text: signature, 
+                  alignment: 'right', 
+              }
+          ]
+        };
+        var col = []
+        //Table Header
+        var checkerTableCol = this.$t('PlacedOrderDetails.pdfTableColumns');
+        for(var i = 0; i < checkerTableCol.length; i++) {
+          var obj = {
+            text: checkerTableCol[i].Header,
+            bold: true
+          }
+          col.push(obj);
+        }
+        docDefinition.content[2].table.body.push(col);
+
+        //Table Body
+        for(var i=0;i<this.table.data.length;i++){
+            var object = {
+              productName: this.table.data[i].productName,
+              quantitySold: this.quantityOut[i],
+              quantityLeft: this.quantityLeft[i],
+            }
+            docDefinition.content[2].table.body.push(Object.values(object));  
+        }
+
+
+        pdfMake.createPdf(docDefinition).download(title+'.pdf');
+        var data;
+        pdfMake.createPdf(docDefinition).getBase64(function(encodedString) {
+            data = encodedString;
+            var formData = new FormData();
+            formData.append("file", data);
+            axios
+              .post(config.backend_host + '/sendGatePass', formData)
+              .then(response => {
+                if(response.data.statusCode === "OK"){
+                  
+                }
+              })
+        });
+      }
+    },
+    mounted() {
+      var formData = new FormData();
+      formData.append("id", this.$route.params.id)
+      axios
+          .post(config.backend_host + '/getOrderById', formData)
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              this.salesLogsModel = response.data.data;
+              this.table.data = response.data.data.salesLogsItem;
+              for(var i = 0; i < this.table.data.length; i++) {
+                this.quantityLeft.push(this.table.data[i].quantityLeft)
+                this.quantityOut.push(0);
+              }
+              this.orderedFrom = response.data.data.createdBy;
+              this.customerName = response.data.data.customer;
+              this.orderedDate =  moment(response.data.data.createdDate).format("MM/DD/YYYY");
+              this.purchaseOrderStatus = response.data.data.purchaseOrderStatus;
+              this.currentStep = this.purchaseOrderStatus;
+              if(this.purchaseOrderStatus === 3){
+                this.steps[2] = "Complete"
+              }
+            }
+          })
+
+      var user = JSON.parse(localStorage.getItem("user"))
+      this.userType = Number(user.usertype);
+    }
+  };
 </script>
 <style>
 </style>

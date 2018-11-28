@@ -35,45 +35,46 @@
     </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import axios from 'axios';
-import config from '@/config';
 
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    VueBootstrapTypeahead
-  },
-  data() {
-    return {
-      errorMessage: "",
-      supplier: {
-        name: "",
-        address: "",
-        contactNo: "",
-      }
-    };
-  },
-  methods: {
-    addSupplier() {
-        var user = JSON.parse(localStorage.getItem("user"))
-        var data = new FormData();
-        data.append("supplierName", this.supplier.name);
-        data.append("supplierAddress", this.supplier.address);
-        data.append("supplierContactNo", this.supplier.contactNo);
-        data.append("userId", user.userId);
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import axios from 'axios';
+  import config from '@/config';
 
-        axios
-        .post(config.backend_host + '/addSupplier', data).then(response => {
-          if(response.data.statusCode === "OK"){
-              this.$refs.successModal.open();
-          }
-        })
-      }
-  }
-};
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      VueBootstrapTypeahead
+    },
+    data() {
+      return {
+        errorMessage: "",
+        supplier: {
+          name: "",
+          address: "",
+          contactNo: "",
+        }
+      };
+    },
+    methods: {
+      addSupplier() {
+          var user = JSON.parse(localStorage.getItem("user"))
+          var data = new FormData();
+          data.append("supplierName", this.supplier.name);
+          data.append("supplierAddress", this.supplier.address);
+          data.append("supplierContactNo", this.supplier.contactNo);
+          data.append("userId", user.userId);
+
+          axios
+          .post(config.backend_host + '/addSupplier', data).then(response => {
+            if(response.data.statusCode === "OK"){
+                this.$refs.successModal.open();
+            }
+          })
+        }
+    }
+  };
 </script>
 <style>
 </style>

@@ -90,134 +90,136 @@
     </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    VueBootstrapTypeahead
-  },
-  props: {
-    suppliers: Array,
-  },
-  data() {
-    return {
-      toBeDeleted: 0,
-      productName: null,
-      productCode: null,
-      productQuantity: null,
-      productUnit: null,
-      productBuyPrice: null,
-      productSellPrice: null,
-      productSupplier: null,
-      productLimit: null,
-      supplier: "",
-      supplierSelected: "",
-      errorMessage: "",
-      supplier: {
-        name: "",
-        address: "",
-        contactNo: "",
+
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
+
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      VueBootstrapTypeahead
+    },
+    props: {
+      suppliers: Array,
+    },
+    data() {
+      return {
+        toBeDeleted: 0,
+        productName: null,
+        productCode: null,
+        productQuantity: null,
+        productUnit: null,
+        productBuyPrice: null,
+        productSellPrice: null,
+        productSupplier: null,
+        productLimit: null,
+        supplier: "",
+        supplierSelected: "",
+        errorMessage: "",
+        supplier: {
+          name: "",
+          address: "",
+          contactNo: "",
+        },
+        supplierList: this.suppliers.map(arr => arr.supplierName)
+      };
+    },
+    computed: {
+      toBeDeletedName() {
+        if(this.table.data.length > 0)
+          return this.table.data[this.toBeDeleted].name;
+      }
+    },
+    watch: {
+      suppliers() {
+        this.supplierList = this.suppliers.map(arr => arr.supplierName);
       },
-      supplierList: this.suppliers.map(arr => arr.supplierName)
-    };
-  },
-  computed: {
-    toBeDeletedName() {
-      if(this.table.data.length > 0)
-        return this.table.data[this.toBeDeleted].name;
-    }
-  },
-  watch: {
-    suppliers() {
-      this.supplierList = this.suppliers.map(arr => arr.supplierName);
+      products() {
+        this.table.data = this.products
+      },
+      productCode: function() {
+        if(this.productCode !== null)
+          this.productCode = this.productCode.toUpperCase();
+      },
     },
-    products() {
-      this.table.data = this.products
-    },
-    productCode: function() {
-      if(this.productCode !== null)
-        this.productCode = this.productCode.toUpperCase();
-    },
-  },
-  methods: {
-    addProduct(){
-      if(this.validateProductAdd()){ 
-        var buyprice = Number(this.productBuyPrice).toFixed(2);
-        var sellprice = Number(this.productSellPrice).toFixed(2);
-        var item = {
-          productName: this.productName,
-          productCode: this.productCode,
-          quantity: this.productQuantity.toString(),
-          unit: this.productUnit,
-          buyPrice: buyprice.toString(),
-          sellPrice: sellprice.toString(),
-          supplier: this.productSupplier,
-          quantityLimit: this.productLimit.toString()
-        }
-        this.$emit("addProduct", item);
-        this.productName = null
-        this.productCode =  null;
-        this.productQuantity =  null;
-        this.productUnit = null;
-        this.productBuyPrice = null;
-        this.productSellPrice = null;
-        this.productLimit = null;
-        this.productSupplier = null;
-      } else {
-        this.$refs.addErrorModal.open();
-      }
-    },
-    validateProductAdd(){
-      var flag = true;
-      this.errorMessage = "Please input all fields!"
-      if(this.productName === null || this.productName === ""){
-        flag = false;
-      } 
-      if(this.productCode === null || this.productCode === ""){
-        flag = false;
-      } 
-      if(this.productQuantity === null || this.productQuantity === ""){
-        flag = false;
-      } 
-      if(this.productUnit === null || this.productUnit === ""){
-        flag = false;
-      } 
-      if(this.productBuyPrice === null || this.productBuyPrice === ""){
-        flag = false;
-      }
-      if(this.productSellPrice === null || this.productSellPrice === ""){
-        flag = false;
-      }
-      if(this.productLimit === null || this.productLimit === ""){
-        flag = false;
-      }
-      if((this.productSupplier === null || this.productName === "") || this.supplierSelected !== this.productSupplier){
-        if(this.productSupplier === null || this.productSupplier === "") {
-          this.errorMessage = "Please input all fields!"
+    methods: {
+      addProduct(){
+        if(this.validateProductAdd()){ 
+          var buyprice = Number(this.productBuyPrice).toFixed(2);
+          var sellprice = Number(this.productSellPrice).toFixed(2);
+          var item = {
+            productName: this.productName,
+            productCode: this.productCode,
+            quantity: this.productQuantity.toString(),
+            unit: this.productUnit,
+            buyPrice: buyprice.toString(),
+            sellPrice: sellprice.toString(),
+            supplier: this.productSupplier,
+            quantityLimit: this.productLimit.toString()
+          }
+          this.$emit("addProduct", item);
+          this.productName = null
+          this.productCode =  null;
+          this.productQuantity =  null;
+          this.productUnit = null;
+          this.productBuyPrice = null;
+          this.productSellPrice = null;
+          this.productLimit = null;
+          this.productSupplier = null;
         } else {
-          this.errorMessage = "Supplier doesn't exist!"
+          this.$refs.addErrorModal.open();
         }
-        flag = false;
+      },
+      validateProductAdd(){
+        var flag = true;
+        this.errorMessage = "Please input all fields!"
+        if(this.productName === null || this.productName === ""){
+          flag = false;
+        } 
+        if(this.productCode === null || this.productCode === ""){
+          flag = false;
+        } 
+        if(this.productQuantity === null || this.productQuantity === ""){
+          flag = false;
+        } 
+        if(this.productUnit === null || this.productUnit === ""){
+          flag = false;
+        } 
+        if(this.productBuyPrice === null || this.productBuyPrice === ""){
+          flag = false;
+        }
+        if(this.productSellPrice === null || this.productSellPrice === ""){
+          flag = false;
+        }
+        if(this.productLimit === null || this.productLimit === ""){
+          flag = false;
+        }
+        if((this.productSupplier === null || this.productName === "") || this.supplierSelected !== this.productSupplier){
+          if(this.productSupplier === null || this.productSupplier === "") {
+            this.errorMessage = "Please input all fields!"
+          } else {
+            this.errorMessage = "Supplier doesn't exist!"
+          }
+          flag = false;
+        }
+        return flag;
+      },
+      selectSupplier() {
+        this.supplierSelected = this.productSupplier;
+      },
+      addSupplier() {
+        this.$refs.addSupplierModal.open();
+      },
+      closeAddSupplierModal() {
+        this.$refs.addSupplierModal.close();
+      },
+      save() {
+        this.$emit("addSupplier", this.supplier);
+        this.$refs.addSupplierModal.close();
       }
-      return flag;
-    },
-    selectSupplier() {
-      this.supplierSelected = this.productSupplier;
-    },
-    addSupplier() {
-      this.$refs.addSupplierModal.open();
-    },
-    closeAddSupplierModal() {
-      this.$refs.addSupplierModal.close();
-    },
-    save() {
-      this.$emit("addSupplier", this.supplier);
-      this.$refs.addSupplierModal.close();
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

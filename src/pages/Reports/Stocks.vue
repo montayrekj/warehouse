@@ -5,15 +5,15 @@
         <card>
           <h4>Advanced Search</h4>
           <div class="row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
               <label>Product Name</label>
-              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchProductName" >
+              <input type="text" class="form-control"  placeholder="Enter product name..." v-model="searchProductName" >
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
               <label>Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <date-picker v-model="searchDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
                 </div>
                 <div class="form-group col-md-6">
                     <date-picker :value="searchDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
@@ -76,109 +76,109 @@
 </template>
 <script>
  
-import DatePicker from 'vuejs-datepicker'; 
-import moment from 'moment';
+  import DatePicker from 'vuejs-datepicker'; 
+  import moment from 'moment';
 
-var pdfMake = require('pdfmake/build/pdfmake.js');
-var pdfFonts = require('pdfmake/build/vfs_fonts.js');
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  var pdfMake = require('pdfmake/build/pdfmake.js');
+  var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-export default {
-  components: {
-    DatePicker
-  },
-  data() {
-    return {
-      table: {
-        data: this.stocks
-      },
-      tbodyClasses: '',
-      searchProductName: '',
-      searchDateFrom: '',
-      searchDateTo: ''
-    };
-  },
-  props: {
-    stocks: Array
-  },
-  watch: {
-    stocks() {
-      this.table.data = this.stocks;
-    }
-  },
-  computed: {
-    tableClass() {
-      return this.type && `table-${this.type}`;
+  export default {
+    components: {
+      DatePicker
     },
-    tableColumns() {
-      return this.$t('Stocks.tableColumns');
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      if(column.Item == 'Balance')
-        return true;
-      else
-        return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      var temp = item[column.Item];
-
-      return temp;
-    },
-    exportToPDF() {
-      var docDefinition = {
-        header: {
-          columns: [
-            {text: "Stocks Report", alignment: 'left', margin: 10, color: '#aaa'},
-            {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
-          ]
+    data() {
+      return {
+        table: {
+          data: this.stocks
         },
-        footer: {
-            text: "© Hexamindz Corporation",
-            alignment: 'right',
-            color: '#aaa',
-            margin: [0,0,10,0]
-        },
-        content: [
-            {text: ' ', lineHeight: 1},
-            {
-                table: {
-                    headerRows: 1,
-                    widths: [ '*', '*', '*'],
-
-                    body: []
-                }
-            }
-        ]
+        tbodyClasses: '',
+        searchProductName: '',
+        searchDateFrom: '',
+        searchDateTo: ''
       };
-      var col = []
-      //Table Header
-      var checkerTableCol = this.tableColumns;
-      for(var i = 0; i < checkerTableCol.length; i++) {
-        var obj = {
-          text: checkerTableCol[i].Header,
-          bold: true
-        }
-        col.push(obj);
+    },
+    props: {
+      stocks: Array
+    },
+    watch: {
+      stocks() {
+        this.table.data = this.stocks;
       }
-      docDefinition.content[1].table.body.push(col);
+    },
+    computed: {
+      tableClass() {
+        return this.type && `table-${this.type}`;
+      },
+      tableColumns() {
+        return this.$t('Stocks.tableColumns');
+      }
+    },
+    methods: {
+      hasValue(item, column) {
+        if(column.Item == 'Balance')
+          return true;
+        else
+          return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        var temp = item[column.Item];
 
-      //Table Body
-      for(var i=0;i<this.table.data.length;i++){
-          var object = {
-            productName: this.table.data[i].productName,
-            quantityIn: this.table.data[i].quantityIn,
-            quantityOut: this.table.data[i].quantityOut
+        return temp;
+      },
+      exportToPDF() {
+        var docDefinition = {
+          header: {
+            columns: [
+              {text: "Stocks Report", alignment: 'left', margin: 10, color: '#aaa'},
+              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+            ]
+          },
+          footer: {
+              text: "© Hexamindz Corporation",
+              alignment: 'right',
+              color: '#aaa',
+              margin: [0,0,10,0]
+          },
+          content: [
+              {text: ' ', lineHeight: 1},
+              {
+                  table: {
+                      headerRows: 1,
+                      widths: [ '*', '*', '*'],
+
+                      body: []
+                  }
+              }
+          ]
+        };
+        var col = []
+        //Table Header
+        var checkerTableCol = this.tableColumns;
+        for(var i = 0; i < checkerTableCol.length; i++) {
+          var obj = {
+            text: checkerTableCol[i].Header,
+            bold: true
           }
-          docDefinition.content[1].table.body.push(Object.values(object));  
-      }
+          col.push(obj);
+        }
+        docDefinition.content[1].table.body.push(col);
 
-      //Download PDF
-      pdfMake.createPdf(docDefinition).download('Stocks Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+        //Table Body
+        for(var i=0;i<this.table.data.length;i++){
+            var object = {
+              productName: this.table.data[i].productName,
+              quantityIn: this.table.data[i].quantityIn,
+              quantityOut: this.table.data[i].quantityOut
+            }
+            docDefinition.content[1].table.body.push(Object.values(object));  
+        }
+
+        //Download PDF
+        pdfMake.createPdf(docDefinition).download('Stocks Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      }
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

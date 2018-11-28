@@ -41,61 +41,61 @@
     </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      table: {
-        data: this.customers
+  export default {
+    data() {
+      return {
+        table: {
+          data: this.customers
+        },
+        modalFlag: false,
+        type: '',
+        tbodyClasses: '',
+        search: '',
+      };
+    },
+    props: {
+      sample: Boolean,
+      customers: Array,
+    },
+    computed: {
+      tableClass() {
+        return this.type && `table-${this.type}`;
       },
-      modalFlag: false,
-      type: '',
-      tbodyClasses: '',
-      search: '',
-    };
-  },
-  props: {
-    sample: Boolean,
-    customers: Array,
-  },
-  computed: {
-    tableClass() {
-      return this.type && `table-${this.type}`;
+      tableColumns(){
+        return this.$t('Customers.tableColumns');
+      },
     },
-    tableColumns(){
-      return this.$t('Customers.tableColumns');
-    },
-  },
-  watch: {
-    customers() {
-      this.table.data = this.customers;
-    },
-    productCode: function() {
-      if(this.productCode !== null)
-        this.productCode = this.productCode.toUpperCase();
-    },
-    search: function () {
-      if(this.search != '') {
-        this.table.data = this.customers.filter(item => 
-          item.customerName.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.customerAddress.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.customerNumber.toUpperCase().includes(this.search.toUpperCase()))
-      }
-      else
+    watch: {
+      customers() {
         this.table.data = this.customers;
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      return item[column.Item] !== "undefined";
+      },
+      productCode: function() {
+        if(this.productCode !== null)
+          this.productCode = this.productCode.toUpperCase();
+      },
+      search: function () {
+        if(this.search != '') {
+          this.table.data = this.customers.filter(item => 
+            item.customerName.toUpperCase().includes(this.search.toUpperCase()) || 
+            item.customerAddress.toUpperCase().includes(this.search.toUpperCase()) || 
+            item.customerNumber.toUpperCase().includes(this.search.toUpperCase()))
+        }
+        else
+          this.table.data = this.customers;
+      }
     },
-    itemValue(item, column) {
-      return item[column.Item];
-    },
-    updateCustomer(id) {
-      window.location.href = "/#/customers/updateCustomer/" + id; 
+    methods: {
+      hasValue(item, column) {
+        return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        return item[column.Item];
+      },
+      updateCustomer(id) {
+        window.location.href = "/#/customers/updateCustomer/" + id; 
+      }
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

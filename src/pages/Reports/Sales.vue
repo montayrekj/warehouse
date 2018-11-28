@@ -20,7 +20,7 @@
             </div>
             <div class="form-group col-md-4">
               <label>Paid Amount</label>
-              <input type="text" class="form-control"  placeholder="Enter term amount..." v-model="searchPaidAmount" >
+              <input type="text" class="form-control"  placeholder="Enter paid amount..." v-model="searchPaidAmount" >
             </div>
           </div>
           <div class="row">
@@ -95,114 +95,114 @@
 </template>
 <script>
  
-import DatePicker from 'vuejs-datepicker'; 
-import moment from 'moment';
+  import DatePicker from 'vuejs-datepicker'; 
+  import moment from 'moment';
 
-var pdfMake = require('pdfmake/build/pdfmake.js');
-var pdfFonts = require('pdfmake/build/vfs_fonts.js');
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  var pdfMake = require('pdfmake/build/pdfmake.js');
+  var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-export default {
-  components: {
-    DatePicker
-  },
-  data() {
-    return {
-      table: {
-        data: this.sales
-      },
-      tbodyClasses: '',
-      searchCustomerName: '',
-      searchType: 'selectAType',
-      searchPaidAmount: '',
-      searchPaidDateFrom: '',
-      searchPaidDateTo: '',
-      searchPaidTo: ''
-    };
-  },
-  props: {
-    sales: Array
-  },
-  watch: {
-    sales() {
-      this.table.data = this.sales;
-    }
-  },
-  computed: {
-    tableClass() {
-      return this.type && `table-${this.type}`;
+  export default {
+    components: {
+      DatePicker
     },
-    tableColumns() {
-      return this.$t('Sales.tableColumns');
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      if(column.Item == 'Balance')
-        return true;
-      else
-        return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      var temp = item[column.Item];
-
-      return temp;
-    },
-    exportToPDF() {
-      var docDefinition = {
-        header: {
-          columns: [
-            {text: "Sales Report", alignment: 'left', margin: 10, color: '#aaa'},
-            {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
-          ]
+    data() {
+      return {
+        table: {
+          data: this.sales
         },
-        footer: {
-            text: "© Hexamindz Corporation",
-            alignment: 'right',
-            color: '#aaa',
-            margin: [0,0,10,0]
-        },
-        content: [
-            {text: ' ', lineHeight: 1},
-            {
-                table: {
-                    headerRows: 1,
-                    widths: [ '*', '*', '*', '*', '*'],
-
-                    body: []
-                }
-            }
-        ]
+        tbodyClasses: '',
+        searchCustomerName: '',
+        searchType: 'selectAType',
+        searchPaidAmount: '',
+        searchPaidDateFrom: '',
+        searchPaidDateTo: '',
+        searchPaidTo: ''
       };
-      var col = []
-      //Table Header
-      var checkerTableCol = this.tableColumns;
-      for(var i = 0; i < checkerTableCol.length; i++) {
-        var obj = {
-          text: checkerTableCol[i].Header,
-          bold: true
-        }
-        col.push(obj);
+    },
+    props: {
+      sales: Array
+    },
+    watch: {
+      sales() {
+        this.table.data = this.sales;
       }
-      docDefinition.content[1].table.body.push(col);
+    },
+    computed: {
+      tableClass() {
+        return this.type && `table-${this.type}`;
+      },
+      tableColumns() {
+        return this.$t('Sales.tableColumns');
+      }
+    },
+    methods: {
+      hasValue(item, column) {
+        if(column.Item == 'Balance')
+          return true;
+        else
+          return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        var temp = item[column.Item];
 
-      //Table Body
-      for(var i=0;i<this.table.data.length;i++){
-          var object = {
-            customer: this.table.data[i].customer,
-            salesType: this.table.data[i].salesType,
-            amount: this.table.data[i].amount,
-            createdDate: this.table.data[i].createdDate,
-            createdBy: this.table.data[i].createdBy
+        return temp;
+      },
+      exportToPDF() {
+        var docDefinition = {
+          header: {
+            columns: [
+              {text: "Sales Report", alignment: 'left', margin: 10, color: '#aaa'},
+              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+            ]
+          },
+          footer: {
+              text: "© Hexamindz Corporation",
+              alignment: 'right',
+              color: '#aaa',
+              margin: [0,0,10,0]
+          },
+          content: [
+              {text: ' ', lineHeight: 1},
+              {
+                  table: {
+                      headerRows: 1,
+                      widths: [ '*', '*', '*', '*', '*'],
+
+                      body: []
+                  }
+              }
+          ]
+        };
+        var col = []
+        //Table Header
+        var checkerTableCol = this.tableColumns;
+        for(var i = 0; i < checkerTableCol.length; i++) {
+          var obj = {
+            text: checkerTableCol[i].Header,
+            bold: true
           }
-          docDefinition.content[1].table.body.push(Object.values(object));  
-      }
+          col.push(obj);
+        }
+        docDefinition.content[1].table.body.push(col);
 
-      //Download PDF
-      pdfMake.createPdf(docDefinition).download('Sales Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+        //Table Body
+        for(var i=0;i<this.table.data.length;i++){
+            var object = {
+              customer: this.table.data[i].customer,
+              salesType: this.table.data[i].salesType,
+              amount: this.table.data[i].amount,
+              createdDate: this.table.data[i].createdDate,
+              createdBy: this.table.data[i].createdBy
+            }
+            docDefinition.content[1].table.body.push(Object.values(object));  
+        }
+
+        //Download PDF
+        pdfMake.createPdf(docDefinition).download('Sales Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      }
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

@@ -220,267 +220,267 @@
     </div>
 </template>
 <script>
-import { BaseTable } from "@/components";
-import { BaseRadio } from "@/components";
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier"];
-const entityColumns = ["productName", "productCode", "quantity", "unit",  "price", "supplier"];
-const modalColumns = ["Name", "Quantity", "Unit", "Price", "Supplier", ""]
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    BaseRadio
-  },
-  data() {
-    return {
-      table: {
-        columns: [...tableColumns],
-        data: this.products,
-        modalColumns: [...modalColumns]
+  import { BaseTable } from "@/components";
+  import { BaseRadio } from "@/components";
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+  const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier"];
+  const entityColumns = ["productName", "productCode", "quantity", "unit",  "price", "supplier"];
+  const modalColumns = ["Name", "Quantity", "Unit", "Price", "Supplier", ""]
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      BaseRadio
+    },
+    data() {
+      return {
+        table: {
+          columns: [...tableColumns],
+          data: this.products,
+          modalColumns: [...modalColumns]
+        },
+        modalFlag: false,
+        selected: [],
+        selectAll: false,
+        type: '',
+        tbodyClasses: '',
+        quantity: [],
+        search: '',
+        grandTotal: 0,
+        paymentMethodCash: false,
+        paymentMethodCheque: false,
+        paymentType: 'Partial',
+        amountInCash: 0,
+        amountInCheque: 0,
+        balance: 0,
+        chequeDueDate: null,
+        remarks: null,
+      };
+    },
+    computed: {
+      tableClass() {
+        return this.type && `table-${this.type}`;
       },
-      modalFlag: false,
-      selected: [],
-      selectAll: false,
-      type: '',
-      tbodyClasses: '',
-      quantity: [],
-      search: '',
-      grandTotal: 0,
-      paymentMethodCash: false,
-      paymentMethodCheque: false,
-      paymentType: 'Partial',
-      amountInCash: 0,
-      amountInCheque: 0,
-      balance: 0,
-      chequeDueDate: null,
-      remarks: null,
-    };
-  },
-  computed: {
-    tableClass() {
-      return this.type && `table-${this.type}`;
+      tableColumns() {
+        return this.$t('stocks.tableColumns');
+      },
+      modalColumnsIn() {
+        return this.$t('stocks.modalColumnsIn');
+      },
+      modalColumnsOut() {
+        return this.$t('stocks.modalColumnsOut');
+      },
+      stocksPaid() {
+          return this.$t('stocks.paid');
+        }
     },
-    tableColumns() {
-      return this.$t('stocks.tableColumns');
+    props: {
+      sample: Boolean,
+      products: Array,
     },
-    modalColumnsIn() {
-      return this.$t('stocks.modalColumnsIn');
-    },
-    modalColumnsOut() {
-      return this.$t('stocks.modalColumnsOut');
-    },
-    stocksPaid() {
-        return this.$t('stocks.paid');
-      }
-  },
-  props: {
-    sample: Boolean,
-    products: Array,
-  },
-  watch: {
-    products() {
-      this.table.data = this.products
-    },
-    selected: function() {
-      if(this.selected.length !== this.table.data.length){
-        this.selectAll = false;
-      } else if(this.selected.length === this.table.data.length){
-        this.selectAll = true;
-      }
-    },
-    search: function () {
-      if(this.search != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.productName.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.produtCode.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.quantity.includes(this.search) ||
-          item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.buyPrice.includes(this.search) ||
-          item.sellPrice.includes(this.search) ||
-          item.supplier.toUpperCase().includes(this.search.toUpperCase()));
-      }
-      else
-        this.table.data = [...tableData];
-    },
-    paymentMethodCash: function() {
-      if(this.paymentMethodCash == false) {
-        this.amountInCash = 0;
-        this.balance = this.computeBalance(this.balance, this.amountInCash);
-      }
-    },
-    paymentMethodCheque: function() {
-      if(this.paymentMethodCheque == false) {
-        this.amountInCheque = 0;
-        this.chequeDueDate = null;
-        this.balance = this.computeBalance(this.balance, this.amountInCheque);
+    watch: {
+      products() {
+        this.table.data = this.products
+      },
+      selected: function() {
+        if(this.selected.length !== this.table.data.length){
+          this.selectAll = false;
+        } else if(this.selected.length === this.table.data.length){
+          this.selectAll = true;
+        }
+      },
+      search: function () {
+        if(this.search != '') {
+          this.table.data = [...tableData].filter(item => 
+            item.productName.toUpperCase().includes(this.search.toUpperCase()) || 
+            item.produtCode.toUpperCase().includes(this.search.toUpperCase()) || 
+            item.quantity.includes(this.search) ||
+            item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
+            item.buyPrice.includes(this.search) ||
+            item.sellPrice.includes(this.search) ||
+            item.supplier.toUpperCase().includes(this.search.toUpperCase()));
+        }
+        else
+          this.table.data = [...tableData];
+      },
+      paymentMethodCash: function() {
+        if(this.paymentMethodCash == false) {
+          this.amountInCash = 0;
+          this.balance = this.computeBalance(this.balance, this.amountInCash);
+        }
+      },
+      paymentMethodCheque: function() {
+        if(this.paymentMethodCheque == false) {
+          this.amountInCheque = 0;
+          this.chequeDueDate = null;
+          this.balance = this.computeBalance(this.balance, this.amountInCheque);
+        }
+      },
+      amountInCash: function () {
+        this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
+      },
+      amountInCheque: function () {
+        this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
+      },
+      balance: function() {
+        if(this.balance == 0)
+          this.paymentType = 'Full';
+        else
+          this.paymentType = 'Partial';
+      },
+      grandTotal: function() {
+        this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
       }
     },
-    amountInCash: function () {
-      this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
-    },
-    amountInCheque: function () {
-      this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
-    },
-    balance: function() {
-      if(this.balance == 0)
-        this.paymentType = 'Full';
-      else
+    methods: {
+      toggleModal: function(origin){
+        this.$emit("changeSample", !this.sample)
+        if(origin === "addStock") {
+          if(!this.$data.modalFlag) {
+            if(this.selected.length > 0){
+            
+              this.$refs.addStockModal.open()
+              this.quantity = new Array(this.selected.length);
+              for(var i = 0; i < this.quantity.length; i++){
+                this.quantity[i] = 0;
+              }
+              this.$data.modalFlag = true;
+            } else {
+              this.$refs.errorStockModal.open();
+            }
+          } else {
+            this.$refs.addStockModal.close()
+            this.quantity = [];
+            this.grandTotal = 0;
+            this.$data.modalFlag = false;
+          }
+        } else if(origin === "removeStock") {
+          this.setToDefaultValue();
+          if(!this.$data.modalFlag) {
+            if(this.selected.length > 0){
+              this.$refs.removeStockModal.open()
+              this.quantity = new Array(this.selected.length);
+              for(var i = 0; i < this.quantity.length; i++){
+                this.quantity[i] = 0;
+              }
+              this.$data.modalFlag = true;
+            } else {
+              this.$refs.errorStockModal.open();
+            }
+          } else {
+            this.$refs.removeStockModal.close()
+            this.quantity = [];
+            this.grandTotal = 0;
+            this.$data.modalFlag = false;
+          }
+        }
+      },
+      closeErrorModal(){
+        this.$emit("changeSample", !this.sample)
+        this.$refs.errorStockModal.close()
+      },
+      isSelected(index) {
+        return this.selected.indexOf(index) > -1;
+      },
+      getWidth(column) {
+        return column === ""? "20%":""
+      },
+      hasValue(item, column) {
+        return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        return item[column.Item];
+      },
+      getItemById(id){
+        for(var i = 0; i < this.table.data.length; i++){
+          if(this.table.data[i].productId === id){
+            return this.table.data[i];
+          }
+        }
+      },
+      quantityChangeColumn(column){
+        return column.Header === "";
+      },
+      selectAllStocks() {
+        this.selected = [];
+        if (!this.selectAll) {
+            for (let i in this.table.data) {
+              this.selected.push(this.table.data[i].productId);
+          }
+        } 
+      },
+      saveStock(origin) {
+        if(origin === "addStock") {
+            for(var i = 0; i < this.selected.length; i++){
+              for(var j = 0; j < this.table.data.length; j++){
+                if(this.table.data[j].productId === this.selected[i]){
+                  this.table.data[j].quantity = Number(this.table.data[j].quantity) + Number(this.quantity[i]);
+                  this.table.data[j].quantity = this.table.data[j].quantity;
+                  break;
+                }
+              }
+            }
+            this.$refs.addStockModal.close()
+            this.quantity = [];
+            this.$data.modalFlag = false;
+        } else if(origin === "removeStock") {
+            for(var i = 0; i < this.selected.length; i++){
+              for(var j = 0; j < this.table.data.length; j++){
+                if(this.table.data[j].productId === this.selected[i]){
+                  this.table.data[j].quantity = Number(this.table.data[j].quantity) - Number(this.quantity[i]);
+                  this.table.data[j].quantity = this.table.data[j].quantity;
+                  break;
+                }
+              }
+            }
+            this.$refs.removeStockModal.close()
+            this.quantity = [];
+            this.$data.modalFlag = false;
+        }
+        this.$emit("addStocks", this.table.data)
+      },
+      quantityChange(event, i, index, origin){
+        event.preventDefault();
+        var val = Number(event.target.value);
+        var item = this.getItemById(i);
+        if(val < 0){
+          this.quantity[index] = 0;
+        } else if(val > Number(item.quantity)){
+          if(origin === 'removeStock'){
+            this.quantity[index] = item.quantity;
+          }
+        }
+        this.computeGrandTotal(item);
+        this.$forceUpdate();
+      },
+      computeGrandTotal(item) {
+        this.grandTotal = 0;
+        for(var i=0; i<this.quantity.length; i++) {
+          this.grandTotal += (item.sellPrice * this.quantity[i]);
+        }
+      },
+      setToDefaultValue() {
+        //sets field to defaut value
+        this.paymentMethodCash = false;
+        this.paymentMethodCheque = false;
         this.paymentType = 'Partial';
-    },
-    grandTotal: function() {
-      this.balance = this.computeBalance(this.grandTotal, (Number(this.amountInCash) + Number(this.amountInCheque)));
-    }
-  },
-  methods: {
-    toggleModal: function(origin){
-      this.$emit("changeSample", !this.sample)
-      if(origin === "addStock") {
-        if(!this.$data.modalFlag) {
-          if(this.selected.length > 0){
-           
-            this.$refs.addStockModal.open()
-            this.quantity = new Array(this.selected.length);
-            for(var i = 0; i < this.quantity.length; i++){
-              this.quantity[i] = 0;
-            }
-            this.$data.modalFlag = true;
-          } else {
-            this.$refs.errorStockModal.open();
-          }
-        } else {
-          this.$refs.addStockModal.close()
-          this.quantity = [];
-          this.grandTotal = 0;
-          this.$data.modalFlag = false;
-        }
-      } else if(origin === "removeStock") {
-        this.setToDefaultValue();
-        if(!this.$data.modalFlag) {
-          if(this.selected.length > 0){
-            this.$refs.removeStockModal.open()
-            this.quantity = new Array(this.selected.length);
-            for(var i = 0; i < this.quantity.length; i++){
-              this.quantity[i] = 0;
-            }
-            this.$data.modalFlag = true;
-          } else {
-            this.$refs.errorStockModal.open();
-          }
-        } else {
-          this.$refs.removeStockModal.close()
-          this.quantity = [];
-          this.grandTotal = 0;
-          this.$data.modalFlag = false;
-        }
-      }
-    },
-    closeErrorModal(){
-      this.$emit("changeSample", !this.sample)
-      this.$refs.errorStockModal.close()
-    },
-    isSelected(index) {
-      return this.selected.indexOf(index) > -1;
-    },
-    getWidth(column) {
-      return column === ""? "20%":""
-    },
-    hasValue(item, column) {
-      return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      return item[column.Item];
-    },
-    getItemById(id){
-      for(var i = 0; i < this.table.data.length; i++){
-        if(this.table.data[i].productId === id){
-          return this.table.data[i];
-        }
-      }
-    },
-    quantityChangeColumn(column){
-      return column.Header === "";
-    },
-    selectAllStocks() {
-      this.selected = [];
-      if (!this.selectAll) {
-          for (let i in this.table.data) {
-            this.selected.push(this.table.data[i].productId);
-        }
-      } 
-    },
-    saveStock(origin) {
-      if(origin === "addStock") {
-          for(var i = 0; i < this.selected.length; i++){
-            for(var j = 0; j < this.table.data.length; j++){
-              if(this.table.data[j].productId === this.selected[i]){
-                this.table.data[j].quantity = Number(this.table.data[j].quantity) + Number(this.quantity[i]);
-                this.table.data[j].quantity = this.table.data[j].quantity;
-                break;
-              }
-            }
-          }
-          this.$refs.addStockModal.close()
-          this.quantity = [];
-          this.$data.modalFlag = false;
-      } else if(origin === "removeStock") {
-          for(var i = 0; i < this.selected.length; i++){
-            for(var j = 0; j < this.table.data.length; j++){
-              if(this.table.data[j].productId === this.selected[i]){
-                this.table.data[j].quantity = Number(this.table.data[j].quantity) - Number(this.quantity[i]);
-                this.table.data[j].quantity = this.table.data[j].quantity;
-                break;
-              }
-            }
-          }
-          this.$refs.removeStockModal.close()
-          this.quantity = [];
-          this.$data.modalFlag = false;
-      }
-      this.$emit("addStocks", this.table.data)
-    },
-    quantityChange(event, i, index, origin){
-      event.preventDefault();
-      var val = Number(event.target.value);
-      var item = this.getItemById(i);
-      if(val < 0){
-        this.quantity[index] = 0;
-      } else if(val > Number(item.quantity)){
-        if(origin === 'removeStock'){
-          this.quantity[index] = item.quantity;
-        }
-      }
-      this.computeGrandTotal(item);
-      this.$forceUpdate();
-    },
-    computeGrandTotal(item) {
-      this.grandTotal = 0;
-      for(var i=0; i<this.quantity.length; i++) {
-        this.grandTotal += (item.sellPrice * this.quantity[i]);
-      }
-    },
-    setToDefaultValue() {
-      //sets field to defaut value
-      this.paymentMethodCash = false;
-      this.paymentMethodCheque = false;
-      this.paymentType = 'Partial';
-      this.amountInCash =  null;
-      this.amountInCheque = null;
-      this.chequeDueDate = null;
-    },
-    computeBalance(totalAmount, paidAmount)  {
-      var balance = 0;
-      totalAmount = Number(totalAmount);
-      paidAmount = Number(paidAmount);
-      if(paidAmount >= totalAmount)
-        balance = 0;
-      else
-        balance = totalAmount - paidAmount;
+        this.amountInCash =  null;
+        this.amountInCheque = null;
+        this.chequeDueDate = null;
+      },
+      computeBalance(totalAmount, paidAmount)  {
+        var balance = 0;
+        totalAmount = Number(totalAmount);
+        paidAmount = Number(paidAmount);
+        if(paidAmount >= totalAmount)
+          balance = 0;
+        else
+          balance = totalAmount - paidAmount;
 
-      return balance;
-    }
-  },
-};
+        return balance;
+      }
+    },
+  };
 </script>
 <style>
 </style>

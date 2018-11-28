@@ -1,8 +1,38 @@
 <template>
   <div>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
+        <card>
+          <h4>Advanced Search</h4>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Id</label>
+              <input type="text" class="form-control" placeholder="Enter id..." v-model="searchId" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Added Date</label>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchAddedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchAddedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Added By</label>
+              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchAddedBy" >
+            </div>
+          </div>
+          <div class="row" style="margin-top: 20px">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+              <button class="btn btn-success" style="width: 100%">Search</button>
+            </div>
+          </div>
+        </card>
+        <card type="chart">
           <div>
             <div class="col-12">
               <div class="table-responsive">
@@ -15,11 +45,6 @@
                   </tr>
                   </thead>
                   <tbody :class="tbodyClasses">
-                  <tr>
-                    <td> <input type="text" placeholder="Search" v-model="searchId" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchAddedDate" class="form-control" /> </td>
-                    <td> <input type="text" placeholder="Search" v-model="searchAddedBy" class="form-control" /> </td>
-                  </tr>
                   <tr v-for="(item, index) in table.data" :key="index">
                     <slot :row="item">
                       <td v-for="(column, index) in tableColumns"
@@ -41,14 +66,21 @@
   </div>
 </template>
 <script>
+
+  import DatePicker from 'vuejs-datepicker';
+
   export default {
+    components: {
+      DatePicker
+    },
     data() {
       return {
         table: {
           data: this.purchases
         },
         searchId: '',
-        searchAddedDate: '',
+        searchAddedDateFrom: '',
+        searchAddedDateTo: '',
         searchAddedBy: '',
         tbodyClasses: '',
         detailsData: []
@@ -60,60 +92,6 @@
     watch: {
       purchases: function() {
         this.table.data = this.purchases;
-      },
-      searchId: function () {
-        if(this.searchId != '') {
-          this.table.data = this.purchases.filter(item => 
-            item.purchasesLogsId.toString().includes(this.searchId));
-        }
-        else
-          this.table.data = this.purchases;
-
-        if(this.searchAddedDate != ''){
-          this.table.data = this.table.data.filter(item =>
-            item.createdDate.toUpperCase().includes(this.searchAddedDate.toUpperCase()));
-        }
-
-        if(this.searchAddedBy != ''){
-          this.table.data = this.table.data.filter(item =>
-            item.createdBy.toUpperCase().includes(this.searchAddedBy.toUpperCase()));
-        }
-      },
-      searchAddedDate: function () {
-        if(this.searchAddedDate != ''){
-          this.table.data = this.purchases.filter(item =>
-            item.createdDate.toUpperCase().includes(this.searchAddedDate.toUpperCase()));
-        }
-        else
-          this.table.data = this.purchases;
-
-        if(this.searchId != '') {
-          this.table.data = this.table.data.filter(item => 
-            item.purchasesLogsId.toString().includes(this.searchId));
-        }
-
-        if(this.searchAddedBy != ''){
-          this.table.data = this.table.data.filter(item =>
-            item.createdBy.toUpperCase().includes(this.searchAddedBy.toUpperCase()));
-        }
-      },
-      searchAddedBy: function () {
-        if(this.searchAddedBy != ''){
-          this.table.data = this.purchases.filter(item =>
-            item.createdBy.toUpperCase().includes(this.searchAddedBy.toUpperCase()));
-        }
-        else
-          this.table.data = this.purchases;
-
-        if(this.searchId != '') {
-          this.table.data = this.table.data.filter(item => 
-            item.purchasesLogsId.toString().includes(this.searchId));
-        }
-
-        if(this.searchAddedDate != ''){
-          this.table.data = this.table.data.filter(item =>
-            item.createdDate.toUpperCase().includes(this.searchAddedDate.toUpperCase()));
-        }
       }
     },
     computed: {

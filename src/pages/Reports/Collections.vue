@@ -109,150 +109,151 @@
   </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
-import DatePicker from 'vuejs-datepicker';
-import moment from 'moment';
 
-var pdfMake = require('pdfmake/build/pdfmake.js');
-var pdfFonts = require('pdfmake/build/vfs_fonts.js');
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
+  import DatePicker from 'vuejs-datepicker';
+  import moment from 'moment';
 
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    DatePicker
-  },
-  data() {
-    return {
-      table: {
-        data: this.collections
-      },
-      search: '',
-      tbodyClasses: '',
-      confirmModalFlag: false,
-      selectedOrderId: null,
-      searchOrderId: '',
-      searchCustomerName: '',
-      searchTermAmount: '',
-      searchTermDueDateFrom: null,
-      searchTermDueDateTo: null,
-      searchOrderedDateFrom: null,
-      searchOrderedDateTo: null,
-      searchOrderedFrom: ''
-    };
-  },
-  props: {
-    collections: Array
-  },
-  watch: {
-    collections() {
-      this.table.data = this.collections;
-    }
-  },
-  computed: {
-    tableClass() {
-      return this.type && `table-${this.type}`;
-    },
-    tableColumns(){
-      return this.$t('Collections.tableColumns');
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      if(column.Item == 'Balance')
-        return true;
-      else
-        return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      var temp = item[column.Item];
-      if(column.Item == "Balance")
-        return this.computeBalance(item["Total_Amount"], item["Paid_Amount"]);
+  var pdfMake = require('pdfmake/build/pdfmake.js');
+  var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-      return temp;
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      DatePicker
     },
-    computeBalance(totalAmount, paidAmount)  {
-      var balance = 0;
-      totalAmount = Number(totalAmount);
-      paidAmount = Number(paidAmount);
-      if(paidAmount >= totalAmount)
-        balance = 0;
-      else
-        balance = totalAmount - paidAmount;
-
-      return balance;
-    },
-    collect() {
-      this.$emit('collectCollection', Number(this.selectedOrderId));
-    },
-    toggleConfirmModal(orderId) {
-      if(!this.confirmModalFlag) {
-        this.confirmModalFlag = true;
-        this.selectedOrderId = orderId;
-        this.$refs.confirmModal.open();
-      } else {
-        this.confirmModalFlag = false;
-        this.selectedOrderId = null;
-        this.$refs.confirmModal.close();
-      }
-    },
-    exportToPDF() {
-      var docDefinition = {
-        header: {
-          columns: [
-            {text: "Collections' Report", alignment: 'left', margin: 10, color: '#aaa'},
-            {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
-          ]
+    data() {
+      return {
+        table: {
+          data: this.collections
         },
-        footer: {
-            text: "© Hexamindz Corporation",
-            alignment: 'right',
-            color: '#aaa',
-            margin: [0,0,10,0]
-        },
-        content: [
-            {text: ' ', lineHeight: 1},
-            {
-                table: {
-                    headerRows: 1,
-                    widths: [ '*', '*', '*', '*', '*', '*'],
-
-                    body: []
-                }
-            }
-        ]
+        search: '',
+        tbodyClasses: '',
+        confirmModalFlag: false,
+        selectedOrderId: null,
+        searchOrderId: '',
+        searchCustomerName: '',
+        searchTermAmount: '',
+        searchTermDueDateFrom: null,
+        searchTermDueDateTo: null,
+        searchOrderedDateFrom: null,
+        searchOrderedDateTo: null,
+        searchOrderedFrom: ''
       };
-      var col = []
-      //Table Header
-      var checkerTableCol = this.tableColumns;
-      for(var i = 0; i < checkerTableCol.length; i++) {
-        var obj = {
-          text: checkerTableCol[i].Header,
-          bold: true
+    },
+    props: {
+      collections: Array
+    },
+    watch: {
+      collections() {
+        this.table.data = this.collections;
+      }
+    },
+    computed: {
+      tableClass() {
+        return this.type && `table-${this.type}`;
+      },
+      tableColumns(){
+        return this.$t('Collections.tableColumns');
+      }
+    },
+    methods: {
+      hasValue(item, column) {
+        if(column.Item == 'Balance')
+          return true;
+        else
+          return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        var temp = item[column.Item];
+        if(column.Item == "Balance")
+          return this.computeBalance(item["Total_Amount"], item["Paid_Amount"]);
+
+        return temp;
+      },
+      computeBalance(totalAmount, paidAmount)  {
+        var balance = 0;
+        totalAmount = Number(totalAmount);
+        paidAmount = Number(paidAmount);
+        if(paidAmount >= totalAmount)
+          balance = 0;
+        else
+          balance = totalAmount - paidAmount;
+
+        return balance;
+      },
+      collect() {
+        this.$emit('collectCollection', Number(this.selectedOrderId));
+      },
+      toggleConfirmModal(orderId) {
+        if(!this.confirmModalFlag) {
+          this.confirmModalFlag = true;
+          this.selectedOrderId = orderId;
+          this.$refs.confirmModal.open();
+        } else {
+          this.confirmModalFlag = false;
+          this.selectedOrderId = null;
+          this.$refs.confirmModal.close();
         }
-        col.push(obj);
-      }
-      docDefinition.content[1].table.body.push(col);
+      },
+      exportToPDF() {
+        var docDefinition = {
+          header: {
+            columns: [
+              {text: "Collections' Report", alignment: 'left', margin: 10, color: '#aaa'},
+              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+            ]
+          },
+          footer: {
+              text: "© Hexamindz Corporation",
+              alignment: 'right',
+              color: '#aaa',
+              margin: [0,0,10,0]
+          },
+          content: [
+              {text: ' ', lineHeight: 1},
+              {
+                  table: {
+                      headerRows: 1,
+                      widths: [ '*', '*', '*', '*', '*', '*'],
 
-      //Table Body
-      for(var i=0;i<this.table.data.length;i++){
-          var object = {
-            orderId: this.table.data[i].orderId,
-            customer: this.table.data[i].customer,
-            termAmount: this.table.data[i].termAmount,
-            termDueDate: this.table.data[i].termDueDate,
-            createdDate: this.table.data[i].createdDate,
-            createdBy: this.table.data[i].createdBy
+                      body: []
+                  }
+              }
+          ]
+        };
+        var col = []
+        //Table Header
+        var checkerTableCol = this.tableColumns;
+        for(var i = 0; i < checkerTableCol.length; i++) {
+          var obj = {
+            text: checkerTableCol[i].Header,
+            bold: true
           }
-          docDefinition.content[1].table.body.push(Object.values(object));  
-      }
+          col.push(obj);
+        }
+        docDefinition.content[1].table.body.push(col);
 
-      //Download PDF
-      pdfMake.createPdf(docDefinition).download('Collections Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+        //Table Body
+        for(var i=0;i<this.table.data.length;i++){
+            var object = {
+              orderId: this.table.data[i].orderId,
+              customer: this.table.data[i].customer,
+              termAmount: this.table.data[i].termAmount,
+              termDueDate: this.table.data[i].termDueDate,
+              createdDate: this.table.data[i].createdDate,
+              createdBy: this.table.data[i].createdBy
+            }
+            docDefinition.content[1].table.body.push(Object.values(object));  
+        }
+
+        //Download PDF
+        pdfMake.createPdf(docDefinition).download('Collections Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      }
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

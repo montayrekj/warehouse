@@ -35,45 +35,45 @@
     </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import axios from 'axios';
-import config from '@/config';
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import axios from 'axios';
+  import config from '@/config';
 
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    VueBootstrapTypeahead
-  },
-  data() {
-    return {
-      errorMessage: "",
-      customer: {
-        name: "",
-        address: "",
-        contactNo: "",
-      }
-    };
-  },
-  methods: {
-    addCustomer() {
-        var user = JSON.parse(localStorage.getItem("user"))
-        var data = new FormData();
-        data.append("customerName", this.customer.name);
-        data.append("customerAddress", this.customer.address);
-        data.append("customerContactNo", this.customer.contactNo);
-        data.append("userId", user.userId);
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      VueBootstrapTypeahead
+    },
+    data() {
+      return {
+        errorMessage: "",
+        customer: {
+          name: "",
+          address: "",
+          contactNo: "",
+        }
+      };
+    },
+    methods: {
+      addCustomer() {
+          var user = JSON.parse(localStorage.getItem("user"))
+          var data = new FormData();
+          data.append("customerName", this.customer.name);
+          data.append("customerAddress", this.customer.address);
+          data.append("customerContactNo", this.customer.contactNo);
+          data.append("userId", user.userId);
 
-        axios
-        .post(config.backend_host + '/addCustomer', data).then(response => {
-          if(response.data.statusCode === "OK"){
-              this.$refs.successModal.open();
-          }
-        })
-      }
-  }
-};
+          axios
+          .post(config.backend_host + '/addCustomer', data).then(response => {
+            if(response.data.statusCode === "OK"){
+                this.$refs.successModal.open();
+            }
+          })
+        }
+    }
+  };
 </script>
 <style>
 </style>

@@ -110,176 +110,176 @@
     </div>
 </template>
 <script>
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
 
-export default {
-  components: {
-    VueBootstrapTypeahead,
-    SweetModal,
-    SweetModalTab
-  },
-  data() {
-    return {
-      table: {
-        data: this.products,
-      },
-      customer: {
-        name: "",
-        address: "",
-        contactNo: "",
-      },
-      selected: [],
-      quantity: [],
-      quantityIndex: null,
-      selectValue: 0,
-      totalAmount: 0.0,
-      customerName: "",
-      customerSelected: "",
-      errorMessage: "",
-      customerList: this.customers.map(arr => arr.customerName)
-    }
-  },
-  props: {
-    products: Array,
-    customers: Array,
-  },
-  watch: {
-    customers() {
-      this.customerList = this.customers.map(arr => arr.customerName);
+  export default {
+    components: {
+      VueBootstrapTypeahead,
+      SweetModal,
+      SweetModalTab
     },
-    quantity() {
-      if(this.quantityIndex != null) {
-        var val = this.quantity[this.quantityIndex]
-        var item = this.selected[this.quantityIndex];
+    data() {
+      return {
+        table: {
+          data: this.products,
+        },
+        customer: {
+          name: "",
+          address: "",
+          contactNo: "",
+        },
+        selected: [],
+        quantity: [],
+        quantityIndex: null,
+        selectValue: 0,
+        totalAmount: 0.0,
+        customerName: "",
+        customerSelected: "",
+        errorMessage: "",
+        customerList: this.customers.map(arr => arr.customerName)
+      }
+    },
+    props: {
+      products: Array,
+      customers: Array,
+    },
+    watch: {
+      customers() {
+        this.customerList = this.customers.map(arr => arr.customerName);
+      },
+      quantity() {
+        if(this.quantityIndex != null) {
+          var val = this.quantity[this.quantityIndex]
+          var item = this.selected[this.quantityIndex];
+          if(val < 0){
+            this.quantity[this.quantityIndex] = 0;
+          } else if(val > Number(item.quantity)){
+            this.quantity[this.quantityIndex] = item.quantity;
+          }
+
+          this.computeTotalAmount();
+          this.$forceUpdate();
+        }
+      },
+      products() {
+        this.table.data = this.products.filter(product => Number(product.quantity) > 0);
+      },
+      selected() {
+        this.table.data = this.products.filter(product => Number(product.quantity) > 0);
+        for(var i = 0; i < this.selected.length; i++){
+          this.table.data = this.table.data.filter(product => product.productId !== this.selected[i].productId);
+        }
+      }
+    },
+    computed: {
+      tableColumns() {
+        return this.$t('PlaceOrder.tableColumns');
+      }
+    },
+    methods: {
+      theadStyle(column) {
+        if(column.Header == "Sell Price" || column.Header == 'Quantity Sold')
+          return "text-align: center; width: 100px"
+        else 
+          return "text-align: center;"
+      },
+      hasValue(item, column) {
+        return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        return item[column.Item];
+      },
+      quantityChangeColumn(column){
+        return column.Header === "Quantity Sold";
+      },
+      setQuantityIndex(index){
+        this.quantityIndex = index;
+      },
+      quantityChange(event, id, index){
+        event.preventDefault();
+        var val = Number(event.target.value);
+        var item = this.getItemById(id);
         if(val < 0){
-          this.quantity[this.quantityIndex] = 0;
+          this.quantity[index] = 0;
         } else if(val > Number(item.quantity)){
-          this.quantity[this.quantityIndex] = item.quantity;
+            this.quantity[index] = item.quantity;
         }
 
         this.computeTotalAmount();
         this.$forceUpdate();
-      }
-    },
-    products() {
-      this.table.data = this.products.filter(product => Number(product.quantity) > 0);
-    },
-    selected() {
-      this.table.data = this.products.filter(product => Number(product.quantity) > 0);
-      for(var i = 0; i < this.selected.length; i++){
-        this.table.data = this.table.data.filter(product => product.productId !== this.selected[i].productId);
-      }
-    }
-  },
-  computed: {
-    tableColumns() {
-      return this.$t('PlaceOrder.tableColumns');
-    }
-  },
-  methods: {
-    theadStyle(column) {
-      if(column.Header == "Sell Price" || column.Header == 'Quantity Sold')
-        return "text-align: center; width: 100px"
-      else 
-        return "text-align: center;"
-    },
-    hasValue(item, column) {
-      return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      return item[column.Item];
-    },
-    quantityChangeColumn(column){
-      return column.Header === "Quantity Sold";
-    },
-    setQuantityIndex(index){
-      this.quantityIndex = index;
-    },
-    quantityChange(event, id, index){
-      event.preventDefault();
-      var val = Number(event.target.value);
-      var item = this.getItemById(id);
-      if(val < 0){
-        this.quantity[index] = 0;
-      } else if(val > Number(item.quantity)){
-          this.quantity[index] = item.quantity;
-      }
-
-      this.computeTotalAmount();
-      this.$forceUpdate();
-    },
-    getItemById(id){
-      for(var i = 0; i < this.products.length; i++){
-        if(this.products[i].productId == id){
-          return this.products[i];
-        }
-      }
-    },
-    onChange($event) {
-      var product = this.products.filter(product => product.productId.toString() === $event)[0]
-      this.selected.push(product);
-      this.selectValue = 0;
-      this.quantity.push(0)
-    },
-    removeSelected(index){
-      this.selected.splice(index, 1)
-      this.quantity.splice(index, 1)
-      this.computeTotalAmount();
-    },
-    order() {
-      if(this.validateOrder()) {
-        for(var i = 0; i < this.selected.length; i++) {
-          this.selected[i].quantity = Number(this.quantity[i]);
-        }
-        this.$emit("removeStocks", this.selected, this.customerSelected)
-      } else {
-        this.$refs.errorModal.open();
-      }
-    },
-    validateOrder() {
-      var flag = true;
-      if(this.customerSelected == "") {
-        flag = false;
-        this.errorMessage = "Please select customer!"
-        return flag;
-      } 
-      if(this.selected.length == 0) {
-        flag = false;
-        this.errorMessage = "Please select product/s!"
-        return flag;
-      } else {
-        for(var i = 0; i < this.quantity.length; i++) {
-          if(this.quantity[i] == 0) {
-            flag = false;
-          this.errorMessage = "Please specify quantity sold!"
-          return flag;
+      },
+      getItemById(id){
+        for(var i = 0; i < this.products.length; i++){
+          if(this.products[i].productId == id){
+            return this.products[i];
           }
         }
+      },
+      onChange($event) {
+        var product = this.products.filter(product => product.productId.toString() === $event)[0]
+        this.selected.push(product);
+        this.selectValue = 0;
+        this.quantity.push(0)
+      },
+      removeSelected(index){
+        this.selected.splice(index, 1)
+        this.quantity.splice(index, 1)
+        this.computeTotalAmount();
+      },
+      order() {
+        if(this.validateOrder()) {
+          for(var i = 0; i < this.selected.length; i++) {
+            this.selected[i].quantity = Number(this.quantity[i]);
+          }
+          this.$emit("removeStocks", this.selected, this.customerSelected)
+        } else {
+          this.$refs.errorModal.open();
+        }
+      },
+      validateOrder() {
+        var flag = true;
+        if(this.customerSelected == "") {
+          flag = false;
+          this.errorMessage = "Please select customer!"
+          return flag;
+        } 
+        if(this.selected.length == 0) {
+          flag = false;
+          this.errorMessage = "Please select product/s!"
+          return flag;
+        } else {
+          for(var i = 0; i < this.quantity.length; i++) {
+            if(this.quantity[i] == 0) {
+              flag = false;
+            this.errorMessage = "Please specify quantity sold!"
+            return flag;
+            }
+          }
+        }
+        return flag;
+      },
+      computeTotalAmount() {
+        this.totalAmount = 0;
+        for(var i=0; i < this.selected.length; i++) {
+          this.totalAmount += (this.selected[i].sellPrice * this.quantity[i]);
+        }
+      },
+      selectCustomer() {
+        this.customerSelected = this.customerName;
+      },
+      addCustomer() {
+        this.$refs.addCustomerModal.open();
+      },
+      closeAddCustomerModal() {
+        this.$refs.addCustomerModal.close();
+      },
+      save() {
+        this.$emit("addCustomer", this.customer);
+        this.$refs.addCustomerModal.close();
       }
-      return flag;
-    },
-    computeTotalAmount() {
-      this.totalAmount = 0;
-      for(var i=0; i < this.selected.length; i++) {
-        this.totalAmount += (this.selected[i].sellPrice * this.quantity[i]);
-      }
-    },
-    selectCustomer() {
-      this.customerSelected = this.customerName;
-    },
-    addCustomer() {
-      this.$refs.addCustomerModal.open();
-    },
-    closeAddCustomerModal() {
-      this.$refs.addCustomerModal.close();
-    },
-    save() {
-      this.$emit("addCustomer", this.customer);
-      this.$refs.addCustomerModal.close();
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

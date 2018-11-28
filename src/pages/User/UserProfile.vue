@@ -50,78 +50,79 @@
     </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import axios from 'axios';
-import config from '@/config';
 
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    VueBootstrapTypeahead
-  },
-  props: {
-    suppliers: Array,
-  },
-  data() {
-    return {
-      user: null,
-      username: "",
-      password: "",
-      email: "",
-      nickname: "",
-      responseMessage: "",
-      showPasswordFlag: false,
-    };
-  },
-  computed: {
-    iconClass() {
-      return this.showPasswordFlag? "fa fa-eye-slash" : "fa fa-eye"
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import axios from 'axios';
+  import config from '@/config';
+
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      VueBootstrapTypeahead
     },
-    passwordType() {
-      return this.showPasswordFlag? "text" : "password"
+    props: {
+      suppliers: Array,
+    },
+    data() {
+      return {
+        user: null,
+        username: "",
+        password: "",
+        email: "",
+        nickname: "",
+        responseMessage: "",
+        showPasswordFlag: false,
+      };
+    },
+    computed: {
+      iconClass() {
+        return this.showPasswordFlag? "fa fa-eye-slash" : "fa fa-eye"
+      },
+      passwordType() {
+        return this.showPasswordFlag? "text" : "password"
+      }
+    },
+    watch: {
+      products() {
+        this.table.data = this.products
+      },
+      productCode: function() {
+        if(this.productCode !== null)
+          this.productCode = this.productCode.toUpperCase();
+      },
+    },
+    methods: {
+      save() {
+        this.user.password = this.password;
+        this.user.email = this.email;
+        this.user.nickname = this.nickname;
+
+        axios
+        .post(config.backend_host + '/updateUser', this.user)
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            this.responseMessage = "Successfully updated user profile!"
+            this.$refs.successModal.open();
+            localStorage.setItem("user", JSON.stringify(this.user));
+          }
+        })
+
+      },
+      showPassword() {
+        this.showPasswordFlag = !this.showPasswordFlag;
+      }
+    },
+    mounted() {
+      var temp = JSON.parse(localStorage.getItem("user"));
+      this.user = temp;
+      this.username = this.user.username;
+      this.password = this.user.password;
+      this.email = this.user.email;
+      this.nickname = this.user.nickname;
     }
-  },
-  watch: {
-    products() {
-      this.table.data = this.products
-    },
-    productCode: function() {
-      if(this.productCode !== null)
-        this.productCode = this.productCode.toUpperCase();
-    },
-  },
-  methods: {
-    save() {
-      this.user.password = this.password;
-      this.user.email = this.email;
-      this.user.nickname = this.nickname;
-
-      axios
-      .post(config.backend_host + '/updateUser', this.user)
-      .then(response => {
-        if(response.data.statusCode === "OK"){
-          this.responseMessage = "Successfully updated user profile!"
-          this.$refs.successModal.open();
-          localStorage.setItem("user", JSON.stringify(this.user));
-        }
-      })
-
-    },
-    showPassword() {
-      this.showPasswordFlag = !this.showPasswordFlag;
-    }
-  },
-  mounted() {
-    var temp = JSON.parse(localStorage.getItem("user"));
-    this.user = temp;
-    this.username = this.user.username;
-    this.password = this.user.password;
-    this.email = this.user.email;
-    this.nickname = this.user.nickname;
-  }
-};
+  };
 </script>
 <style>
 </style>

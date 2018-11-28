@@ -57,82 +57,83 @@
     </div>
 </template>
 <script>
-export default {
-  data() {
-    return {
-      table: {
-        data: this.products,
+
+  export default {
+    data() {
+      return {
+        table: {
+          data: this.products,
+        },
+        selected: [],
+        quantity: [],
+        selectValue: 0
+      }
+    },
+    props: {
+      products: Array
+    },
+    watch: {
+      products() {
+        this.table.data = this.products;
       },
-      selected: [],
-      quantity: [],
-      selectValue: 0
-    }
-  },
-  props: {
-    products: Array
-  },
-  watch: {
-    products() {
-      this.table.data = this.products;
-    },
-    selected() {
-      this.table.data = this.products
-      for(var i = 0; i < this.selected.length; i++){
-        this.table.data = this.table.data.filter(product => product.productId !== this.selected[i].productId);
-      }
-      
-    }
-  },
-  computed: {
-    tableColumns() {
-      return this.$t('AddStocks.tableColumns');
-    }
-  },
-  methods: {
-    hasValue(item, column) {
-      return item[column.Item] !== "undefined";
-    },
-    itemValue(item, column) {
-      return item[column.Item];
-    },
-    quantityChangeColumn(column){
-      return column.Header === "Quantity Added";
-    },
-    quantityChange(event, id, index){
-      event.preventDefault();
-      var val = Number(event.target.value);
-      var item = this.getItemById(id);
-      if(val < 0){
-        this.quantity[index] = 0;
-      }
-      //this.computeGrandTotal(item);
-      this.$forceUpdate();
-    },
-    getItemById(id){
-      for(var i = 0; i < this.table.data.length; i++){
-        if(this.table.data[i].productId === id){
-          return this.table.data[i];
+      selected() {
+        this.table.data = this.products
+        for(var i = 0; i < this.selected.length; i++){
+          this.table.data = this.table.data.filter(product => product.productId !== this.selected[i].productId);
         }
+        
       }
     },
-    onChange($event) {
-      var product = this.products.filter(product => product.productId.toString() === $event)[0]
-      this.selected.push(product);
-      this.selectValue = 0;
-      this.quantity.push(0)
-    },
-    removeSelected(index){
-      this.selected.splice(index, 1)
-      this.quantity.splice(index, 1)
-    },
-    save() {
-      for(var i = 0; i < this.selected.length; i++) {
-        this.selected[i].quantity = Number(this.quantity[i]);
+    computed: {
+      tableColumns() {
+        return this.$t('AddStocks.tableColumns');
       }
-      this.$emit("addStocks", this.selected)
+    },
+    methods: {
+      hasValue(item, column) {
+        return item[column.Item] !== "undefined";
+      },
+      itemValue(item, column) {
+        return item[column.Item];
+      },
+      quantityChangeColumn(column){
+        return column.Header === "Quantity Added";
+      },
+      quantityChange(event, id, index){
+        event.preventDefault();
+        var val = Number(event.target.value);
+        var item = this.getItemById(id);
+        if(val < 0){
+          this.quantity[index] = 0;
+        }
+        //this.computeGrandTotal(item);
+        this.$forceUpdate();
+      },
+      getItemById(id){
+        for(var i = 0; i < this.table.data.length; i++){
+          if(this.table.data[i].productId === id){
+            return this.table.data[i];
+          }
+        }
+      },
+      onChange($event) {
+        var product = this.products.filter(product => product.productId.toString() === $event)[0]
+        this.selected.push(product);
+        this.selectValue = 0;
+        this.quantity.push(0)
+      },
+      removeSelected(index){
+        this.selected.splice(index, 1)
+        this.quantity.splice(index, 1)
+      },
+      save() {
+        for(var i = 0; i < this.selected.length; i++) {
+          this.selected[i].quantity = Number(this.quantity[i]);
+        }
+        this.$emit("addStocks", this.selected)
+      }
     }
-  }
-};
+  };
 </script>
 <style>
 </style>

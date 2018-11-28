@@ -35,60 +35,61 @@
     </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import axios from 'axios';
-import config from '@/config';
 
-export default {
-  components: {
-    SweetModal,
-    SweetModalTab,
-    VueBootstrapTypeahead
-  },
-  data() {
-    return {
-      errorMessage: "",
-      supplier: {
-        id: 0,
-        name: "",
-        address: "",
-        contactNo: "",
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import axios from 'axios';
+  import config from '@/config';
+
+  export default {
+    components: {
+      SweetModal,
+      SweetModalTab,
+      VueBootstrapTypeahead
+    },
+    data() {
+      return {
+        errorMessage: "",
+        supplier: {
+          id: 0,
+          name: "",
+          address: "",
+          contactNo: "",
+        }
+      };
+    },
+    methods: {
+      updateSupplier() {
+        var formData = new FormData();
+        formData.append("supplierName", this.supplier.name)
+        formData.append("supplierAddress", this.supplier.address)
+        formData.append("supplierNumber", this.supplier.contactNo)
+        formData.append("supplierId", this.supplier.id)
+        formData.append("id", this.$route.params.id)
+        axios
+            .post(config.backend_host + '/updateSupplier', formData)
+            .then(response => {
+              if(response.data.statusCode === "OK"){
+                this.$refs.successModal.open();
+              }
+            })
       }
-    };
-  },
-  methods: {
-    updateSupplier() {
+    },
+    mounted() {
       var formData = new FormData();
-      formData.append("supplierName", this.supplier.name)
-      formData.append("supplierAddress", this.supplier.address)
-      formData.append("supplierNumber", this.supplier.contactNo)
-      formData.append("supplierId", this.supplier.id)
       formData.append("id", this.$route.params.id)
       axios
-          .post(config.backend_host + '/updateSupplier', formData)
+          .post(config.backend_host + '/getSupplierById', formData)
           .then(response => {
             if(response.data.statusCode === "OK"){
-              this.$refs.successModal.open();
+              this.supplier.name = response.data.data.supplierName;
+              this.supplier.address = response.data.data.supplierAddress;
+              this.supplier.contactNo = response.data.data.supplierNumber;
+              this.supplier.id = response.data.data.supplierId;
             }
           })
     }
-  },
-  mounted() {
-    var formData = new FormData();
-    formData.append("id", this.$route.params.id)
-    axios
-        .post(config.backend_host + '/getSupplierById', formData)
-        .then(response => {
-          if(response.data.statusCode === "OK"){
-            this.supplier.name = response.data.data.supplierName;
-            this.supplier.address = response.data.data.supplierAddress;
-            this.supplier.contactNo = response.data.data.supplierNumber;
-            this.supplier.id = response.data.data.supplierId;
-          }
-        })
-  }
-};
+  };
 </script>
 <style>
 </style>
