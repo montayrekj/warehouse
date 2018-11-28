@@ -34,7 +34,7 @@
                            menu-classes="dropdown-navbar">
               <a slot="title" href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="true">
                 <div class="photo">
-                  <i class="tim-icons icon-button-power pull-right" style="padding-right: 2px; padding-top: 4px"></i>
+                  <img src="img/anime3.png">
                 </div>
                 <b class="caret d-none d-lg-block d-xl-block"></b>
                 <p class="d-lg-none">
@@ -46,7 +46,7 @@
               </li>
               <div class="dropdown-divider"></div>
               <li class="nav-link">
-                <a href="#" class="nav-item dropdown-item">Edit Profile</a>
+                <a href="/#/profile" class="nav-item dropdown-item">Edit Profile</a>
               </li>
               <li class="nav-link">
                 <a href="#" @click="logout" class="nav-item dropdown-item">Log out</a>
@@ -66,11 +66,6 @@
     components: {
       CollapseTransition,
       Modal
-    },
-    computed: {
-      isRTL() {
-        return this.$rtl.isRTL;
-      },
     },
     data() {
       return {

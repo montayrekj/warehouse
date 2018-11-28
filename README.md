@@ -129,7 +129,6 @@ Within the download you'll find the following directories and files:
         |       |-- SidebarSharePlugin.vue
         |       |-- TopNavbar.vue
         |-- locales
-        |   |-- ar.json
         |   |-- en.json
         |-- pages
         |   |-- Dashboard.vue
@@ -149,7 +148,6 @@ Within the download you'll find the following directories and files:
         |       |-- EditProfileForm.vue
         |       |-- UserCard.vue
         |-- plugins
-        |   |-- RTLPlugin.js
         |   |-- blackDashboard.js
         |   |-- globalComponents.js
         |   |-- globalDirectives.js

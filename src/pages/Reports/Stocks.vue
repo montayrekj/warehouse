@@ -1,16 +1,39 @@
 <template>
   <div>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
+        <card>
+          <h4>Advanced Search</h4>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Product Name</label>
+              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchProductName" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Date</label>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="margin-top: 20px">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+              <button class="btn btn-success" style="width: 100%">Search</button>
+            </div>
+          </div>
+        </card>
+        <card type="chart">
           <div>
             <div class="col-12">
               <div style="padding-bottom: 10px; width: 100%">
                 <div class="row">
-                  <div class="col-md-3" style="margin-bottom: 10px">
-                    <input type="text" placeholder="Search" v-model="search" class="form-control" />
-                  </div>
-                  <div class="col-md-7"></div>
+                  <div class="col-md-10"></div>
                   <div class="col-md-2">
                     <div :class="'float-right'" style="width: 100%;">
                       <label class="btn btn-primary btn-simple" @click="exportToPDF()" style="width: 100%">
@@ -53,6 +76,7 @@
 </template>
 <script>
  
+import DatePicker from 'vuejs-datepicker'; 
 import moment from 'moment';
 
 var pdfMake = require('pdfmake/build/pdfmake.js');
@@ -60,13 +84,18 @@ var pdfFonts = require('pdfmake/build/vfs_fonts.js');
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export default {
+  components: {
+    DatePicker
+  },
   data() {
     return {
       table: {
         data: this.stocks
       },
-      search: '',
-      tbodyClasses: ''
+      tbodyClasses: '',
+      searchProductName: '',
+      searchDateFrom: '',
+      searchDateTo: ''
     };
   },
   props: {
@@ -75,16 +104,6 @@ export default {
   watch: {
     stocks() {
       this.table.data = this.stocks;
-    },
-    search: function () { 
-      if(this.search != '') {
-        this.table.data = this.stocks.filter(item => 
-          item.productName.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.quantityIn.toString().includes(this.search) || 
-          item.quantityOut.toString().includes(this.search));
-      }
-      else
-        this.table.data = this.stocks;
     }
   },
   computed: {

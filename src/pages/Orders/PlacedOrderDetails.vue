@@ -380,8 +380,21 @@ export default {
           docDefinition.content[2].table.body.push(Object.values(object));  
       }
 
-      //Download PDF
+
       pdfMake.createPdf(docDefinition).download(title+'.pdf');
+      var data;
+      pdfMake.createPdf(docDefinition).getBase64(function(encodedString) {
+          data = encodedString;
+          var formData = new FormData();
+          formData.append("file", data);
+          axios
+            .post(config.backend_host + '/sendGatePass', formData)
+            .then(response => {
+              if(response.data.statusCode === "OK"){
+                
+              }
+            })
+      });
     }
   },
   mounted() {

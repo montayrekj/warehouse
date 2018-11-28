@@ -66,7 +66,11 @@
         .post(config.backend_host + "/login", data).then(response => {
           if(response.data.statusCode === "OK"){
             localStorage.setItem('user', JSON.stringify(response.data.data));
-            window.location.href="/#/dashboard"
+            if(this.$route.query.from != undefined) {
+              window.location = this.$route.query.from;
+            } else {
+             window.location.href = "/#/dashboard";
+            }
           } else {
             this.username = "";
             this.password = "";

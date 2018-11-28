@@ -14,7 +14,7 @@
               <i v-if="this.$sidebar.productsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
             </p>
           </a>
-          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.productsFlag">
+          <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.productsFlag)">
             <sidebar-link to="/products/addProduct" :name="$t('sidebar.addProduct')"/>
             <sidebar-link to="/products/viewProducts" :name="$t('sidebar.viewProducts')"/>
           </ul>
@@ -28,7 +28,7 @@
               <i v-if="this.$sidebar.stocksFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
             </p>
           </a>
-          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.stocksFlag">
+          <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.stocksFlag)">
             <sidebar-link to="/stocks/addStocks" :name="$t('sidebar.addStocks')"/>
             <sidebar-link to="/stocks/viewAddedStocks" :name="$t('sidebar.viewAddedStocks')"/>
           </ul>
@@ -42,7 +42,7 @@
               <i v-if="this.$sidebar.ordersFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
             </p>
           </a>
-          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.ordersFlag">
+          <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.ordersFlag)" class="reports">
             <sidebar-link to="/orders/placeOrder" :name="$t('sidebar.placeOrder')"/>
             <sidebar-link to="/orders/viewActiveOrders" :name="$t('sidebar.viewActiveOrders')"/>
             <sidebar-link to="/orders/viewCompletedOrders" :name="$t('sidebar.viewCompletedOrders')"/>
@@ -58,10 +58,40 @@
               <i v-if="this.$sidebar.reportsFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
             </p>
           </a>
-          <ul style="list-style-type: none; margin-left: 20px;" v-if="this.$sidebar.reportsFlag">
+          <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.reportsFlag)" class="reports">
             <sidebar-link to="/reports/collections" :name="$t('sidebar.collections')"/>
             <sidebar-link to="/reports/sales" :name="$t('sidebar.sales')"/>
             <sidebar-link to="/reports/stocks" :name="$t('sidebar.stocks')"/>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleCustomers()">
+            <i class="tim-icons icon-satisfied"></i>
+            <p>
+              Customers
+              <i v-if="!this.$sidebar.customersFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.customersFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.customersFlag)">
+            <sidebar-link to="/customers/addCustomer" :name="$t('sidebar.addCustomer')"/>
+            <sidebar-link to="/customers/viewCustomers" :name="$t('sidebar.viewCustomers')"/>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" @click="toggleSuppliers()">
+            <i class="tim-icons icon-single-02"></i>
+            <p>
+              Suppliers
+              <i v-if="!this.$sidebar.suppliersFlag" class="tim-icons icon-minimal-right" style="float:right; font-size:12px;"></i>
+              <i v-if="this.$sidebar.suppliersFlag" class="tim-icons icon-minimal-down" style="float:right; font-size:12px;"></i>
+            </p>
+          </a>
+          <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.suppliersFlag)">
+            <sidebar-link to="/suppliers/addSupplier" :name="$t('sidebar.addSupplier')"/>
+            <sidebar-link to="/suppliers/viewSuppliers" :name="$t('sidebar.viewSuppliers')"/>
           </ul>
         </li>
         
@@ -99,7 +129,7 @@ export default {
     style() {
       if(!this.sample)
         return "z-index: 0; top: 0;right: 0; bottom: 0; left: 0; position: fixed;"
-    }
+    },
   },
   methods: {
     toggleSidebar() {
@@ -121,6 +151,15 @@ export default {
     },
     toggleProducts() {
       this.$sidebar.toggleProducts(!this.$sidebar.productsFlag);
+    },
+    toggleCustomers() {
+      this.$sidebar.toggleCustomers(!this.$sidebar.customersFlag);
+    },
+    toggleSuppliers() {
+      this.$sidebar.toggleSuppliers(!this.$sidebar.suppliersFlag);
+    },
+    display(flag) {
+      return flag? "sidebar-show":"sidebar-hide";
     }
   }
 };

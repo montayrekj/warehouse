@@ -9,7 +9,7 @@
             <div class="col-md-4">
               <vue-bootstrap-typeahead 
                 v-model="customerName"
-                :data="customers"
+                :data="customerList"
                 style="border: 0px; display: inline-block; width: 85%"
                 :minMatchingChars="0"
                 placeholder="Enter customer name..."
@@ -137,6 +137,7 @@ export default {
       customerName: "",
       customerSelected: "",
       errorMessage: "",
+      customerList: this.customers.map(arr => arr.customerName)
     }
   },
   props: {
@@ -144,6 +145,9 @@ export default {
     customers: Array,
   },
   watch: {
+    customers() {
+      this.customerList = this.customers.map(arr => arr.customerName);
+    },
     quantity() {
       if(this.quantityIndex != null) {
         var val = this.quantity[this.quantityIndex]

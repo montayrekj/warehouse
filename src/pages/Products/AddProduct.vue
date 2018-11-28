@@ -19,7 +19,7 @@
                 <div class="col-10" style="padding-right: 0px;">
                   <vue-bootstrap-typeahead 
                     v-model="productSupplier"
-                    :data="suppliers"
+                    :data="supplierList"
                     style="border: 0px;width:98%; display: inline-block;"
                     :minMatchingChars="0"
                     placeholder="Enter product supplier..."
@@ -119,7 +119,8 @@ export default {
         name: "",
         address: "",
         contactNo: "",
-      }
+      },
+      supplierList: this.suppliers.map(arr => arr.supplierName)
     };
   },
   computed: {
@@ -129,6 +130,9 @@ export default {
     }
   },
   watch: {
+    suppliers() {
+      this.supplierList = this.suppliers.map(arr => arr.supplierName);
+    },
     products() {
       this.table.data = this.products
     },

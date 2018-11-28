@@ -30,8 +30,11 @@
     "viewCompletedOrders": "View Completed Orders",
     "collections": "Collections",
     "sales": "Sales",
-    "stocks": "Stocks"
-    
+    "stocks": "Stocks",
+    "addCustomer": "Add Customer",
+    "viewCustomers": "View Customers",
+    "addSupplier": "Add Supplier",
+    "viewSuppliers": "View Suppliers"
   },
   "products": {
     "tableColumns" : [
@@ -151,6 +154,20 @@
       {"Header":"Product Name", "Item":"productName"},
       {"Header":"Quantity In", "Item":"quantityIn"},
       {"Header":"Quantity Out", "Item":"quantityOut"}
+    ]
+  },
+  "Customers": {
+    "tableColumns" : [
+      {"Header":"Customer Name", "Item":"customerName"},
+      {"Header":"Customer Address", "Item":"customerAddress"},
+      {"Header":"Customer Contact No.", "Item":"customerNumber"}
+    ]
+  },
+  "Suppliers": {
+    "tableColumns" : [
+      {"Header":"Supplier Name", "Item":"supplierName"},
+      {"Header":"Supplier Address", "Item":"supplierAddress"},
+      {"Header":"Supplier Contact No.", "Item":"supplierNumber"}
     ]
   }
 }

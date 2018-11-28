@@ -22,12 +22,13 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('user');
   if (authRequired && !loggedIn) {
-    return next('/login');
+    const loginpath = window.location.toString();
+    next({path: '/login', query: { from: loginpath}});
   }
 
-  if(loggedIn && to.path === "/login") {
+  /*if(loggedIn && to.path === "/login") {
     return next('/dashboard')
-  }
+  }*/
 
   next();
 })

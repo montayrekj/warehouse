@@ -75,7 +75,7 @@
         .post(config.backend_host +'/removeStocks' + customerName, event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
-              window.location.href = "/#/orders/viewOrders"
+              window.location.href = "/#/orders/viewActiveOrders"
           }
         })
       },
@@ -168,7 +168,7 @@
         axios
         .post(config.backend_host + '/regionalManagerApproved', data).then(response => {
           if(response.data.statusCode === "OK"){
-              window.location.href="/#/orders/viewOrders"
+              window.location.href="/#/orders/viewActiveOrders"
           }
         })
       },
@@ -184,7 +184,7 @@
         axios
         .post(config.backend_host + '/accountingApproved', data).then(response => {
           if(response.data.statusCode === "OK"){
-              window.location.href="/#/orders/viewOrders"
+              window.location.href="/#/orders/viewActiveOrders"
           }
         })
       },
@@ -192,7 +192,7 @@
         axios
         .post(config.backend_host + '/checkerConfirmOrder', event).then(response => {
           if(response.data.statusCode === "OK"){
-              window.location.href="/#/orders/viewOrders"
+              window.location.href="/#/orders/viewActiveOrders"
           }
         })
       },
@@ -222,7 +222,8 @@
         .post(config.backend_host + '/getCustomers')
         .then(response => {
           if(response.data.statusCode === "OK")
-            this.customers = response.data.data.map(arr => arr.customerName);
+            //this.customers = response.data.data.map(arr => arr.customerName);
+            this.customers = response.data.data;
         })
       },
       getSuppliers() {
@@ -230,7 +231,8 @@
         .post(config.backend_host + '/getSuppliers')
         .then(response => {
           if(response.data.statusCode === "OK")
-            this.suppliers = response.data.data.map(arr => arr.supplierName);
+            //this.suppliers = response.data.data.map(arr => arr.supplierName);
+            this.suppliers = response.data.data;
         })
       }
     }, 

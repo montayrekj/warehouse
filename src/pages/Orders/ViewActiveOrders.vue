@@ -219,7 +219,6 @@ export default {
     .post(config.backend_host + '/getActiveOrders', formData)
     .then(response => {
       if(response.data.statusCode === "OK"){
-        console.log(response.data.data)
         for(var i = 0; i < response.data.data.length; i++) {
           response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
         }

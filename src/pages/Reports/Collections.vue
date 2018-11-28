@@ -1,16 +1,64 @@
 <template>
   <div>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
+        <card>
+          <h4>Advanced Search</h4>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Order Id</label>
+              <input type="text" class="form-control" placeholder="Enter order id..." v-model="searchOrderId" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Customer Name</label>
+              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchCustomerName" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Term Amount</label>
+              <input type="text" class="form-control"  placeholder="Enter term amount..." v-model="searchTermAmount" >
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Term Due Date</label>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchTermDueDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchTermDueDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Ordered Date</label>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchOrderedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchOrderedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Ordered From</label>
+              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchOrderedFrom" >
+            </div>
+          </div>
+          <div class="row" style="margin-top: 20px">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+              <button class="btn btn-success" style="width: 100%">Search</button>
+            </div>
+          </div>
+        </card>
+        <card type="chart">
           <div>
             <div class="col-12">
               <div style="padding-bottom: 10px; width: 100%">
                 <div class="row">
-                  <div class="col-md-3" style="margin-bottom: 10px;">
-                    <input type="text" placeholder="Search" v-model="search" class="form-control" />
-                  </div>
-                  <div class="col-md-7"></div>
+                  <div class="col-md-10"></div>
                   <div class="col-md-2">
                     <div :class="'float-right'" style="width: 100%;">
                       <label class="btn btn-primary btn-simple" @click="exportToPDF()" style="width: 100%">
@@ -61,7 +109,8 @@
   </div>
 </template>
 <script>
-import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
+import DatePicker from 'vuejs-datepicker';
 import moment from 'moment';
 
 var pdfMake = require('pdfmake/build/pdfmake.js');
@@ -71,7 +120,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export default {
   components: {
     SweetModal,
-    SweetModalTab
+    SweetModalTab,
+    DatePicker
   },
   data() {
     return {
@@ -81,7 +131,15 @@ export default {
       search: '',
       tbodyClasses: '',
       confirmModalFlag: false,
-      selectedOrderId: null
+      selectedOrderId: null,
+      searchOrderId: '',
+      searchCustomerName: '',
+      searchTermAmount: '',
+      searchTermDueDateFrom: null,
+      searchTermDueDateTo: null,
+      searchOrderedDateFrom: null,
+      searchOrderedDateTo: null,
+      searchOrderedFrom: ''
     };
   },
   props: {
@@ -90,19 +148,6 @@ export default {
   watch: {
     collections() {
       this.table.data = this.collections;
-    },
-    search: function () { 
-      if(this.search != '') {
-        this.table.data = this.collections.filter(item => 
-          item.orderId.toString().includes(this.search) ||
-          item.customer.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.termAmount.toString().includes(this.search) ||
-          item.termDueDate.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.createdDate.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.createdBy.toUpperCase().includes(this.search.toUpperCase()));
-      }
-      else
-        this.table.data = this.collections;
     }
   },
   computed: {

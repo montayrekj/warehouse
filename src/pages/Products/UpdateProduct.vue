@@ -29,7 +29,7 @@
           </div>
           <div class="form-group">
             <label for="productSupplier">Supplier</label>
-            <input type="text" v-if="onloadSupplier === true"class="form-control" placeholder="Enter product supplier..." v-model="productSupplier" >
+            <input type="text" v-if="onloadSupplier === true" class="form-control" placeholder="Enter product supplier..." v-model="productSupplier" >
             <vue-bootstrap-typeahead 
                 v-model="productSupplier"
                 v-if="onloadSupplier === false"

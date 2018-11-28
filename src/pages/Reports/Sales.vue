@@ -1,16 +1,58 @@
 <template>
   <div>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card type="chart" style="max-height: calc(100vh - 88px); overflow: auto">
+        <card>
+          <h4>Advanced Search</h4>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Customer Name</label>
+              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchCustomerName" >
+            </div>
+            <div class="form-group col-md-4">
+              <label>Type</label>
+              <!--input type="text" class="form-control" placeholder="Select a type..." v-model="searchType" -->
+              <select class="form-control" v-model="searchType">
+                <option value="selectAType" disabled selected>Select a type...</option>
+                <option value="Cash">Cash</option>
+                <option value="Term">Term</option> 
+              </select>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Paid Amount</label>
+              <input type="text" class="form-control"  placeholder="Enter term amount..." v-model="searchPaidAmount" >
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label>Paid Date</label>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchPaidDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+                <div class="form-group col-md-6">
+                    <date-picker :value="searchPaidDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Paid To</label>
+              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchPaidTo" >
+            </div>
+          </div>
+          <div class="row" style="margin-top: 20px">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+              <button class="btn btn-success" style="width: 100%">Search</button>
+            </div>
+          </div>
+        </card>
+        <card type="chart">
           <div>
             <div class="col-12">
               <div style="padding-bottom: 10px; width: 100%">
                 <div class="row">
-                  <div class="col-md-3" style="margin-bottom: 10px">
-                    <input type="text" placeholder="Search" v-model="search" class="form-control" />
-                  </div>
-                  <div class="col-md-7"></div>
+                  <div class="col-md-10"></div>
                   <div class="col-md-2">
                     <div :class="'float-right'" style="width: 100%;">
                       <label class="btn btn-primary btn-simple" @click="exportToPDF()" style="width: 100%">
@@ -53,6 +95,7 @@
 </template>
 <script>
  
+import DatePicker from 'vuejs-datepicker'; 
 import moment from 'moment';
 
 var pdfMake = require('pdfmake/build/pdfmake.js');
@@ -60,13 +103,21 @@ var pdfFonts = require('pdfmake/build/vfs_fonts.js');
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export default {
+  components: {
+    DatePicker
+  },
   data() {
     return {
       table: {
         data: this.sales
       },
-      search: '',
-      tbodyClasses: ''
+      tbodyClasses: '',
+      searchCustomerName: '',
+      searchType: 'selectAType',
+      searchPaidAmount: '',
+      searchPaidDateFrom: '',
+      searchPaidDateTo: '',
+      searchPaidTo: ''
     };
   },
   props: {
@@ -75,18 +126,6 @@ export default {
   watch: {
     sales() {
       this.table.data = this.sales;
-    },
-    search: function () { 
-      if(this.search != '') {
-        this.table.data = this.sales.filter(item => 
-          item.customer.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.salesType.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.amount.toString().includes(this.search.toUpperCase()) ||
-          item.createdDate.toUpperCase().includes(this.search.toUpperCase()) ||
-          item.createdBy.toUpperCase().includes(this.search.toUpperCase()));
-      }
-      else
-        this.table.data = this.sales;
     }
   },
   computed: {

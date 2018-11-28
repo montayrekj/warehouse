@@ -206,3 +206,49 @@ html {
   margin-bottom: 60px
 }
 
+.input-group-append.eye-password{
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  padding: 10px;
+  background-image: linear-gradient(to bottom left, #32d47d, #00f2c3, #32d47d) !important;
+}
+
+.input-group-append.eye-password:hover{
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+  -webkit-transform: translateY(-1px);
+  cursor: pointer;
+}
+
+.eye-password > i {
+    font-weight: bold;
+}
+
+.sweet-modal-fix {
+  background-color: #253545 !important;
+}
+
+.sweet-modal.theme-dark .sweet-modal-icon.sweet-modal-success::before, .sweet-modal.theme-dark .sweet-modal-icon.sweet-modal-success::after, .sweet-modal.theme-dark .sweet-modal-icon.sweet-modal-success .sweet-modal-fix {
+  background-color: #253545 !important;
+}
+
+.sidebar-hide {
+  height: 0; 
+  overflow: hidden; 
+  -webkit-transition: 0.5s; 
+  transition: 0.5s;
+}
+
+.sidebar-show {
+  overflow: hidden; 
+  -webkit-transition: 0.5s; 
+  transition: 0.5s; 
+  height: 120px;
+}
+
+.sidebar-show.reports{
+  overflow: hidden; 
+  -webkit-transition: 0.5s; 
+  transition: 0.5s; 
+  height: 180px;
+}

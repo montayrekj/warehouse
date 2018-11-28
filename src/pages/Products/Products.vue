@@ -108,18 +108,18 @@ export default {
     },
     search: function () {
       if(this.search != '') {
-        this.table.data = [...tableData].filter(item => 
-          item.name.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.code.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.quantity.includes(this.search) ||
+        this.table.data = this.products.filter(item => 
+          item.productName.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.productCode.toUpperCase().includes(this.search.toUpperCase()) || 
+          item.quantity.toString().includes(this.search) ||
           item.unit.toUpperCase().includes(this.search.toUpperCase()) || 
-          item.buyPrice.includes(this.search) ||
-          item.sellPrice.includes(this.search) ||
-          item.limit.includes(this.search) ||
+          item.buyPrice.toString().includes(this.search) ||
+          item.sellPrice.toString().includes(this.search) ||
+          item.quantityLimit.toString().includes(this.search) ||
           item.supplier.toUpperCase().includes(this.search.toUpperCase()));
       }
       else
-        this.table.data = [...tableData];
+        this.table.data = this.products;
     }
   },
   methods: {

@@ -22,7 +22,16 @@ import Collections from "@/pages/Reports/Collections.vue";
 import Sales from "@/pages/Reports/Sales.vue";
 import Stocks from "@/pages/Reports/Stocks.vue";
 
+import AddCustomer from "@/pages/Customers/AddCustomer.vue"
+import Customers from "@/pages/Customers/Customers.vue"
+import UpdateCustomer from "@/pages/Customers/UpdateCustomer.vue"
+
+import AddSupplier from "@/pages/Suppliers/AddSupplier.vue"
+import Suppliers from "@/pages/Suppliers/Suppliers.vue"
+import UpdateSupplier from "@/pages/Suppliers/UpdateSupplier.vue"
+
 import Login from "@/pages/Login.vue";
+import UserProfile from "@/pages/User/UserProfile.vue"
 
 const routes = [
   { path: "/login", component: Login },
@@ -37,13 +46,18 @@ const routes = [
         component: Dashboard
       },
       {
+        path: "profile",
+        name: "profile",
+        component: UserProfile
+      },
+      {
         path: "products/addProduct",
         name: "add product",
         component: AddProduct
       },
       {
         path: "products/updateProduct/:id",
-        name: "update > ",
+        name: "update product > ",
         component: UpdateProduct
       },
       {
@@ -100,6 +114,36 @@ const routes = [
         path: "reports/stocks",
         name: "stocks",
         component: Stocks
+      },
+      {
+        path: "customers/addCustomer",
+        name: "add customer",
+        component: AddCustomer
+      },
+      {
+        path: "customers/viewCustomers",
+        name: "view customers",
+        component: Customers
+      },
+      {
+        path: "customers/updateCustomer/:id",
+        name: "update customer > ",
+        component: UpdateCustomer
+      },
+      {
+        path: "suppliers/addSupplier",
+        name: "add supplier",
+        component: AddSupplier
+      },
+      {
+        path: "suppliers/viewSuppliers",
+        name: "view suppliers",
+        component: Suppliers
+      },
+      {
+        path: "suppliers/updateSupplier/:id",
+        name: "update supplier > ",
+        component: UpdateSupplier
       }
     ]
   },
