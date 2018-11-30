@@ -260,9 +260,7 @@
         if(this.userType != null){
           switch(this.userType.toString()){
             case this.regionalManager:
-              if(this.purchaseOrderStatus == config.PO_STATUS_PENDING){
-                temp = true;
-              }
+              temp = true;
               break;
             case this.accounting:
               if(this.purchaseOrderStatus == config.PO_STATUS_RM_APPROVED){
