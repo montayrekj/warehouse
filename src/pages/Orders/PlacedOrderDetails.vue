@@ -309,7 +309,7 @@
         }
 
         this.salesLogsModel.salesLogsItem = this.table.data;
-        //this.$emit('checkerConfirmOrder', this.salesLogsModel);
+        this.$emit('checkerConfirmOrder', this.salesLogsModel);
         if(this.table.data.length <= 10)
           this.createPDF("Customer's Copy");
         else {
