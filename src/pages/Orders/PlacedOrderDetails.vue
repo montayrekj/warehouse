@@ -165,6 +165,8 @@
   import DatePicker from 'vuejs-datepicker'
   import StepProgress from 'vue-step-progress';
   import 'vue-step-progress/dist/main.css';
+  import Loading from 'vue-loading-overlay';
+  import 'vue-loading-overlay/dist/vue-loading.css';
 
   import { POINT_CONVERSION_COMPRESSED } from 'constants';
 
@@ -177,7 +179,8 @@
 
     components: {
       DatePicker,
-      StepProgress
+      StepProgress,
+      Loading
     },
     data() {
       return {
@@ -185,6 +188,7 @@
           data: [],
         },
         salesLogsModel: null,
+        orderId: null,
         customerName: "",
         orderedFrom: "",
         orderedDate: "",
@@ -200,6 +204,8 @@
         ],
         stepperIcon: "fa fa-check",
         currentStep: 0,
+        isLoading: true,
+        fullPage: true
       }
     },
     watch: {
@@ -319,13 +325,13 @@
         this.salesLogsModel.salesLogsItem = this.table.data;
         this.$emit('checkerConfirmOrder', this.salesLogsModel);
         if(this.table.data.length <= 10)
-          this.createPDF("Customer's Copy");
+          this.createPDF("Customer's Copy", this.orderId);
         else {
-          this.createPDF("Customer's Copy");
-          this.createPDF("Guard's Copy");
+          this.createPDF("Customer's Copy", this.orderId);
+          this.createPDF("Guard's Copy", this.orderId);
         }
       },
-      createPDF(title) {
+      createPDF(title, orderId) {
         var user = JSON.parse(localStorage.getItem("user"))
         var signature = "Customer's Signature Over Printed Name"
         if(this.table.data.length <= 10) {
@@ -493,22 +499,24 @@
             var formData = new FormData();
             var user = JSON.parse(localStorage.getItem("user"))
             formData.append("userId", user.userId);
-            formData.append("orderId", this.$route.params.id);
+            formData.append("orderId", orderId);
             formData.append("file", data);
             
-            axios
+            window.location.href="/#/orders/viewActiveOrders"
+            /*axios
               .post(config.backend_host + '/sendGatePass', formData)
               .then(response => {
                 if(response.data.statusCode === "OK"){
                   
                 }
-              })
+              })*/
         });
       }
     },
     mounted() {
       var formData = new FormData();
-      formData.append("id", this.$route.params.id)
+      this.orderId = this.$route.params.id
+      formData.append("id", this.orderId)
       axios
           .post(config.backend_host + '/getOrderById', formData)
           .then(response => {

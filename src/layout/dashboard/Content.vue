@@ -164,11 +164,11 @@
         var data = new FormData();
         data.append('orderId', event.orderId);
         data.append('approved', event.approved);
-
+        window.location.href="/#/orders/viewActiveOrders"
         axios
         .post(config.backend_host + '/regionalManagerApproved', data).then(response => {
+         
           if(response.data.statusCode === "OK"){
-              window.location.href="/#/orders/viewActiveOrders"
           }
         })
       },
@@ -180,11 +180,12 @@
         data.append('termAmount', event.termAmount);
         data.append('termDueDate', event.termDueDate);
         data.append('userId', this.userId);
-
+        window.location.href="/#/orders/viewActiveOrders"
         axios
         .post(config.backend_host + '/accountingApproved', data).then(response => {
+          
           if(response.data.statusCode === "OK"){
-              window.location.href="/#/orders/viewActiveOrders"
+              
           }
         })
       },
@@ -192,7 +193,7 @@
         axios
         .post(config.backend_host + '/checkerConfirmOrder', event).then(response => {
           if(response.data.statusCode === "OK"){
-              window.location.href="/#/orders/viewActiveOrders"
+              //window.location.href="/#/orders/viewActiveOrders"
           }
         })
       },
