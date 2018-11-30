@@ -316,7 +316,6 @@
           this.createPDF("Customer's Copy");
           this.createPDF("Guard's Copy");
         }
-        //this.createPDF("Guard's Copy");
       },
       createPDF(title) {
         var user = JSON.parse(localStorage.getItem("user"))
@@ -485,9 +484,10 @@
             data = encodedString;
             var formData = new FormData();
             var user = JSON.parse(localStorage.getItem("user"))
-            alert(user.userId)
             formData.append("userId", user.userId);
+            formData.append("orderId", this.$route.params.id);
             formData.append("file", data);
+            
             axios
               .post(config.backend_host + '/sendGatePass', formData)
               .then(response => {
