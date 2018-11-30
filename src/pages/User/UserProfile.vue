@@ -52,7 +52,6 @@
 <script>
 
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
   import axios from 'axios';
   import config from '@/config';
 
@@ -60,7 +59,6 @@
     components: {
       SweetModal,
       SweetModalTab,
-      VueBootstrapTypeahead
     },
     props: {
       suppliers: Array,

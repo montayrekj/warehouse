@@ -5,30 +5,41 @@
         <card>
           <h4>Advanced Search</h4>
           <div class="row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
               <label>Id</label>
               <input type="text" class="form-control" placeholder="Enter id..." v-model="searchId" >
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-5">
               <label>Added Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchAddedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchAddedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('addedDateFrom')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchAddedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchAddedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('addedDateTo')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="form-group col-md-4">
               <label>Added By</label>
-              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchAddedBy" >
+              <vue-bootstrap-typeahead 
+                v-model="username"
+                :data="userList"
+                :minMatchingChars="0"
+                placeholder="Enter name..."
+                @hit="selectUser"/>
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-              <button class="btn btn-success" style="width: 100%">Search</button>
+              <button class="btn btn-success" style="width: 100%" @click="search">Search</button>
             </div>
           </div>
         </card>
@@ -68,10 +79,15 @@
 <script>
 
   import DatePicker from 'vuejs-datepicker';
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import axios from 'axios';
+  import config from '@/config'
+  import moment from 'moment';
 
   export default {
     components: {
-      DatePicker
+      DatePicker,
+      VueBootstrapTypeahead
     },
     data() {
       return {
@@ -83,7 +99,9 @@
         searchAddedDateTo: '',
         searchAddedBy: '',
         tbodyClasses: '',
-        detailsData: []
+        detailsData: [],
+        userList: [],
+        username: ''
       };
     },
     props: {
@@ -92,7 +110,12 @@
     watch: {
       purchases: function() {
         this.table.data = this.purchases;
-      }
+      },
+      username() {
+        if(this.username != this.searchAddedBy) {
+          this.searchAddedBy = '';
+        }
+      },
     },
     computed: {
       tableClass() {
@@ -122,7 +145,53 @@
           balance = totalAmount - paidAmount;
 
         return balance;
+      },
+      clearDate(element) {
+        switch(element){
+          case 'addedDateFrom': this.searchAddedDateFrom = '';
+            break;
+          case 'addedDateTo': this.searchAddedDateTo = '';
+            break;
+        }
+      },
+      selectUser() {
+        this.searchAddedBy = this.username;
+      },
+      search() {
+        var baseurl = '/getPurchasesLogs?'
+        var url = "";
+        url += "id=" + this.searchId
+        if(this.searchAddedDateFrom != '')
+          url += "&addedDateFrom=" + (this.searchAddedDateFrom.getMonth() + 1) + '/' + this.searchAddedDateFrom.getDate() + '/' +  this.searchAddedDateFrom.getFullYear();
+        else
+          url += "&addedDateFrom=" + '';
+
+        if(this.searchAddedDateTo != '')
+          url += "&addedDateTo=" + (this.searchAddedDateTo.getMonth() + 1) + '/' + this.searchAddedDateTo.getDate() + '/' +  this.searchAddedDateTo.getFullYear();
+        else
+          url += "&addedDateTo=" + '';
+
+        url += "&addedBy=" + this.username
+        axios
+          .get(config.backend_host + (baseurl + url))
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              for(var i = 0; i < response.data.data.length; i++) {
+                response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+              }
+              this.table.data = response.data.data;
+            }
+          })
       }
+    },
+    mounted() {
+      axios
+        .post(config.backend_host + "/getUsers")
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            this.userList = response.data.data.map(arr => arr.username);
+          }
+        })
     }
   };
 </script>

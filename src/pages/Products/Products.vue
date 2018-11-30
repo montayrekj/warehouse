@@ -18,13 +18,18 @@
             </div>
             <div class="form-group col-md-4">
               <label>Supplier</label>
-              <input type="text" class="form-control"  placeholder="Enter supplier name..." v-model="searchSupplier" >
+              <vue-bootstrap-typeahead 
+                v-model="supplierName"
+                :data="supplierList"
+                :minMatchingChars="0"
+                placeholder="Enter supplier name..."
+                @hit="selectSupplier"/>
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-              <button class="btn btn-success" style="width: 100%">Search</button>
+              <button class="btn btn-success" style="width: 100%" @click="search">Search</button>
             </div>
           </div>
         </card>
@@ -74,13 +79,15 @@
 <script>
 
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
-  const tableColumns = ["Name", "Code", "Quantity", "Unit",  "Price", "Supplier", "Limit"];
-  const entityColumns = ["productName", "productCode", "quantity", "unit",  "price", "supplier", "quantityLimit"];
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+  import axios from 'axios';
+  import config from "@/config";
 
   export default {
     components: {
       SweetModal,
       SweetModalTab,
+      VueBootstrapTypeahead
     },
     data() {
       return {
@@ -91,6 +98,8 @@
         type: '',
         tbodyClasses: '',
         toBeDeleted: 0,
+        supplierName: "",
+        supplierList: this.suppliers.map(arr => arr.supplierName),
         searchProductName: '',
         searchProductCode: '',
         searchUnit: '',
@@ -100,6 +109,7 @@
     props: {
       sample: Boolean,
       products: Array,
+      suppliers: Array,
     },
     computed: {
       tableClass() {
@@ -114,8 +124,16 @@
       }
     },
     watch: {
+      supplierName() {
+        if(this.supplierName != this.searchSupplier) {
+          this.searchSupplier = '';
+        }
+      },
       products() {
         this.table.data = this.products
+      },
+      suppliers() {
+        this.supplierList = this.suppliers.map(arr => arr.supplierName)
       }
     },
     methods: {
@@ -147,6 +165,24 @@
       },
       updateProduct(id) {
         window.location.href = "/#/products/updateProduct/" + id; 
+      },
+      selectSupplier() {
+        this.searchSupplier = this.supplierName;
+      },
+      search() {
+        var baseurl = '/getProducts?'
+        var url = "";
+        url += "productName=" + this.searchProductName
+        url += "&productCode=" + this.searchProductCode
+        url += "&unit=" + this.searchUnit
+        url += "&supplier=" + this.supplierName
+        axios
+          .get(config.backend_host + (baseurl + url))
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              this.table.data = response.data.data;
+            }
+          })
       }
     }
   };

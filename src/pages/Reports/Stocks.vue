@@ -9,7 +9,7 @@
               <label>Product Name</label>
               <input type="text" class="form-control"  placeholder="Enter product name..." v-model="searchProductName" >
             </div>
-            <div class="form-group col-md-6">
+            <!--div class="form-group col-md-6">
               <label>Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
@@ -19,12 +19,12 @@
                     <date-picker :value="searchDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
                 </div>
               </div>
-            </div>
+            </div-->
           </div>
           <div class="row" style="margin-top: 20px">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-              <button class="btn btn-success" style="width: 100%">Search</button>
+              <button class="btn btn-success" style="width: 100%" @click="search">Search</button>
             </div>
           </div>
         </card>
@@ -77,6 +77,8 @@
 <script>
  
   import DatePicker from 'vuejs-datepicker'; 
+  import axios from 'axios';
+  import config from '@/config';
   import moment from 'moment';
 
   var pdfMake = require('pdfmake/build/pdfmake.js');
@@ -176,6 +178,33 @@
 
         //Download PDF
         pdfMake.createPdf(docDefinition).download('Stocks Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      },
+      search() {
+        var baseurl = '/getStocks?'
+        var url = "";
+        url += "productName=" + this.searchProductName;
+
+        /*if(this.searchDateFrom != '')
+          url += "&dateFrom=" + (this.searchDateFrom.getMonth() + 1) + '/' + this.searchDateFrom.getDate() + '/' +  this.searchDateFrom.getFullYear();
+        else
+          url += "&dateFrom=" + '';
+
+        if(this.searchDateTo != '')
+          url += "&dateTo=" + (this.searchDateTo.getMonth() + 1) + '/' + this.searchDateTo.getDate() + '/' +  this.searchDateTo.getFullYear();
+        else
+          url += "&dateTo=" + '';*/
+        
+        axios
+          .get(config.backend_host + (baseurl + url))
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              for(var i = 0; i < response.data.data.length; i++) {
+                response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+                response.data.data[i].termDueDate = moment(response.data.data[i].termDueDate).format("MM/DD/YYYY");
+              }
+              this.table.data = response.data.data;
+            }
+          })
       }
     }
   };

@@ -180,6 +180,11 @@ html {
   cursor: pointer !important;
 }
 
+.input-group > .vdp-datepicker > div > .input-calendar-color {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
 .vdp-datepicker__calendar {
   position: absolute;
   z-index: 100;
@@ -251,4 +256,14 @@ html {
   -webkit-transition: 0.5s; 
   transition: 0.5s; 
   height: 180px;
+}
+
+.input-group > .vdp-datepicker {
+  width: calc(100% - 35px)
+}
+
+.input-group-select {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  -webkit-appearance: none;
 }

@@ -5,7 +5,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Daily Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-primary "></i> 3,215</h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-primary "></i> {{dailySales}} </h3>
           </template>
         </card>
       </div>
@@ -13,7 +13,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Weekly Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-info "></i> 15,426</h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-info "></i> {{weeklySales}} </h3>
           </template>
         </card>
       </div>
@@ -21,7 +21,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Monthly Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-success "></i> 72,392</h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-success "></i> {{monthlySales}} </h3>
           </template>
         </card>
       </div>
@@ -62,16 +62,6 @@
                         :gradient-stops="salesLineChart.gradientStops"
                         :extra-options="salesLineChart.extraOptions">
             </line-chart>
-          </div>
-          <div class="row">
-            <div class="col-4"></div>
-            <div class="col-3">
-              <h5 class="card-category"><i class="tim-icons icon-simple-delete text-success "></i> In</h5>     
-            </div>
-            <div class="col-3">
-              <h5 class="card-category"><i class="tim-icons icon-simple-delete text-info "></i> Out</h5>
-            </div>
-            <div class="col-2"></div>
           </div>
         </card>
       </div>
@@ -133,13 +123,16 @@
           extraOptions: chartConfigs.purpleChartOptions,
           gradientColors: config.colors.primaryGradient,
           gradientStops: [1, 0.4, 0],
-          categories: []
+          categories: [],
         },
         table: {
           data: [],
           activeIndex: 0
         },
-        tbodyClasses: ''
+        tbodyClasses: '',
+        dailySales: 0,
+        weeklySales: 0,
+        monthlySales: 0
       }
     },
     computed: {
@@ -171,21 +164,6 @@
             pointHoverBorderWidth: 15,
             pointRadius: 4,
             data: []
-          },
-          {
-            fill: true,
-            borderColor: config.colors.info,
-            borderWidth: 2,
-            borderDash: [],
-            borderDashOffset: 0.0,
-            pointBackgroundColor: config.colors.info,
-            pointBorderColor: 'rgba(255,255,255,0)',
-            pointHoverBackgroundColor: config.colors.info,
-            pointBorderWidth: 20,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 15,
-            pointRadius: 4,
-            data: []
           }],
           labels: []
         }
@@ -194,12 +172,10 @@
           case 0:
             chartData.labels = ['SUN','MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
             chartData.datasets[0].data = [100, 70, 90, 70, 85, 60, 75];
-            chartData.datasets[1].data = [90, 60, 80, 60, 75, 50, 65];
             break;
           case 1:
             chartData.labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
             chartData.datasets[0].data = [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120];
-            chartData.datasets[1].data = [70, 130, 95, 120, 85, 115, 80, 110, 70, 105, 60, 130];
             break;
         }
         
@@ -232,6 +208,27 @@
         .then(response => {
           if(response.data.statusCode === "OK")
             this.table.data = response.data.data;
+        })
+
+      axios
+        .post(config.backend_host + '/dailySales')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.dailySales = response.data.data;
+        })
+
+      axios
+        .post(config.backend_host + '/weeklySales')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.weeklySales = response.data.data;
+        })
+
+      axios
+        .post(config.backend_host + '/monthlySales')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.monthlySales = response.data.data;
         })
     }
   };

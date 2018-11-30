@@ -3,7 +3,7 @@
     <div class="col-12">
       <card>
         <h3>Order Status</h3>
-        <step-progress :steps="steps" :current-step="currentStep"></step-progress>
+        <step-progress :steps="steps" :current-step="currentStep" :icon-class="stepperIcon"></step-progress>
       </card>
       <card>
         <h3>Order Details</h3>
@@ -70,10 +70,8 @@
         <h3>Regional Manager</h3>
         <div class="row">
           <div class="col-md-12">
-            <label style="font-size: 1rem">I agree that this order will be approved. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eleifend, 
-              ipsum vitae consectetur dapibus, felis lectus imperdiet elit, sed molestie nisi massa a ligula. Quisque lacus risus, 
-              vehicula vitae ullamcorper efficitur, aliquet non diam. Etiam gravida, elit ac fermentum vehicula, ex ante commodo 
-              sapien, sit amet convallis odio mi in velit.
+            <label style="font-size: 1rem"> 
+              I have carefully and eagerly reviewed this order, and I duly agree that this order will be approved and shall be transfered to Accounting for payment processing and approval.
             </label>
           </div>
           <div class="col-xl-8"></div>
@@ -198,8 +196,9 @@
         quantityOut: [],
         quantityIndex: null,
         steps: [
-          'Regional Manager', 'Accounting', 'Checker'
+          'Regional Manager', 'Accounting', 'Checker', 'Closed'
         ],
+        stepperIcon: "fa fa-check",
         currentStep: 0,
       }
     },
@@ -310,25 +309,31 @@
         }
 
         this.salesLogsModel.salesLogsItem = this.table.data;
-        this.$emit('checkerConfirmOrder', this.salesLogsModel);
-        this.createPDF("Customer's Copy");
-        this.createPDF("Guard's Copy");
+        //this.$emit('checkerConfirmOrder', this.salesLogsModel);
+        if(this.table.data.length <= 10)
+          this.createPDF("Customer's Copy");
+        else {
+          this.createPDF("Customer's Copy");
+          this.createPDF("Guard's Copy");
+        }
+        //this.createPDF("Guard's Copy");
       },
       createPDF(title) {
         var user = JSON.parse(localStorage.getItem("user"))
         var signature = "Customer's Signature Over Printed Name"
+        if(this.table.data.length <= 10) {
+          var halfPageBreak = 12 - this.table.data.length;
+          var rectHeight = (halfPageBreak * 10) + ((halfPageBreak * 10) - 10);
+        } else {
+          var rectHeight = 0;
+        }
         var docDefinition = {
+          pageSize: 'A4',
           header: {
             columns: [
-              {text: title, alignment: 'left', margin: 10, color: '#aaa'},
-              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+              {text: title, alignment: 'left', margin: [40,10,10,10], color: '#aaa'},
+              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: [10,10,40,10], color: '#aaa'}
             ]
-          },
-          footer: {
-              text: "© Hexamindz Corporation",
-              alignment: 'right',
-              color: '#aaa',
-              margin: [0,0,10,0]
           },
           content: [
               {
@@ -339,12 +344,25 @@
               {
                   table: {
                       headerRows: 1,
-                      widths: [ '*', '*', '*'],
+                      widths: [ '*', '15%', '15%'],
 
                       body: []
-                  }
+                  },
               },
               {text: ' ', lineHeight: 4},
+              {
+              canvas: [
+                  {
+                      type: 'rect',
+                      x: 0,
+                      y: 0,
+                      w: 517,
+                      h: rectHeight,
+                      r: 4,
+                      lineColor: '#fff',
+                  }
+                ]
+              },
               {text: signature, 
                   alignment: 'right', 
                   decoration: 'overline', 
@@ -355,9 +373,60 @@
               },
               {text: signature, 
                   alignment: 'right', 
-              }
+              },
+              // Half Page
+              {text: '', lineHeight: 1},
+              // Half Page
+              {text: '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', lineHeight: 1, margin: [0, 5, 0, 5]},
+              {
+                columns: [
+                  {text: "Guard's Copy", alignment: 'left', color: '#aaa'},
+                  {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', color: '#aaa'}
+                ]
+              },
+              {text: ' ', lineHeight: 1},
+              {
+                text: 'Checker: ' + user.username,
+                alignment: 'left'
+              },
+              {text: ' ', lineHeight: 1},
+              {
+                  table: {
+                      headerRows: 1,
+                      widths: [ '*', '15%', '15%'],
+
+                      body: []
+                  }
+              },
+              {text: ' ', lineHeight: 4},
+              {
+              canvas: [
+                  {
+                      type: 'rect',
+                      x: 0,
+                      y: 0,
+                      w: 517,
+                      h: rectHeight,
+                      r: 4,
+                      lineColor: '#fff',
+                  }
+                ]
+              },
+              {text: signature, 
+                  alignment: 'right', 
+                  decoration: 'overline', 
+                  decorationStyle: 'solid',
+                      decorationColor: 'black',
+                      color: 'white',
+                      lineHeight: 0.5
+              },
+              {text: signature, 
+                  alignment: 'right', 
+              },
           ]
         };
+        
+
         var col = []
         //Table Header
         var checkerTableCol = this.$t('PlacedOrderDetails.pdfTableColumns');
@@ -380,12 +449,44 @@
             docDefinition.content[2].table.body.push(Object.values(object));  
         }
 
+        if(this.table.data.length <= 10) {
+          var col = []
+          //Table Header
+          var checkerTableCol = this.$t('PlacedOrderDetails.pdfTableColumns');
+          for(var i = 0; i < checkerTableCol.length; i++) {
+            var obj = {
+              text: checkerTableCol[i].Header,
+              bold: true
+            }
+            col.push(obj);
+          }
+          docDefinition.content[13].table.body.push(col);
 
-        pdfMake.createPdf(docDefinition).download(title+'.pdf');
+          //Table Body
+          for(var i=0;i<this.table.data.length;i++){
+              var object = {
+                productName: this.table.data[i].productName,
+                quantitySold: this.quantityOut[i],
+                quantityLeft: this.quantityLeft[i],
+              }
+              docDefinition.content[13].table.body.push(Object.values(object));  
+          }
+        } else {
+          docDefinition.content.length = 7;
+        }
+
+        if(this.table.data.length <= 10) {
+          pdfMake.createPdf(docDefinition).download("Gate Pass - " + moment().format("MM/DD/YYYY").toString() + '.pdf');
+        } else {
+          pdfMake.createPdf(docDefinition).download("Gate Pass(" + title + ") - " + moment().format("MM/DD/YYYY").toString() +'.pdf');
+        }
         var data;
         pdfMake.createPdf(docDefinition).getBase64(function(encodedString) {
             data = encodedString;
             var formData = new FormData();
+            var user = JSON.parse(localStorage.getItem("user"))
+            alert(user.userId)
+            formData.append("userId", user.userId);
             formData.append("file", data);
             axios
               .post(config.backend_host + '/sendGatePass', formData)
@@ -416,7 +517,10 @@
               this.purchaseOrderStatus = response.data.data.purchaseOrderStatus;
               this.currentStep = this.purchaseOrderStatus;
               if(this.purchaseOrderStatus === 3){
-                this.steps[2] = "Complete"
+                this.currentStep = 4;
+              } else if(this.purchaseOrderStatus < 0){
+                this.currentStep = 4;
+                this.stepperIcon = "fa fa-times"
               }
             }
           })

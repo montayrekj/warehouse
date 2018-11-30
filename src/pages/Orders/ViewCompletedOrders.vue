@@ -5,13 +5,18 @@
         <card>
           <h4>Advanced Search</h4>
           <div class="row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
               <label>Order Id</label>
               <input type="text" class="form-control" placeholder="Enter order id..." v-model="searchOrderId" >
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-5">
               <label>Customer Name</label>
-              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchCustomerName" >
+              <vue-bootstrap-typeahead 
+                v-model="customerName"
+                :data="customerList"
+                :minMatchingChars="0"
+                placeholder="Enter customer name..."
+                @hit="selectCustomer"/>
             </div>
             <div class="form-group col-md-4">
               <label>Total Amount</label>
@@ -19,35 +24,49 @@
             </div>
           </div>
           <div class="row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
               <label>Payment Status</label>
-              <select class="form-control" v-model="searchPaymentStatus">
-                <option value="selectPaymentStatus" disabled selected>Select payment status...</option>
-                <option value="Unpaid">Unpaid</option>
-                <option value="Partial">Partial</option>
-                <option value="Full">Full</option>
-              </select>
+              <div class="input-group">
+                <select class="form-control input-group-select" v-model="searchPaymentStatus">
+                  <option value="selectPaymentStatus" disabled selected>Select payment status...</option>
+                  <option value="Unpaid">Unpaid</option>
+                  <option value="Partial">Partial</option>
+                  <option value="Full">Full</option>
+                </select>
+                <div class="input-group-append eye-password" @click="clearPaymentStatus"><i class="fa fa-times"></i></div>
+              </div>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-5">
               <label>Ordered Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchOrderedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchOrderedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('orderedDateFrom')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchOrderedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchOrderedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('orderedDateTo')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="form-group col-md-4">
               <label>Ordered From</label>
-              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchOrderedFrom" >
+              <vue-bootstrap-typeahead 
+                v-model="username"
+                :data="userList"
+                :minMatchingChars="0"
+                placeholder="Enter name..."
+                @hit="selectUser"/>
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-              <button class="btn btn-success" style="width: 100%">Search</button>
+              <button class="btn btn-success" style="width: 100%" @click="search">Search</button>
             </div>
           </div>
         </card>
@@ -87,13 +106,15 @@
 <script>
 
   import DatePicker from 'vuejs-datepicker';
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
   import axios from 'axios';
   import moment from 'moment';
   import config from '@/config'
 
   export default {
     components: {
-      DatePicker
+      DatePicker,
+      VueBootstrapTypeahead
     },
     data() {
       return {
@@ -102,6 +123,10 @@
         },
         tbodyClasses: '',
         searchOrderId: '',
+        customerName: "",
+        customerList: this.customers.map(arr => arr.customerName),
+        username: "",
+        userList: [],
         searchCustomerName: '',
         searchTotalAmount: '',
         searchPaymentStatus: 'selectPaymentStatus',
@@ -111,9 +136,25 @@
         orders: []
       };
     },
+    props: {
+      customers: Array
+    },
     watch: {
       orders: function() {
         this.table.data = this.orders;
+      },
+      customers() {
+        this.customerList = this.customers.map(arr => arr.customerName);
+      },
+      username() {
+        if(this.username != this.searchOrderedFrom) {
+          this.searchOrderedFrom = '';
+        }
+      },
+      customerName() {
+        if(this.customerName != this.searchCustomerName) {
+          this.searchCustomerName = '';
+        }
       }
     },
     computed: {
@@ -121,7 +162,7 @@
         return this.type && `table-${this.type}`;
       },
       tableColumns() {
-        return this.$t('ViewCompletedOrders.tableColumns');
+        return this.$t('ViewClosedOrders.tableColumns');
       }
     },
     methods: {
@@ -133,8 +174,16 @@
       },
       itemValue(item, column) {
         var temp = item[column.Item];
-        if(column.Item == "Balance")
+        if(column.Item == "Balance") {
           return this.computeBalance(item["totalAmount"], item["paidAmount"]);
+        }
+        else if(column.Item == "purchaseOrderStatus") {
+          if(temp == 3) {
+            return "Completed"
+          } else {
+            return "Declined"
+          }
+        }
 
         return temp;
       },
@@ -148,6 +197,63 @@
           balance = totalAmount - paidAmount;
 
         return balance;
+      },
+      clearPaymentStatus() {
+        this.searchPaymentStatus = 'selectPaymentStatus';
+      },
+      clearDate(element) {
+        switch(element){
+          case 'orderedDateFrom': this.searchOrderedDateFrom = '';
+            break;
+          case 'orderedDateTo': this.searchOrderedDateTo = '';
+            break;
+        }
+      },
+      selectCustomer() {
+        this.searchCustomerName = this.customerName;
+      },
+      selectUser() {
+        this.searchOrderedFrom = this.username;
+      },
+      search() {
+        var formData = new FormData();
+        formData.append("active", false);
+
+        var baseurl = '/getActiveOrders?'
+        var url = "";
+        url += "orderId=" + this.searchOrderId
+        url += "&customerName=" + this.customerName
+        url += "&totalAmount=" + this.searchTotalAmount
+        if(this.searchPaymentStatus == 'selectPaymentStatus'){
+          url += "&paymentStatus=" + ''
+        } else {
+          url += "&paymentStatus=" + this.searchPaymentStatus
+        }
+
+        if(this.searchOrderedDateFrom != '')
+          url += "&orderedDateFrom=" + (this.searchOrderedDateFrom.getMonth() + 1) + '/' + this.searchOrderedDateFrom.getDate() + '/' +  this.searchOrderedDateFrom.getFullYear();
+        else
+          url += "&orderedDateFrom=" + '';
+
+        if(this.searchOrderedDateTo != '')
+          url += "&orderedDateTo=" + (this.searchOrderedDateTo.getMonth() + 1) + '/' + this.searchOrderedDateTo.getDate() + '/' +  this.searchOrderedDateTo.getFullYear();
+        else
+          url += "&orderedDateTo=" + '';
+
+        url += "&orderedFrom=" + this.username
+
+        url += "&active=" + true;
+        
+        axios
+          .get(config.backend_host + (baseurl + url))
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              for(var i = 0; i < response.data.data.length; i++) {
+                response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+              }
+              this.table.data = response.data.data;
+            }
+          })
       }
     },
     mounted() {
@@ -164,6 +270,14 @@
           this.orders = response.data.data;
         }
       })
+
+      axios
+        .post(config.backend_host + "/getUsers")
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            this.userList = response.data.data.map(arr => arr.username);
+          }
+        })
     }
   };
 </script>

@@ -27,7 +27,7 @@
     "viewAddedStocks": "View Added Stocks",
     "placeOrder": "Place Order",
     "viewActiveOrders": "View Active Orders",
-    "viewCompletedOrders": "View Completed Orders",
+    "viewClosedOrders": "View Closed Orders",
     "collections": "Collections",
     "sales": "Sales",
     "stocks": "Stocks",
@@ -99,13 +99,14 @@
       {"Header":"Ordered From", "Item":"createdBy"}
     ]
   },
-  "ViewCompletedOrders": {
+  "ViewClosedOrders": {
     "tableColumns" : [
       {"Header":"Order Id", "Item":"orderId"},
       {"Header":"Customer Name", "Item":"customer"},
       {"Header":"Total Amount", "Item":"totalAmount"},
       {"Header":"Paid Amount", "Item":"paidAmount"},
       {"Header":"Balance", "Item":"Balance"},
+      {"Header":"Order Status", "Item":"purchaseOrderStatus"},
       {"Header":"Ordered Date", "Item":"createdDate"},
       {"Header":"Ordered From", "Item":"createdBy"}
     ]

@@ -45,7 +45,7 @@
           <ul style="list-style-type: none; margin-left: 20px;" :class="display(this.$sidebar.ordersFlag)" class="reports">
             <sidebar-link to="/orders/placeOrder" :name="$t('sidebar.placeOrder')"/>
             <sidebar-link to="/orders/viewActiveOrders" :name="$t('sidebar.viewActiveOrders')"/>
-            <sidebar-link to="/orders/viewCompletedOrders" :name="$t('sidebar.viewCompletedOrders')"/>
+            <sidebar-link to="/orders/viewClosedOrders" :name="$t('sidebar.viewClosedOrders')"/>
           </ul>
         </li>
 

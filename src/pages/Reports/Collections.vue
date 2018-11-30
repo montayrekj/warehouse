@@ -7,15 +7,20 @@
           <div class="row">
             <div class="form-group col-md-4">
               <label>Order Id</label>
-              <input type="text" class="form-control" placeholder="Enter order id..." v-model="searchOrderId" >
+              <input type="number" class="form-control" placeholder="Enter order id..." v-model="searchOrderId" >
             </div>
             <div class="form-group col-md-4">
               <label>Customer Name</label>
-              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchCustomerName" >
+              <vue-bootstrap-typeahead 
+                v-model="customerName"
+                :data="customerList"
+                :minMatchingChars="0"
+                placeholder="Enter customer name..."
+                @hit="selectCustomer"/>
             </div>
             <div class="form-group col-md-4">
               <label>Term Amount</label>
-              <input type="text" class="form-control"  placeholder="Enter term amount..." v-model="searchTermAmount" >
+              <input type="number" class="form-control"  placeholder="Enter term amount..." v-model="searchTermAmount" >
             </div>
           </div>
           <div class="row">
@@ -23,10 +28,16 @@
               <label>Term Due Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchTermDueDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group">
+                      <date-picker v-model="searchTermDueDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'" ref="dateFrom"></date-picker>
+                      <div class="input-group-append eye-password" @click="clearDate('dueDateFrom')"><i class="fa fa-calendar-times"></i></div>
+                    </div>
                 </div>
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchTermDueDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchTermDueDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('dueDateTo')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -34,22 +45,33 @@
               <label>Ordered Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchOrderedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchOrderedDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('orderedDateFrom')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchOrderedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                  <div class="input-group">
+                    <date-picker v-model="searchOrderedDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date To..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('orderedDateTo')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="form-group col-md-4">
               <label>Ordered From</label>
-              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchOrderedFrom" >
+              <vue-bootstrap-typeahead 
+                v-model="username"
+                :data="userList"
+                :minMatchingChars="0"
+                placeholder="Enter name..."
+                @hit="selectUser"/>
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-              <button class="btn btn-success" style="width: 100%">Search</button>
+              <button class="btn btn-success" style="width: 100%" @click="search">Search</button>
             </div>
           </div>
         </card>
@@ -112,7 +134,10 @@
 
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
   import DatePicker from 'vuejs-datepicker';
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
   import moment from 'moment';
+  import axios from 'axios';
+  import config from '@/config'
 
   var pdfMake = require('pdfmake/build/pdfmake.js');
   var pdfFonts = require('pdfmake/build/vfs_fonts.js');
@@ -122,33 +147,51 @@
     components: {
       SweetModal,
       SweetModalTab,
-      DatePicker
+      DatePicker,
+      VueBootstrapTypeahead
     },
     data() {
       return {
         table: {
           data: this.collections
         },
-        search: '',
         tbodyClasses: '',
         confirmModalFlag: false,
+        customerName: "",
+        customerList: this.customers.map(arr => arr.customerName),
+        username: "",
+        userList: [],
         selectedOrderId: null,
         searchOrderId: '',
         searchCustomerName: '',
         searchTermAmount: '',
-        searchTermDueDateFrom: null,
-        searchTermDueDateTo: null,
-        searchOrderedDateFrom: null,
-        searchOrderedDateTo: null,
+        searchTermDueDateFrom: '',
+        searchTermDueDateTo: '',
+        searchOrderedDateFrom: '',
+        searchOrderedDateTo: '',
         searchOrderedFrom: ''
       };
     },
     props: {
-      collections: Array
+      collections: Array,
+      customers: Array
     },
     watch: {
       collections() {
         this.table.data = this.collections;
+      },
+      customers() {
+        this.customerList = this.customers.map(arr => arr.customerName);
+      },
+      username() {
+        if(this.username != this.searchOrderedFrom) {
+          this.searchOrderedFrom = '';
+        }
+      },
+      customerName() {
+        if(this.customerName != this.searchCustomerName) {
+          this.searchCustomerName = '';
+        }
       }
     },
     computed: {
@@ -183,6 +226,18 @@
           balance = totalAmount - paidAmount;
 
         return balance;
+      },
+      clearDate(element) {
+        switch(element){
+          case 'dueDateFrom': this.searchTermDueDateFrom = '';
+            break;
+          case 'dueDateTo': this.searchTermDueDateTo = '';
+            break;
+          case 'orderedDateFrom': this.searchOrderedDateFrom = '';
+            break;
+          case 'orderedDateTo': this.searchOrderedDateTo = '';
+            break;
+        }
       },
       collect() {
         this.$emit('collectCollection', Number(this.selectedOrderId));
@@ -251,7 +306,62 @@
 
         //Download PDF
         pdfMake.createPdf(docDefinition).download('Collections Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      },
+      selectCustomer() {
+        this.searchCustomerName = this.customerName;
+      },
+      selectUser() {
+        this.searchOrderedFrom = this.username;
+      },
+      search() {
+        var baseurl = '/getCollections?'
+        var url = "";
+        url += "orderId=" + this.searchOrderId
+        url += "&customerName=" + this.customerName
+        url += "&termAmount=" + this.searchTermAmount
+        if(this.searchTermDueDateFrom != '')
+          url += "&termDueDateFrom=" + (this.searchTermDueDateFrom.getMonth() + 1) + '/' + this.searchTermDueDateFrom.getDate() + '/' +  this.searchTermDueDateFrom.getFullYear();
+        else
+          url += "&termDueDateFrom=" + '';
+
+        if(this.searchTermDueDateTo != '')
+          url += "&termDueDateTo=" + (this.searchTermDueDateTo.getMonth() + 1) + '/' + this.searchTermDueDateTo.getDate() + '/' +  this.searchTermDueDateTo.getFullYear();
+        else
+          url += "&termDueDateTo=" + '';
+
+        if(this.searchOrderedDateFrom != '')
+          url += "&orderedDateFrom=" + (this.searchOrderedDateFrom.getMonth() + 1) + '/' + this.searchOrderedDateFrom.getDate() + '/' +  this.searchOrderedDateFrom.getFullYear();
+        else
+          url += "&orderedDateFrom=" + '';
+
+        if(this.searchOrderedDateTo != '')
+          url += "&orderedDateTo=" + (this.searchOrderedDateTo.getMonth() + 1) + '/' + this.searchOrderedDateTo.getDate() + '/' +  this.searchOrderedDateTo.getFullYear();
+        else
+          url += "&orderedDateTo=" + '';
+
+        url += "&orderedFrom=" + this.username
+        
+        axios
+          .get(config.backend_host + (baseurl + url))
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              for(var i = 0; i < response.data.data.length; i++) {
+                response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+                response.data.data[i].termDueDate = moment(response.data.data[i].termDueDate).format("MM/DD/YYYY");
+              }
+              this.table.data = response.data.data;
+            }
+          })
       }
+    },
+    mounted() {
+      axios
+        .post(config.backend_host + "/getUsers")
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            this.userList = response.data.data.map(arr => arr.username);
+          }
+        })
     }
   };
 </script>

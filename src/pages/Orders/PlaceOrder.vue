@@ -179,8 +179,8 @@
     },
     methods: {
       theadStyle(column) {
-        if(column.Header == "Sell Price" || column.Header == 'Quantity Sold')
-          return "text-align: center; width: 100px"
+        if(column.Header == 'Quantity Sold' || column.Header == "Sell Price")
+          return "text-align: center; width: 100px; min-width: 100px"
         else 
           return "text-align: center;"
       },
@@ -225,6 +225,7 @@
       removeSelected(index){
         this.selected.splice(index, 1)
         this.quantity.splice(index, 1)
+        this.quantityIndex = null;
         this.computeTotalAmount();
       },
       order() {
@@ -240,9 +241,18 @@
       validateOrder() {
         var flag = true;
         if(this.customerSelected == "") {
-          flag = false;
-          this.errorMessage = "Please select customer!"
-          return flag;
+          if(this.customerName != "") {
+            var temp = this.customers.filter(customer => customer.customerName == this.customerName);
+            if(temp.length == 0) {
+              flag = false;
+              this.errorMessage = "Customer doesn't exist!"
+              return flag;
+            }
+          } else {
+            flag = false;
+            this.errorMessage = "Please input customer!"
+            return flag;
+          }
         } 
         if(this.selected.length == 0) {
           flag = false;

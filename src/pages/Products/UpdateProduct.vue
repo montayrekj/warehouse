@@ -178,7 +178,9 @@
           if(this.productSupplier === null || this.productSupplier === "") {
             this.errorMessage = "Please input all fields!"
           } else {
-            this.errorMessage = "Supplier doesn't exist!"
+            var temp = this.suppliers.filter(supplier => supplier.supplierName == this.productSupplier)
+            if(temp.length == 0)
+              this.errorMessage = "Supplier doesn't exist!"
           }
           flag = false;
         }

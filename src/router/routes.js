@@ -91,8 +91,8 @@ const routes = [
         component: ViewActiveOrders
       },
       {
-        path: "/orders/viewCompletedOrders",
-        name: "view completed orders ",
+        path: "/orders/viewClosedOrders",
+        name: "view closed orders ",
         component: ViewCompletedOrders
       },
       {

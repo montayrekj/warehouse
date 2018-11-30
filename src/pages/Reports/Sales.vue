@@ -7,16 +7,23 @@
           <div class="row">
             <div class="form-group col-md-4">
               <label>Customer Name</label>
-              <input type="text" class="form-control"  placeholder="Enter customer name..." v-model="searchCustomerName" >
+              <vue-bootstrap-typeahead 
+                v-model="customerName"
+                :data="customerList"
+                :minMatchingChars="0"
+                placeholder="Enter customer name..."
+                @hit="selectCustomer"/>
             </div>
             <div class="form-group col-md-4">
               <label>Type</label>
-              <!--input type="text" class="form-control" placeholder="Select a type..." v-model="searchType" -->
-              <select class="form-control" v-model="searchType">
-                <option value="selectAType" disabled selected>Select a type...</option>
-                <option value="Cash">Cash</option>
-                <option value="Term">Term</option> 
-              </select>
+              <div class="input-group">
+                <select class="form-control input-group-select" v-model="searchType">
+                  <option value="selectAType" disabled selected>Select a type...</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Term">Term</option> 
+                </select>
+                <div class="input-group-append eye-password" @click="clearSearchType"><i class="fa fa-times"></i></div>
+              </div>
             </div>
             <div class="form-group col-md-4">
               <label>Paid Amount</label>
@@ -28,22 +35,27 @@
               <label>Paid Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchPaidDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <date-picker v-model="searchPaidDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
                 </div>
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchPaidDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                    <date-picker v-model="searchPaidDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
                 </div>
               </div>
             </div>
             <div class="form-group col-md-4">
               <label>Paid To</label>
-              <input type="text" class="form-control"  placeholder="Enter name..." v-model="searchPaidTo" >
+              <vue-bootstrap-typeahead 
+                v-model="username"
+                :data="userList"
+                :minMatchingChars="0"
+                placeholder="Enter name..."
+                @hit="selectUser"/>
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
             <div class="col-md-10"></div>
             <div class="col-md-2">
-              <button class="btn btn-success" style="width: 100%">Search</button>
+              <button class="btn btn-success" style="width: 100%" @click="search">Search</button>
             </div>
           </div>
         </card>
@@ -96,7 +108,10 @@
 <script>
  
   import DatePicker from 'vuejs-datepicker'; 
+  import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
   import moment from 'moment';
+  import axios from 'axios';
+  import config from '@/config';
 
   var pdfMake = require('pdfmake/build/pdfmake.js');
   var pdfFonts = require('pdfmake/build/vfs_fonts.js');
@@ -104,7 +119,8 @@
 
   export default {
     components: {
-      DatePicker
+      DatePicker,
+      VueBootstrapTypeahead
     },
     data() {
       return {
@@ -113,6 +129,10 @@
         },
         tbodyClasses: '',
         searchCustomerName: '',
+        username: "",
+        userList: [],
+        customerName: "",
+        customerList: this.customers.map(arr => arr.customerName),
         searchType: 'selectAType',
         searchPaidAmount: '',
         searchPaidDateFrom: '',
@@ -121,12 +141,26 @@
       };
     },
     props: {
-      sales: Array
+      sales: Array,
+      customers: Array,
     },
     watch: {
       sales() {
         this.table.data = this.sales;
-      }
+      },
+      customers() {
+        this.customerList = this.customers.map(arr => arr.customerName);
+      },
+      customerName() {
+        if(this.customerName != this.searchCustomerName) {
+          this.searchCustomerName = '';
+        }
+      },
+      username() {
+        if(this.username != this.searchPaidTo) {
+          this.searchPaidTo = '';
+        }
+      },
     },
     computed: {
       tableClass() {
@@ -147,6 +181,15 @@
         var temp = item[column.Item];
 
         return temp;
+      },
+      clearSearchType() {
+        this.searchType = 'selectAType';
+      },
+      selectCustomer() {
+        this.searchCustomerName = this.customerName;
+      },
+      selectUser() {
+        this.searchPaidTo = this.username;
       },
       exportToPDF() {
         var docDefinition = {
@@ -200,7 +243,50 @@
 
         //Download PDF
         pdfMake.createPdf(docDefinition).download('Sales Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+      },
+      search() {
+        var baseurl = '/getSales?'
+        var url = "";
+        url += "paidAmount=" + this.searchPaidAmount;
+        url += "&customerName=" + this.customerName;
+        if(this.searchType == 'selectAType') {
+          url += "&searchType=" + '';
+        } else {
+          url += "&searchType=" + this.searchType;
+        }
+        if(this.searchPaidDateFrom != '')
+          url += "&paidDateFrom=" + (this.searchPaidDateFrom.getMonth() + 1) + '/' + this.searchPaidDateFrom.getDate() + '/' +  this.searchPaidDateFrom.getFullYear();
+        else
+          url += "&paidDateFrom=" + '';
+
+        if(this.searchPaidDateTo != '')
+          url += "&paidDateTo=" + (this.searchPaidDateTo.getMonth() + 1) + '/' + this.searchPaidDateTo.getDate() + '/' +  this.searchPaidDateTo.getFullYear();
+        else
+          url += "&paidDateTo=" + '';
+
+        url += "&paidTo=" + this.username;
+        
+        axios
+          .get(config.backend_host + (baseurl + url))
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              for(var i = 0; i < response.data.data.length; i++) {
+                response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+                response.data.data[i].termDueDate = moment(response.data.data[i].termDueDate).format("MM/DD/YYYY");
+              }
+              this.table.data = response.data.data;
+            }
+          })
       }
+    },
+    mounted() {
+      axios
+      .post(config.backend_host + "/getUsers")
+      .then(response => {
+        if(response.data.statusCode === "OK"){
+          this.userList = response.data.data.map(arr => arr.username);
+        }
+      })
     }
   };
 </script>
