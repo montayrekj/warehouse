@@ -260,7 +260,9 @@
         if(this.userType != null){
           switch(this.userType.toString()){
             case this.regionalManager:
-              temp = true;
+              if(this.purchaseOrderStatus == config.PO_STATUS_PENDING || this.purchaseOrderStatus == config.PO_STATUS_RM_APPROVED || this.purchaseOrderStatus == config.PO_STATUS_ACCT_APPROVED){
+                temp = true;
+              }
               break;
             case this.accounting:
               if(this.purchaseOrderStatus == config.PO_STATUS_RM_APPROVED){
@@ -276,8 +278,16 @@
               break;
           }
         }
-        //if(this.userType == userType)
-        return (this.userType == type) && temp;
+
+        if(this.userType == this.regionalManager) {
+          if(this.purchaseOrderStatus == type) {
+            temp = true;
+          } else {
+            temp = false;
+          }
+        }
+        
+        return (this.userType == type || this.userType == this.regionalManager) && temp;
       },
       setQuantityIndex(index){
         this.quantityIndex = index;
