@@ -97,10 +97,27 @@
         </div>
         <div class="row">
           <div class="form-group col-md-12">
-            <label for="contactNo" class="add-customer-label pull-left">Customer Contact No.</label>
-            <input type="text" class="form-control" placeholder="Enter contact no..." v-model="customer.contactNo" >
+            <label for="contactPerson" class="add-customer-label pull-left">Contact Person</label>
+            <input type="text" class="form-control" placeholder="Enter contact person..." v-model="customer.contactPerson" >
           </div>
         </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+              <label for="contactNo" class="add-customer-label pull-left">Customer Contact No.</label>
+              <input type="text" class="form-control" placeholder="Enter contact no..." v-model="customer.contactNo" >
+            </div>
+            <div class="form-group col-md-6">
+              <label for="contactNo" class="add-customer-label pull-left">Customer Level.</label>
+              <select class="form-control" v-model="customer.level">
+                <option value="defaultLevel" disabled selected>Select customer level...</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+          </div>
           <button slot="button" class="btn btn-danger" @click="closeAddCustomerModal" style="margin-right:5px">Cancel</button>
           <button slot="button" class="btn btn-success" @click="save" style="width:130px; margin-left:5px;">Add</button>
       </sweet-modal>
@@ -110,6 +127,8 @@
     </div>
 </template>
 <script>
+  import axios from 'axios';
+  import config from '@/config';
   import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
 
@@ -128,6 +147,8 @@
           name: "",
           address: "",
           contactNo: "",
+          contactPerson: "",
+          level: "defaultLevel"
         },
         selected: [],
         quantity: [],
@@ -285,9 +306,34 @@
         this.$refs.addCustomerModal.close();
       },
       save() {
-        this.$emit("addCustomer", this.customer);
+        //this.$emit("addCustomer", this.customer);
+        this.addCustomerBE(this.customer)
         this.$refs.addCustomerModal.close();
-      }
+      },
+      addCustomerBE(item) {
+        var data = new FormData();
+        data.append("customerName", item.name);
+        data.append("customerAddress", item.address);
+        data.append("customerContactNo", item.contactNo);
+        data.append("customerContactPerson", item.contactPerson);
+        data.append("customerLevel", item.level);
+        data.append("userId", JSON.parse(localStorage.getItem("user")).userId);
+
+        axios
+        .post(config.backend_host + '/addCustomer', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              axios
+              .post(config.backend_host + '/getCustomers')
+              .then(response => {
+                if(response.data.statusCode === "OK")
+                  this.customers = response.data.data.map(arr => arr.customerName);
+              })
+            } else {
+              this.errorMessage = response.data.message;
+              this.$refs.errorModal.open();
+            }
+        })
+      },
     }
   };
 </script>

@@ -19,8 +19,13 @@
                 @hit="selectCustomer"/>
             </div>
             <div class="form-group col-md-4">
-              <label>Total Amount</label>
-              <input type="text" class="form-control"  placeholder="Enter total amount..." v-model="searchTotalAmount" >
+              <label>Ordered From</label>
+              <vue-bootstrap-typeahead 
+                v-model="username"
+                :data="userList"
+                :minMatchingChars="0"
+                placeholder="Enter name..."
+                @hit="selectUser"/>
             </div>
           </div>
           <div class="row">
@@ -53,14 +58,23 @@
                 </div>
               </div>
             </div>
-            <div class="form-group col-md-4">
-              <label>Ordered From</label>
-              <vue-bootstrap-typeahead 
-                v-model="username"
-                :data="userList"
-                :minMatchingChars="0"
-                placeholder="Enter name..."
-                @hit="selectUser"/>
+            <div class="form-group col-md-2">
+              <label for="contactNo" class="add-customer-label pull-left">Customer Level.</label>
+              <div class="input-group">
+                <select class="form-control" v-model="customerLevel">
+                  <option value="defaultLevel" disabled selected>Select customer level...</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <div class="input-group-append eye-password" @click="clearLevel"><i class="fa fa-times"></i></div>
+              </div>
+            </div>
+            <div class="form-group col-md-2">
+              <label>Total Amount</label>
+              <input type="text" class="form-control"  placeholder="Enter total amount..." v-model="searchTotalAmount" >
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
@@ -124,6 +138,7 @@
         tbodyClasses: '',
         searchOrderId: '',
         customerName: "",
+        customerLevel: "defaultLevel",
         customerList: this.customers.map(arr => arr.customerName),
         username: "",
         userList: [],
@@ -201,6 +216,9 @@
       clearPaymentStatus() {
         this.searchPaymentStatus = 'selectPaymentStatus';
       },
+      clearLevel() {
+        this.customerLevel = 'defaultLevel';
+      },
       clearDate(element) {
         switch(element){
           case 'orderedDateFrom': this.searchOrderedDateFrom = '';
@@ -228,6 +246,12 @@
           url += "&paymentStatus=" + ''
         } else {
           url += "&paymentStatus=" + this.searchPaymentStatus
+        }
+
+        if(this.customerLevel == 'defaultLevel'){
+          url += "&customerLevel=" + ''
+        } else {
+          url += "&customerLevel=" + this.customerLevel
         }
 
         if(this.searchOrderedDateFrom != '')

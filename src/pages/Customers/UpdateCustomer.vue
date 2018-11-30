@@ -16,8 +16,25 @@
           </div>
           <div class="row">
             <div class="form-group col-md-12">
+              <label for="contactPerson" class="add-customer-label pull-left">Contact Person</label>
+              <input type="text" class="form-control" placeholder="Enter contact person..." v-model="customer.contactPerson" >
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-6">
               <label for="contactNo" class="add-customer-label pull-left">Customer Contact No.</label>
               <input type="text" class="form-control" placeholder="Enter contact no..." v-model="customer.contactNo" >
+            </div>
+            <div class="form-group col-md-6">
+              <label for="contactNo" class="add-customer-label pull-left">Customer Level.</label>
+              <select class="form-control" v-model="customer.level">
+                <option value="defaultLevel" disabled selected>Select customer level...</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
             </div>
           </div>
           <div class="row" style="margin-top: 20px">
@@ -32,6 +49,11 @@
       <sweet-modal ref="successModal" icon="success" overlay-theme="dark" modal-theme="dark">
         Successfully updated customer!
       </sweet-modal>
+      <!--Success Modal -->
+      <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+        {{errorMessage}}
+      </sweet-modal>
+    </div>
     </div>
 </template>
 <script>
@@ -50,26 +72,33 @@
       return {
         errorMessage: "",
         customer: {
-          id: 0,
           name: "",
           address: "",
           contactNo: "",
+          contactPerson: "",
+          level: "defaultLevel",
         }
       };
     },
     methods: {
       updateCustomer() {
         var formData = new FormData();
-        formData.append("customerName", this.customer.name)
-        formData.append("customerAddress", this.customer.address)
-        formData.append("customerNumber", this.customer.contactNo)
+        formData.append("customerName", this.customer.name);
+        formData.append("customerAddress", this.customer.address);
+        formData.append("customerNumber", this.customer.contactNo);
+        formData.append("customerContactPerson", this.customer.contactPerson);
+        formData.append("customerLevel", this.customer.level);
         formData.append("customerId", this.customer.id)
         formData.append("id", this.$route.params.id)
+
         axios
             .post(config.backend_host + '/updateCustomer', formData)
             .then(response => {
               if(response.data.statusCode === "OK"){
                 this.$refs.successModal.open();
+              } else {
+                this.errorMessage = response.data.message;
+                this.$refs.errorModal.open();
               }
             })
       }
@@ -84,6 +113,8 @@
               this.customer.name = response.data.data.customerName;
               this.customer.address = response.data.data.customerAddress;
               this.customer.contactNo = response.data.data.customerNumber;
+              this.customer.contactPerson = response.data.data.customerContactPerson;
+              this.customer.level = response.data.data.customerLevel
               this.customer.id = response.data.data.customerId;
             }
           })

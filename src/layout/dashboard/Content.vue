@@ -71,11 +71,11 @@
       removeStocks(event, customerName) {
         event[0].modifiedBy = this.userId;
         customerName = "/" + customerName
+        window.location.href = "/#/orders/viewActiveOrders"
         axios
         .post(config.backend_host +'/removeStocks' + customerName, event).then(response => {
           if(response.data.statusCode === "OK"){
               this.getProducts();
-              window.location.href = "/#/orders/viewActiveOrders"
           }
         })
       },
@@ -96,6 +96,8 @@
           if(response.data.statusCode === "OK"){
               this.getProducts();
               window.location.href = "/#/products/viewProducts"
+          } else {
+            
           }
         })
       },
@@ -104,6 +106,8 @@
         data.append("customerName", event.name);
         data.append("customerAddress", event.address);
         data.append("customerContactNo", event.contactNo);
+        data.append("customerContactPerson", event.contactPerson);
+        data.append("customerLevel", event.level);
         data.append("userId", this.userId);
 
         axios

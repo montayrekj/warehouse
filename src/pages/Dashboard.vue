@@ -132,7 +132,9 @@
         tbodyClasses: '',
         dailySales: 0,
         weeklySales: 0,
-        monthlySales: 0
+        monthlySales: 0,
+        dailySalesChart: [],
+        monthlySalesChart: []
       }
     },
     computed: {
@@ -171,11 +173,11 @@
         switch(index) {
           case 0:
             chartData.labels = ['SUN','MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-            chartData.datasets[0].data = [100, 70, 90, 70, 85, 60, 75];
+            chartData.datasets[0].data = this.dailySalesChart
             break;
           case 1:
             chartData.labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-            chartData.datasets[0].data = [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120];
+            chartData.datasets[0].data = this.monthlySalesChart
             break;
         }
         
@@ -202,7 +204,7 @@
     },
     },
     mounted() {
-      this.initChart(0);
+      
       axios
         .post(config.backend_host + '/getProductsBelowLimit')
         .then(response => {
@@ -230,6 +232,23 @@
           if(response.data.statusCode === "OK")
             this.monthlySales = response.data.data;
         })
+
+      axios
+        .post(config.backend_host + '/dailySalesChart')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.dailySalesChart = response.data.data;
+            this.initChart(0);
+        })
+
+      axios
+        .post(config.backend_host + '/monthlySalesChart')
+        .then(response => {
+          if(response.data.statusCode === "OK")
+            this.monthlySalesChart = response.data.data;
+        })
+
+      
     }
   };
 </script>

@@ -92,6 +92,7 @@
     "tableColumns" : [
       {"Header":"Order Id", "Item":"orderId"},
       {"Header":"Customer Name", "Item":"customer"},
+      {"Header":"Customer Level", "Item":"customerLevel"},
       {"Header":"Total Amount", "Item":"totalAmount"},
       {"Header":"Paid Amount", "Item":"paidAmount"},
       {"Header":"Balance", "Item":"Balance"},
@@ -103,6 +104,7 @@
     "tableColumns" : [
       {"Header":"Order Id", "Item":"orderId"},
       {"Header":"Customer Name", "Item":"customer"},
+      {"Header":"Customer Level", "Item":"customerLevel"},
       {"Header":"Total Amount", "Item":"totalAmount"},
       {"Header":"Paid Amount", "Item":"paidAmount"},
       {"Header":"Balance", "Item":"Balance"},

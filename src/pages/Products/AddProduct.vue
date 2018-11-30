@@ -91,6 +91,8 @@
 </template>
 <script>
 
+  import axios from 'axios';
+  import config from '@/config';
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
   import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
 
@@ -158,8 +160,9 @@
             supplier: this.productSupplier,
             quantityLimit: this.productLimit.toString()
           }
-          this.$emit("addProduct", item);
-          this.productName = null
+          //this.$emit("addProduct", item);
+          this.addProductBE(item)
+          /*this.productName = null
           this.productCode =  null;
           this.productQuantity =  null;
           this.productUnit = null;
@@ -167,6 +170,7 @@
           this.productSellPrice = null;
           this.productLimit = null;
           this.productSupplier = null;
+          this.supplierName = "";*/
         } else {
           this.$refs.addErrorModal.open();
         }
@@ -217,9 +221,56 @@
         this.$refs.addSupplierModal.close();
       },
       save() {
-        this.$emit("addSupplier", this.supplier);
+        //this.$emit("addSupplier", this.supplier);
+        this.addSupplierBE(this.supplier);
         this.$refs.addSupplierModal.close();
-      }
+      },
+      addSupplierBE(item) {
+        var data = new FormData();
+        data.append("supplierName", item.name);
+        data.append("supplierAddress", item.address);
+        data.append("supplierContactNo", item.contactNo);
+        data.append("userId", JSON.parse(localStorage.getItem("user")).userId);
+
+        axios
+        .post(config.backend_host + '/addSupplier', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              axios
+              .post(config.backend_host + '/getSuppliers')
+              .then(response => {
+                if(response.data.statusCode === "OK") {
+                  this.suppliers = response.data.data.map(arr => arr.supplierName)
+                }
+              })
+          } else {
+            this.errorMessage = response.data.message;
+            this.$refs.addErrorModal.open();
+          }
+        })
+      },
+      addProductBE(item){
+        console.log(item)
+        var data = new FormData();
+        data.append('productName', item.productName);
+        data.append('productCode', item.productCode);
+        data.append('quantity', item.quantity);
+        data.append('buyPrice', item.buyPrice);
+        data.append('sellPrice', item.sellPrice);
+        data.append('unit', item.unit);
+        data.append('quantityLimit', item.quantityLimit);
+        data.append('supplier', item.supplier);
+        data.append('createdBy', JSON.parse(localStorage.getItem("user")).userId)
+
+        axios
+        .post(config.backend_host + '/addProduct', data).then(response => {
+          if(response.data.statusCode === "OK"){
+              window.location.href = "/#/products/viewProducts"
+          } else {
+              this.errorMessage = response.data.message;
+              this.$refs.addErrorModal.open();
+          }
+        })
+      },
     }
   };
 </script>

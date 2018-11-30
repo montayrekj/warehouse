@@ -32,6 +32,9 @@
       <sweet-modal ref="successModal" icon="success" overlay-theme="dark" modal-theme="dark">
         Successfully updated supplier!
       </sweet-modal>
+      <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+        {{errorMessage}}
+      </sweet-modal>
     </div>
 </template>
 <script>
@@ -69,6 +72,9 @@
             .then(response => {
               if(response.data.statusCode === "OK"){
                 this.$refs.successModal.open();
+              } else {
+                this.errorMessage = response.data.message;
+                this.$refs.errorModal.open();
               }
             })
       }

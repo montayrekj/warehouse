@@ -8,12 +8,20 @@
       <card>
         <h3>Order Details</h3>
         <div class="row">
-          <div class="col-md-7">
+          <div class="col-md-5">
             <div style="padding-top: 10px">
               <label class="control-label" style="font-size: 14px">Customer Name </label>
             </div>
             <div style="padding-top: 10px;">
               <label class="label-content-color" style="font-size: 16px; font-style: italic"> {{customerName}}</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div style="padding-top: 10px;">
+              <label class="control-label" style="font-size: 14px">Customer Level </label>
+            </div>
+            <div style="padding-top: 10px;">
+              <label class="label-content-color" style="font-size: 16px; font-style: italic"> {{customerLevel}}</label>
             </div>
           </div>
           <div class="col-md-3">
@@ -192,6 +200,7 @@
         customerName: "",
         orderedFrom: "",
         orderedDate: "",
+        customerLevel: "",
         cashAmount: 0.0,
         termDueDate: new Date(),
         userType: null,
@@ -531,6 +540,7 @@
               this.customerName = response.data.data.customer;
               this.orderedDate =  moment(response.data.data.createdDate).format("MM/DD/YYYY");
               this.purchaseOrderStatus = response.data.data.purchaseOrderStatus;
+              this.customerLevel = response.data.data.customerLevel;
               this.currentStep = this.purchaseOrderStatus;
               if(this.purchaseOrderStatus === 3){
                 this.currentStep = 4;
