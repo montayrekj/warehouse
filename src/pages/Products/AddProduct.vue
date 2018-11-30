@@ -249,7 +249,6 @@
         })
       },
       addProductBE(item){
-        console.log(item)
         var data = new FormData();
         data.append('productName', item.productName);
         data.append('productCode', item.productCode);
