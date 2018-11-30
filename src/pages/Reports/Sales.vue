@@ -35,10 +35,16 @@
               <label>Paid Date</label>
               <div class="row">
                 <div class="form-group col-md-6">
+                  <div class="input-group">
                     <date-picker v-model="searchPaidDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('paidDateFrom')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
                 <div class="form-group col-md-6">
+                  <div class="input-group">
                     <date-picker v-model="searchPaidDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                    <div class="input-group-append eye-password" @click="clearDate('paidDateTo')"><i class="fa fa-calendar-times"></i></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -184,6 +190,14 @@
       },
       clearSearchType() {
         this.searchType = 'selectAType';
+      },
+      clearDate(element) {
+        switch(element){
+          case 'paidDateFrom': this.searchPaidDateFrom = '';
+            break;
+          case 'paidDateTo': this.searchPaidDateTo = '';
+            break;
+        }
       },
       selectCustomer() {
         this.searchCustomerName = this.customerName;

@@ -181,21 +181,21 @@ html {
 }
 
 .input-group > .vdp-datepicker > div > .input-calendar-color {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
 }
 
 .vdp-datepicker__calendar {
-  position: absolute;
-  z-index: 100;
-  background: #1d253b;
+  position: absolute !important;
+  z-index: 100 !important;
+  background: #1d253b !important;
   width: 300px;
-  border: 1px solid #2b3354;
-  color: #b5b9be;
+  border: 1px solid #2b3354 !important;
+  color: #b5b9be !important;
 }
 
 .vdp-datepicker__calendar header .prev:not(.disabled):hover, .vdp-datepicker__calendar header .next:not(.disabled):hover, .vdp-datepicker__calendar header .up:not(.disabled):hover {
-  background: #2b3354;
+  background: #2b3354 !important;
 }
 
 .step-progress__wrapper {
@@ -259,11 +259,11 @@ html {
 }
 
 .input-group > .vdp-datepicker {
-  width: calc(100% - 35px)
+  width: calc(100% - 35px) !important
 }
 
 .input-group-select {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-  -webkit-appearance: none;
+  border-top-right-radius: 0px !important; 
+  border-bottom-right-radius: 0px !important;
+  -webkit-appearance: none !important;
 }
