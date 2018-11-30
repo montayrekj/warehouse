@@ -214,7 +214,10 @@
         stepperIcon: "fa fa-check",
         currentStep: 0,
         isLoading: true,
-        fullPage: true
+        fullPage: true,
+        orderTermAmount: "",
+        orderPaidAmount: "",
+        orderTermDueDate: "",
       }
     },
     watch: {
@@ -332,8 +335,8 @@
         }
 
         this.salesLogsModel.salesLogsItem = this.table.data;
-        this.$emit('checkerConfirmOrder', this.salesLogsModel);
-        if(this.table.data.length <= 10)
+
+        if(this.table.data.length <= 9)
           this.createPDF("Customer's Copy", this.orderId);
         else {
           this.createPDF("Customer's Copy", this.orderId);
@@ -343,24 +346,65 @@
       createPDF(title, orderId) {
         var user = JSON.parse(localStorage.getItem("user"))
         var signature = "Customer's Signature Over Printed Name"
-        if(this.table.data.length <= 10) {
+        if(this.table.data.length <= 9) {
           var halfPageBreak = 12 - this.table.data.length;
-          var rectHeight = (halfPageBreak * 10) + ((halfPageBreak * 10) - 10);
+          var rectHeight = (halfPageBreak * 10) + ((halfPageBreak * 10) - 60);
         } else {
           var rectHeight = 0;
         }
         var docDefinition = {
           pageSize: 'A4',
-          header: {
-            columns: [
-              {text: title, alignment: 'left', margin: [40,10,10,10], color: '#aaa'},
-              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: [10,10,40,10], color: '#aaa'}
-            ]
-          },
           content: [
               {
-                text: 'Checker: ' + user.username,
-                alignment: 'left'
+                columns: [
+                  {text: title, alignment: 'left', color: '#aaa'},
+                  {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', color: '#aaa'}
+                ]
+              },
+              {text: ' ', lineHeight: 1},
+              {
+                text: [ 
+                  { 
+                    text:'Customer Name: ',
+                    alignment: 'left',
+                    bold: true,
+                    
+                  },
+                  { 
+                    text: this.customerName,
+                    alignment: 'left',
+                  }
+                ],
+                margin: [0,0,0,5]
+              },
+              {
+                columns: [
+                  [{
+                    text: 'Amount Paid' ,
+                    bold: true
+                  },
+                  {
+                    text: this.orderPaidAmount
+                  }],
+                  [{
+                    text: "Balance",
+                    bold: true,
+                    alignment: 'center'
+                  },
+                  {
+                    text: this.orderTermAmount,
+                    alignment: 'center'
+                  }],
+                  [{
+                    text: "Due Date", 
+                    bold: true,
+                    alignment: 'right'
+                  },
+                  {
+                    text: this.orderTermDueDate,
+                    alignment: 'right'
+                  }],
+                ]
               },
               {text: ' ', lineHeight: 1},
               {
@@ -393,8 +437,16 @@
                       color: 'white',
                       lineHeight: 0.5
               },
-              {text: signature, 
-                  alignment: 'right', 
+              {
+                columns: [
+                  {
+                    text: 'Checker: ' + user.username,
+                    alignment: 'left'
+                  },
+                  {text: signature, 
+                      alignment: 'right', 
+                  }
+                ]
               },
               // Half Page
               {text: '', lineHeight: 1},
@@ -408,8 +460,48 @@
               },
               {text: ' ', lineHeight: 1},
               {
-                text: 'Checker: ' + user.username,
-                alignment: 'left'
+                text: [ 
+                  { 
+                    text:'Customer Name: ',
+                    alignment: 'left',
+                    bold: true,
+                    
+                  },
+                  { 
+                    text: this.customerName,
+                    alignment: 'left',
+                  }
+                ],
+                margin: [0,0,0,5]
+              },
+              {
+                columns: [
+                  [{
+                    text: 'Amount Paid' ,
+                    bold: true
+                  },
+                  {
+                    text: this.orderPaidAmount
+                  }],
+                  [{
+                    text: "Balance",
+                    bold: true,
+                    alignment: 'center'
+                  },
+                  {
+                    text: this.orderTermAmount,
+                    alignment: 'center'
+                  }],
+                  [{
+                    text: "Due Date", 
+                    bold: true,
+                    alignment: 'right'
+                  },
+                  {
+                    text: this.orderTermDueDate,
+                    alignment: 'right'
+                  }],
+                ]
               },
               {text: ' ', lineHeight: 1},
               {
@@ -442,9 +534,17 @@
                       color: 'white',
                       lineHeight: 0.5
               },
-              {text: signature, 
-                  alignment: 'right', 
-              },
+              {
+                columns: [
+                  {
+                    text: 'Checker: ' + user.username,
+                    alignment: 'left'
+                  },
+                  {text: signature, 
+                      alignment: 'right', 
+                  }
+                ]
+              }
           ]
         };
         
@@ -459,7 +559,7 @@
           }
           col.push(obj);
         }
-        docDefinition.content[2].table.body.push(col);
+        docDefinition.content[5].table.body.push(col);
 
         //Table Body
         for(var i=0;i<this.table.data.length;i++){
@@ -468,10 +568,10 @@
               quantitySold: this.quantityOut[i],
               quantityLeft: this.quantityLeft[i],
             }
-            docDefinition.content[2].table.body.push(Object.values(object));  
+            docDefinition.content[5].table.body.push(Object.values(object));  
         }
 
-        if(this.table.data.length <= 10) {
+        if(this.table.data.length <= 9) {
           var col = []
           //Table Header
           var checkerTableCol = this.$t('PlacedOrderDetails.pdfTableColumns');
@@ -482,7 +582,7 @@
             }
             col.push(obj);
           }
-          docDefinition.content[13].table.body.push(col);
+          docDefinition.content[17].table.body.push(col);
 
           //Table Body
           for(var i=0;i<this.table.data.length;i++){
@@ -491,13 +591,13 @@
                 quantitySold: this.quantityOut[i],
                 quantityLeft: this.quantityLeft[i],
               }
-              docDefinition.content[13].table.body.push(Object.values(object));  
+              docDefinition.content[17].table.body.push(Object.values(object));  
           }
         } else {
-          docDefinition.content.length = 7;
+          docDefinition.content.length = 10;
         }
 
-        if(this.table.data.length <= 10) {
+        if(this.table.data.length <= 9) {
           pdfMake.createPdf(docDefinition).download("Gate Pass - " + moment().format("MM/DD/YYYY").toString() + '.pdf');
         } else {
           pdfMake.createPdf(docDefinition).download("Gate Pass(" + title + ") - " + moment().format("MM/DD/YYYY").toString() +'.pdf');
@@ -542,6 +642,9 @@
               this.purchaseOrderStatus = response.data.data.purchaseOrderStatus;
               this.customerLevel = response.data.data.customerLevel;
               this.currentStep = this.purchaseOrderStatus;
+              this.orderTermAmount = response.data.data.termAmount
+              this.orderPaidAmount = response.data.data.paidAmount
+              this.orderTermDueDate = moment(response.data.data.termDueDate).format("MM/DD/YYYY");
               if(this.purchaseOrderStatus === 3){
                 this.currentStep = 4;
               } else if(this.purchaseOrderStatus < 0){
