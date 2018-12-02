@@ -173,8 +173,6 @@
   import DatePicker from 'vuejs-datepicker'
   import StepProgress from 'vue-step-progress';
   import 'vue-step-progress/dist/main.css';
-  import Loading from 'vue-loading-overlay';
-  import 'vue-loading-overlay/dist/vue-loading.css';
 
   import { POINT_CONVERSION_COMPRESSED } from 'constants';
 
