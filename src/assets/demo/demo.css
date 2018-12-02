@@ -267,3 +267,7 @@ html {
   border-bottom-right-radius: 0px !important;
   -webkit-appearance: none !important;
 }
+
+.sweet-modal {
+  width: 100%;
+}

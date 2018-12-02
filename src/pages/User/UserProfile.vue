@@ -40,11 +40,11 @@
         </card>
       </div>
       <!--Success Modal -->
-      <sweet-modal ref="successModal" icon="success" overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="successModal" icon="success" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         Successfully updated user profile!
       </sweet-modal>
       <!--Error Modal -->
-      <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         {{this.responseMessage}}
       </sweet-modal>
     </div>

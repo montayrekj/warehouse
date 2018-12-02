@@ -59,7 +59,7 @@
         </card>
       </div>
       <!--Add Product Required Error Modal -->
-      <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         {{errorMessage}}
       </sweet-modal>
     </div>

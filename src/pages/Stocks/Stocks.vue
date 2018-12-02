@@ -56,12 +56,12 @@
       </div>
 
       <!-- Error Stocks Modal -->
-      <sweet-modal ref="errorStockModal" icon="error" hide-close-button overlay-theme="dark" modal-theme="dark" title="Oops!">
+      <sweet-modal ref="errorStockModal" icon="error" hide-close-button overlay-theme="dark" modal-theme="dark" title="Oops!" :enable-mobile-fullscreen="false">
         Please select a Stock inorder to Add/Reduce Stocks.
         <button slot="button" v-on:click="closeErrorModal()" class="btn btn-sm btn-success">Fine!</button>
       </sweet-modal>
       <!-- Add Stocks Modal -->
-      <sweet-modal ref="addStockModal" class="stocksModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks">
+      <sweet-modal ref="addStockModal" class="stocksModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Stocks" :enable-mobile-fullscreen="false">
         <div class="table-responsive">
           <table class="table tablesorter" :class="tableClass">
             <thead class="text-primary">
@@ -97,7 +97,7 @@
       </sweet-modal>
 
       <!-- Remove Stocks Modal -->
-      <sweet-modal ref="removeStockModal" class="stocksModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks">
+      <sweet-modal ref="removeStockModal" class="stocksModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Reduce Stocks" :enable-mobile-fullscreen="false">
         <div class="row form-group">
           <div class="col-3">
             <label class="control-label">Customer Name </label>

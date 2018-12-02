@@ -37,7 +37,7 @@
       </div>
     </div>
     <!--Login error Modal -->
-    <sweet-modal ref="loginErrorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+    <sweet-modal ref="loginErrorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
       The username or password you entered is incorrect!
     </sweet-modal>
   </div>

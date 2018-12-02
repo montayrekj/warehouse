@@ -61,7 +61,7 @@
           </div>
         </card>
       </div>
-      <sweet-modal ref="addSupplierModal" hide-close-button overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="addSupplierModal" hide-close-button overlay-theme="dark" modal-theme="dark" title="Add Supplier" :enable-mobile-fullscreen="false">
         <div class="row">
           <div class="form-group col-md-12">
             <label for="customerName" class="add-customer-label pull-left">Supplier Name</label>
@@ -84,7 +84,7 @@
           <button slot="button" class="btn btn-success" @click="save" style="width:130px; margin-left:5px;">Add</button>
       </sweet-modal>
       <!--Add Product Required Error Modal -->
-      <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         {{this.errorMessage}}
       </sweet-modal>
     </div>

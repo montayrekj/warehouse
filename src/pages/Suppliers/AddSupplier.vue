@@ -29,8 +29,12 @@
         </card>
       </div>
       <!--Success Modal -->
-      <sweet-modal ref="successModal" icon="success" overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="successModal" icon="success" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         Successfully added supplier!
+      </sweet-modal>
+      <!-- Error Modal -->
+      <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
+        {{errorMessage}}
       </sweet-modal>
     </div>
 </template>
@@ -68,6 +72,9 @@
           .post(config.backend_host + '/addSupplier', data).then(response => {
             if(response.data.statusCode === "OK"){
                 this.$refs.successModal.open();
+            } else {
+              this.errorMessage = response.data.message;
+              this.$refs.errorModal.open();
             }
           })
         }

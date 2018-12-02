@@ -69,7 +69,7 @@
       </div>
 
       <!--Delete Warning Modal -->
-      <sweet-modal ref="deleteWarning" icon="warning" hide-close-button overlay-theme="dark" modal-theme="dark">
+      <sweet-modal ref="deleteWarning" icon="warning" hide-close-button overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         Are you sure you want to delete <span>{{toBeDeletedName}}</span>?
         <button slot="button" v-on:click="deleteProduct()" class="btn btn-sm btn-success" style="margin-right: 5px">Yes</button>
         <button slot="button" v-on:click="deleteWarn(0)" class="btn btn-sm btn-danger">No</button>

@@ -123,7 +123,7 @@
         </card>
       </div>
     </div>
-    <sweet-modal ref="confirmModal" hide-close-button overlay-theme="dark" modal-theme="dark" icon="warning">
+    <sweet-modal ref="confirmModal" hide-close-button overlay-theme="dark" modal-theme="dark" icon="warning" :enable-mobile-fullscreen="false">
       Are you sure you have collected the term?
       <button slot="button" class="btn btn-success" @click="collect" style="width: 130px; margin-right:5px;">Yes</button>
       <button slot="button" class="btn btn-danger" @click="toggleConfirmModal(0)" style="width: 130px; margin-left:5px">No</button>
