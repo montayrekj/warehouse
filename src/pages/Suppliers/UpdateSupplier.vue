@@ -23,7 +23,7 @@
           <div class="row" style="margin-top: 20px">
             <div class="col-md-9"></div>
             <div class="col-md-3">
-              <button class="btn btn-success" style="width: 100%" @click="updateSupplier">Add</button>
+              <button class="btn btn-success" style="width: 100%" @click="updateSupplier">Update</button>
             </div>
           </div>
         </card>
@@ -61,12 +61,13 @@
     },
     methods: {
       updateSupplier() {
+        var user = JSON.parse(localStorage.getItem("user"))
         var formData = new FormData();
         formData.append("supplierName", this.supplier.name)
         formData.append("supplierAddress", this.supplier.address)
         formData.append("supplierNumber", this.supplier.contactNo)
         formData.append("supplierId", this.supplier.id)
-        formData.append("id", this.$route.params.id)
+        formData.append("id", user.userId)
         axios
             .post(config.backend_host + '/updateSupplier', formData)
             .then(response => {

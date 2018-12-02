@@ -271,3 +271,11 @@ html {
 .sweet-modal {
   width: 100%;
 }
+
+.advanced-search-icon {
+  float: right;
+  color: #00e49e;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

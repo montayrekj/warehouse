@@ -164,12 +164,16 @@
         </div>
       </card>
     </div>
+    <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
+      {{this.errorMessage}}
+    </sweet-modal>
   </div>
 </template>
 <script>
   import axios from 'axios';
   import config from '@/config'
   import moment from 'moment';
+  import { SweetModal, SweetModalTab } from 'sweet-modal-vue';
   import DatePicker from 'vuejs-datepicker'
   import StepProgress from 'vue-step-progress';
   import 'vue-step-progress/dist/main.css';
@@ -181,11 +185,11 @@
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
   export default {
-    
-
     components: {
       DatePicker,
       StepProgress,
+      SweetModal, 
+      SweetModalTab
     },
     data() {
       return {
@@ -215,6 +219,7 @@
         orderTermAmount: "",
         orderPaidAmount: "",
         orderTermDueDate: "",
+        errorMessage: ""
       }
     },
     watch: {
@@ -332,13 +337,30 @@
         }
 
         this.salesLogsModel.salesLogsItem = this.table.data;
-
-        if(this.table.data.length <= 9)
-          this.createPDF("Customer's Copy", this.orderId);
-        else {
-          this.createPDF("Customer's Copy", this.orderId);
-          this.createPDF("Guard's Copy", this.orderId);
-        }
+        axios
+          .post(config.backend_host + '/confirmQuantity', this.salesLogsModel)
+          .then(response => {
+            if(response.data.statusCode === "OK"){
+              console.log(response.data.data)
+              if(response.data.data.length == 0) {
+                this.$emit('checkerConfirmOrder', this.salesLogsModel);
+                if(this.table.data.length <= 9)
+                  this.createPDF("Customer's Copy", this.orderId);
+                else {
+                  this.createPDF("Customer's Copy", this.orderId);
+                  this.createPDF("Guard's Copy", this.orderId);
+                }
+              } else {
+                var message = "The following product/s have insufficient stocks: "
+                for(var i = 0; i < response.data.data.length; i++) {
+                  message += response.data.data[i];
+                }
+                message += ". See products page for more info.";
+                this.errorMessage = message;
+                this.$refs.errorModal.open();
+              }
+            }
+          })
       },
       createPDF(title, orderId) {
         var user = JSON.parse(localStorage.getItem("user"))

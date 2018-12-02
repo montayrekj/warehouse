@@ -194,8 +194,10 @@
         })
       },
       checkerConfirmOrder(event) {
+        var formData = new FormData();
+        formData.append("orderModel", event);
         axios
-        .post(config.backend_host + '/checkerConfirmOrder', event).then(response => {
+        .post(config.backend_host + '/checkerConfirmOrder/' + this.userId , event).then(response => {
           if(response.data.statusCode === "OK"){
               //window.location.href="/#/orders/viewActiveOrders"
           }

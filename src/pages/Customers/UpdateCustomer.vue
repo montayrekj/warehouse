@@ -40,7 +40,7 @@
           <div class="row" style="margin-top: 20px">
             <div class="col-md-9"></div>
             <div class="col-md-3">
-              <button class="btn btn-success" style="width: 100%" @click="updateCustomer">Add</button>
+              <button class="btn btn-success" style="width: 100%" @click="updateCustomer">Update</button>
             </div>
           </div>
         </card>
@@ -82,6 +82,7 @@
     },
     methods: {
       updateCustomer() {
+        var user = JSON.parse(localStorage.getItem("user"))
         var formData = new FormData();
         formData.append("customerName", this.customer.name);
         formData.append("customerAddress", this.customer.address);
@@ -89,7 +90,7 @@
         formData.append("customerContactPerson", this.customer.contactPerson);
         formData.append("customerLevel", this.customer.level);
         formData.append("customerId", this.customer.id)
-        formData.append("id", this.$route.params.id)
+        formData.append("id", user.userId)
 
         axios
             .post(config.backend_host + '/updateCustomer', formData)

@@ -2,8 +2,10 @@
   <div>
     <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card>
-          <h4>Advanced Search</h4>
+        <card :style="hide">
+          <h4>Advanced Search 
+            <i class="advanced-search-icon" :class="searchIcon" @click="hideFlag = !hideFlag"></i>
+          </h4>
           <div class="row">
             <div class="form-group col-md-3">
               <label>Id</label>
@@ -94,6 +96,7 @@
         table: {
           data: this.purchases
         },
+        hideFlag: false,
         searchId: '',
         searchAddedDateFrom: '',
         searchAddedDateTo: '',
@@ -123,6 +126,20 @@
       },
       tableColumns() {
         return this.$t('ViewAddedStocks.tableColumns');
+      },
+      hide() {
+        if(this.hideFlag) {
+          return "max-height: 55px; overflow: hidden; -webkit-transition: 0.01s; transition: max-height 0.01s ease-in;"
+        } else {
+          return "max-height: 1000px; -webkit-transition: 0.7s; transition: max-height 0.7s ease-out; "
+        }
+      },
+      searchIcon() {
+        if(this.hideFlag) {
+          return "tim-icons icon-minimal-right"
+        } else {
+          return "tim-icons icon-minimal-down"
+        }
       }
     },
     methods: {
