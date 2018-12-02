@@ -186,7 +186,6 @@
     components: {
       DatePicker,
       StepProgress,
-      Loading
     },
     data() {
       return {
