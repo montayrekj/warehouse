@@ -7,7 +7,7 @@
   },
   "dashboard": {
     "chartCategories": [
-      "Weekly",
+      "Daily",
       "Monthly"
     ],
     "tableColumns" : [
