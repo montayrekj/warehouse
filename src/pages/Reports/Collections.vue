@@ -263,7 +263,7 @@
         }
       },
       collect() {
-        this.$emit('collectCollection', Number(this.selectedOrderId));
+        this.$emit('collectCollection', this.selectedOrderId);
       },
       toggleConfirmModal(orderId) {
         if(!this.confirmModalFlag) {
