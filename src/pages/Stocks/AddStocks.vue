@@ -1,7 +1,7 @@
 <template>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px);  overflow: auto">
       <div class="col-12">
-        <card style="max-height: calc(100vh - 88px); overflow: auto">
+        <card style="max-height: calc(100vh - 88px);">
           <div class="table-responsive">
             <table class="table tablesorter">
               <thead class="text-primary">

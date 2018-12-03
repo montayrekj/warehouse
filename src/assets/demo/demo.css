@@ -279,3 +279,14 @@ html {
   font-size: 1.2rem;
   cursor: pointer;
 }
+
+.step-progress__step-label {
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 650px) {
+  .step-progress__step-label {
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+  }
+}

@@ -1,6 +1,6 @@
 <template>
-    <div class="row" style="max-height: calc(100vh - 88px);">
-      <div class="col-12" style="max-height: calc(100vh - 88px); overflow: auto">
+    <div class="row" style="max-height: calc(100vh - 88px);  overflow: auto">
+      <div class="col-12" style="max-height: calc(100vh - 88px);">
         <card>
           <div class="row form-group">
             <div class="col-md-2" style="padding-top: 10px;">
@@ -120,6 +120,12 @@
           </div>
           <button slot="button" class="btn btn-danger" @click="closeAddCustomerModal" style="margin-right:5px">Cancel</button>
           <button slot="button" class="btn btn-success" @click="save" style="width:130px; margin-left:5px;">Add</button>
+      </sweet-modal>
+      <sweet-modal ref="addCustomerSuccessModal" icon="success" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
+        Successfully added customer!
+      </sweet-modal>
+      <sweet-modal ref="addCustomerErrorModal" icon="error" overlay-theme="dark" v-on:close="goBack" modal-theme="dark" :enable-mobile-fullscreen="false">
+        {{this.errorMessage}}
       </sweet-modal>
       <sweet-modal ref="errorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
         {{this.errorMessage}}
@@ -308,7 +314,15 @@
         this.$refs.addCustomerModal.open();
       },
       closeAddCustomerModal() {
+        this.customer.name = ""
+        this.customer.address = "",
+        this.customer.contactNo = "",
+        this.customer.contactPerson = "",
+        this.customer.level = "defaultLevel",
         this.$refs.addCustomerModal.close();
+      },
+      goBack() {
+        this.$refs.addCustomerModal.open();
       },
       save() {
         //this.$emit("addCustomer", this.customer);
@@ -331,11 +345,17 @@
               .post(config.backend_host + '/getCustomers')
               .then(response => {
                 if(response.data.statusCode === "OK")
-                  this.customers = response.data.data.map(arr => arr.customerName);
+                  this.customerList = response.data.data.map(arr => arr.customerName);
+                  this.customer.name = ""
+                  this.customer.address = "",
+                  this.customer.contactNo = "",
+                  this.customer.contactPerson = "",
+                  this.customer.level = "defaultLevel",
+                  this.$refs.addCustomerSuccessModal.open();
               })
             } else {
               this.errorMessage = response.data.message;
-              this.$refs.errorModal.open();
+              this.$refs.addCustomerErrorModal.open();
             }
         })
       },

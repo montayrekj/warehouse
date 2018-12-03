@@ -1,7 +1,7 @@
 <template>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto">
       <div class="col-12">
-        <card style="max-height: calc(100vh - 88px); overflow: auto">
+        <card style="max-height: calc(100vh - 88px); ">
           <div class="form-group">
             <label for="productName">Product Name</label>
             <input type="text" class="form-control" placeholder="Enter product name..." v-model="productName" >

@@ -358,6 +358,8 @@
                 var message = "The following product/s have insufficient stocks: "
                 for(var i = 0; i < response.data.data.length; i++) {
                   message += response.data.data[i];
+                  if((i+1) < response.data.data.length) 
+                    message += ", "
                 }
                 message += ". See products page for more info.";
                 this.errorMessage = message;

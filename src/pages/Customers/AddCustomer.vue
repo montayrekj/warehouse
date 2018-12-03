@@ -1,5 +1,5 @@
 <template>
-    <div class="row" style="max-height: calc(100vh - 88px);; overflow: auto;">
+    <div class="row" style="max-height: calc(100vh - 88px); overflow: auto;">
       <div class="col-12">
         <card style="max-height: calc(100vh - 88px)">
           <div class="row">
@@ -93,6 +93,11 @@
           axios
           .post(config.backend_host + '/addCustomer', data).then(response => {
             if(response.data.statusCode === "OK"){
+              this.customer.name = ""
+              this.customer.address = "",
+              this.customer.contactNo = "",
+              this.customer.contactPerson = "",
+              this.customer.level = "defaultLevel",
               this.$refs.successModal.open();
             } else {
               this.errorMessage = response.data.message;

@@ -130,6 +130,9 @@
       <button slot="button" class="btn btn-success" @click="collect" style="width: 130px; margin-right:5px;">Yes</button>
       <button slot="button" class="btn btn-danger" @click="toggleConfirmModal(0)" style="width: 130px; margin-left:5px">No</button>
     </sweet-modal>
+    <sweet-modal ref="errorExport" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
+      No data to be exported!
+    </sweet-modal>
   </div>
 </template>
 <script>
@@ -274,58 +277,62 @@
         }
       },
       exportToPDF() {
-        var docDefinition = {
-          header: {
-            columns: [
-              {text: "Collections' Report", alignment: 'left', margin: 10, color: '#aaa'},
-              {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+        if(this.table.data.length > 0) {
+          var docDefinition = {
+            header: {
+              columns: [
+                {text: "Collections' Report", alignment: 'left', margin: 10, color: '#aaa'},
+                {text: moment().format("MM/DD/YYYY").toString(), alignment: 'right', margin: 10, color: '#aaa'}
+              ]
+            },
+            footer: {
+                text: "© Hexamindz Corporation",
+                alignment: 'right',
+                color: '#aaa',
+                margin: [0,0,10,0]
+            },
+            content: [
+                {text: ' ', lineHeight: 1},
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: [ '*', '*', '*', '*', '*', '*'],
+
+                        body: []
+                    }
+                }
             ]
-          },
-          footer: {
-              text: "© Hexamindz Corporation",
-              alignment: 'right',
-              color: '#aaa',
-              margin: [0,0,10,0]
-          },
-          content: [
-              {text: ' ', lineHeight: 1},
-              {
-                  table: {
-                      headerRows: 1,
-                      widths: [ '*', '*', '*', '*', '*', '*'],
-
-                      body: []
-                  }
-              }
-          ]
-        };
-        var col = []
-        //Table Header
-        var checkerTableCol = this.tableColumns;
-        for(var i = 0; i < checkerTableCol.length; i++) {
-          var obj = {
-            text: checkerTableCol[i].Header,
-            bold: true
-          }
-          col.push(obj);
-        }
-        docDefinition.content[1].table.body.push(col);
-
-        //Table Body
-        for(var i=0;i<this.table.data.length;i++){
-            var object = {
-              orderId: this.table.data[i].orderId,
-              customer: this.table.data[i].customer,
-              termAmount: this.table.data[i].termAmount,
-              termDueDate: this.table.data[i].termDueDate,
-              createdDate: this.table.data[i].createdDate,
-              createdBy: this.table.data[i].createdBy
+          };
+          var col = []
+          //Table Header
+          var checkerTableCol = this.tableColumns;
+          for(var i = 0; i < checkerTableCol.length; i++) {
+            var obj = {
+              text: checkerTableCol[i].Header,
+              bold: true
             }
-            docDefinition.content[1].table.body.push(Object.values(object));  
-        }
+            col.push(obj);
+          }
+          docDefinition.content[1].table.body.push(col);
 
-        //Download PDF
-        pdfMake.createPdf(docDefinition).download('Collections Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+          //Table Body
+          for(var i=0;i<this.table.data.length;i++){
+              var object = {
+                orderId: this.table.data[i].orderId,
+                customer: this.table.data[i].customer,
+                termAmount: this.table.data[i].termAmount,
+                termDueDate: this.table.data[i].termDueDate,
+                createdDate: this.table.data[i].createdDate,
+                createdBy: this.table.data[i].createdBy
+              }
+              docDefinition.content[1].table.body.push(Object.values(object));  
+          }
+
+          //Download PDF
+          pdfMake.createPdf(docDefinition).download('Collections Report - ' + moment().format("MM/DD/YYYY").toString() + '.pdf');
+        } else {
+          this.$refs.errorExport.open();
+        }
       },
       selectCustomer() {
         this.searchCustomerName = this.customerName;

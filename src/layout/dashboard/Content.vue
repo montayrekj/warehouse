@@ -71,11 +71,18 @@
       removeStocks(event, customerName) {
         event[0].modifiedBy = this.userId;
         customerName = "/" + customerName
-        window.location.href = "/#/orders/viewActiveOrders"
         axios
         .post(config.backend_host +'/removeStocks' + customerName, event).then(response => {
           if(response.data.statusCode === "OK"){
-              this.getProducts();
+              window.location.href = "/#/orders/viewActiveOrders"
+              var formData = new FormData();
+              formData.append("orderId", response.data.data.orderId)
+              axios
+                .post(config.backend_host +'/emailRegionalManager', formData).then(response => {
+                  if(response.data.statusCode === "OK"){ 
+
+                  }
+                })
           }
         })
       },
@@ -168,11 +175,19 @@
         var data = new FormData();
         data.append('orderId', event.orderId);
         data.append('approved', event.approved);
-        window.location.href="/#/orders/viewActiveOrders"
+        
         axios
         .post(config.backend_host + '/regionalManagerApproved', data).then(response => {
-         
           if(response.data.statusCode === "OK"){
+            window.location.href="/#/orders/viewActiveOrders"
+            var formData = new FormData();
+            formData.append("orderId", event.orderId)
+            axios
+              .post(config.backend_host +'/emailAccounting', formData).then(response => {
+                if(response.data.statusCode === "OK"){ 
+                  
+                }
+              })
           }
         })
       },
@@ -184,12 +199,18 @@
         data.append('termAmount', event.termAmount);
         data.append('termDueDate', event.termDueDate);
         data.append('userId', this.userId);
-        window.location.href="/#/orders/viewActiveOrders"
         axios
         .post(config.backend_host + '/accountingApproved', data).then(response => {
-          
           if(response.data.statusCode === "OK"){
-              
+            window.location.href="/#/orders/viewActiveOrders"
+            var formData = new FormData();
+            formData.append("orderId", event.orderId)
+            axios
+              .post(config.backend_host +'/emailChecker', formData).then(response => {
+                if(response.data.statusCode === "OK"){ 
+                  
+                }
+              })
           }
         })
       },
@@ -242,6 +263,18 @@
             //this.suppliers = response.data.data.map(arr => arr.supplierName);
             this.suppliers = response.data.data;
         })
+      },
+      getOrders() {
+        axios
+        .post(config.backend_host + '/getOrders')
+        .then(response => {
+          if(response.data.statusCode === "OK"){
+            for(var i = 0; i < response.data.data.length; i++) {
+              response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
+            }
+            this.orders = response.data.data;
+          }
+        })
       }
     }, 
     mounted() {
@@ -262,16 +295,7 @@
           }
         })
 
-        axios
-        .post(config.backend_host + '/getOrders')
-        .then(response => {
-          if(response.data.statusCode === "OK"){
-            for(var i = 0; i < response.data.data.length; i++) {
-              response.data.data[i].createdDate = moment(response.data.data[i].createdDate).format("MM/DD/YYYY");
-            }
-            this.orders = response.data.data;
-          }
-        })
+        this.getOrders();
 
         this.getSuppliers();
 

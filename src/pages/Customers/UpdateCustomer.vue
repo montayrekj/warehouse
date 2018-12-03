@@ -1,7 +1,7 @@
 <template>
-    <div class="row" style="max-height: calc(100vh - 88px);">
+    <div class="row" style="max-height: calc(100vh - 88px);  overflow: auto">
       <div class="col-12">
-        <card style="max-height: calc(100vh - 88px); overflow: auto">
+        <card style="max-height: calc(100vh - 88px);">
           <div class="row">
             <div class="form-group col-md-12">
               <label for="customerName" class="add-customer-label pull-left">Customer Name</label>

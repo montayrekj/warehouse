@@ -83,8 +83,12 @@
           <button slot="button" class="btn btn-danger" @click="closeAddSupplierModal" style="margin-right:5px">Cancel</button>
           <button slot="button" class="btn btn-success" @click="save" style="width:130px; margin-left:5px;">Add</button>
       </sweet-modal>
+      <!--Success Modal -->
+      <sweet-modal ref="addSupplierSuccessModal" icon="success" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
+        Successfully added supplier!
+      </sweet-modal>
       <!--Add Product Required Error Modal -->
-      <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" modal-theme="dark" :enable-mobile-fullscreen="false">
+      <sweet-modal ref="addErrorModal" icon="error" overlay-theme="dark" v-on:close="goBack" modal-theme="dark" :enable-mobile-fullscreen="false">
         {{this.errorMessage}}
       </sweet-modal>
     </div>
@@ -218,12 +222,18 @@
         this.$refs.addSupplierModal.open();
       },
       closeAddSupplierModal() {
+        this.supplier.name = "";
+        this.supplier.address = "";
+        this.supplier.contactNo = "";
         this.$refs.addSupplierModal.close();
       },
       save() {
         //this.$emit("addSupplier", this.supplier);
         this.addSupplierBE(this.supplier);
         this.$refs.addSupplierModal.close();
+      },
+      goBack() {
+        this.$refs.addSupplierModal.open();
       },
       addSupplierBE(item) {
         var data = new FormData();
@@ -239,7 +249,11 @@
               .post(config.backend_host + '/getSuppliers')
               .then(response => {
                 if(response.data.statusCode === "OK") {
-                  this.suppliers = response.data.data.map(arr => arr.supplierName)
+                  this.supplierList = response.data.data.map(arr => arr.supplierName)
+                  this.supplier.name = "";
+                  this.supplier.address = "";
+                  this.supplier.contactNo = "";
+                  this.$refs.addSupplierSuccessModal.open();
                 }
               })
           } else {
