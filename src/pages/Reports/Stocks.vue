@@ -18,7 +18,7 @@
                     <date-picker v-model="searchDateFrom" :input-class="'form-control input-calendar-color'" placeholder= "Enter date from..." :format="'MM/dd/yyyy'"></date-picker>
                 </div>
                 <div class="form-group col-md-6">
-                    <date-picker :value="searchDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
+                    <date-picker v-model="searchDateTo" :input-class="'form-control input-calendar-color'" placeholder= "Enter date to..." :format="'MM/dd/yyyy'"></date-picker>
                 </div>
               </div>
             </div-->

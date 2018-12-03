@@ -108,7 +108,7 @@
         <div class="row">
           <div class="form-group col-md-12">
             <label for="contactNo" class="add-customer-label pull-left">Term Due Date</label>
-            <date-picker :value="termDueDate" :input-class="'form-control input-calendar-color'" :format="'MM/dd/yyyy'"></date-picker>
+            <date-picker v-model="termDueDate" :input-class="'form-control input-calendar-color'" :format="'MM/dd/yyyy'"></date-picker>
           </div>
         </div>
         <div class="row">
