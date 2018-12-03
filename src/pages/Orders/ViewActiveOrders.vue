@@ -208,6 +208,13 @@
         var temp = item[column.Item];
         if(column.Item == "Balance")
           return this.computeBalance(item["totalAmount"], item["paidAmount"]);
+        else if(column.Item == "totalAmount") {
+          return "PHP " + temp.toLocaleString();
+        } else if(column.Item == "paidAmount") {
+          return "PHP " + temp.toLocaleString();
+        } else if(column.Item == "balance") {
+          return "PHP " + temp.toLocaleString();
+        }
 
         return temp;
       },

@@ -158,7 +158,12 @@
         return item[column.Item] !== "undefined";
       },
       itemValue(item, column) {
-        return item[column.Item];
+        if(column.Item == "quantity" || column.Item == "quantityLimit")
+          return item[column.Item].toLocaleString();
+        else if(column.Item == "buyPrice" || column.Item == "sellPrice")
+          return "PHP " + item[column.Item].toLocaleString();
+        else
+          return item[column.Item];
       },
       deleteWarn(index) {
         this.$emit("changeSample", !this.sample)

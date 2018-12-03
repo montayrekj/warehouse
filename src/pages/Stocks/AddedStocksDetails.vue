@@ -51,6 +51,11 @@
         return item[column.Item] !== "undefined";
       },
       itemValue(item, column) {
+         if(column.Item == "buyPrice") {
+          return "PHP " + item[column.Item].toLocaleString();
+        } else if(column.Item == "quantityAdded") {
+          return item[column.Item].toLocaleString();
+        }
         return item[column.Item];
       },
       getItemById(id){

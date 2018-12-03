@@ -220,8 +220,9 @@
         axios
         .post(config.backend_host + '/getProducts')
         .then(response => {
-          if(response.data.statusCode === "OK")
+          if(response.data.statusCode === "OK") {
             this.products = response.data.data;
+          }
         })
       },
       getCustomers() {
@@ -248,12 +249,7 @@
       this.userId = user.userId;
 
       //Get All Products
-       axios
-        .post(config.backend_host + '/getProducts')
-        .then(response => {
-          if(response.data.statusCode === "OK")
-            this.products = response.data.data;
-        })
+       this.getProducts();
 
         axios
         .post(config.backend_host + '/getPurchasesLogs')

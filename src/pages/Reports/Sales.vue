@@ -202,7 +202,9 @@
       },
       itemValue(item, column) {
         var temp = item[column.Item];
-
+        if(column.Item == "amount") {
+          return "PHP " + temp.toLocaleString();
+        }
         return temp;
       },
       clearSearchType() {

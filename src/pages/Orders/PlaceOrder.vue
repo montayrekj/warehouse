@@ -73,7 +73,7 @@
             <div class="col-xl-6"></div>
             <div class="col-xl-3">
               <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px;color: #bfbfc5;">TOTAL AMOUNT</label>
-              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount.toFixed(2)}}</label>
+              <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{"PHP " + totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}}</label>
             </div>
             <div class="col-xl-1"></div>
             <div class="col-xl-2">
@@ -209,6 +209,11 @@
         return item[column.Item] !== "undefined";
       },
       itemValue(item, column) {
+        if(column.Item == "buyPrice") {
+          return "PHP " + item[column.Item].toLocaleString();
+        } else if(column.Item == "quantity") {
+          return item[column.Item].toLocaleString();
+        }
         return item[column.Item];
       },
       quantityChangeColumn(column){

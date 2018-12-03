@@ -5,7 +5,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Daily Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-primary "></i> {{dailySales}} </h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-primary "></i> {{"₱ " + dailySales.toLocaleString()}} </h3>
           </template>
         </card>
       </div>
@@ -13,7 +13,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Weekly Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-info "></i> {{weeklySales}} </h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-info "></i> {{"₱ " + weeklySales.toLocaleString()}} </h3>
           </template>
         </card>
       </div>
@@ -21,7 +21,7 @@
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">Monthly Sales</h5>
-            <h3 class="card-title"><i class="tim-icons icon-money-coins text-success "></i> {{monthlySales}} </h3>
+            <h3 class="card-title"><i class="tim-icons icon-money-coins text-success "></i> {{"₱ " + monthlySales.toLocaleString()}} </h3>
           </template>
         </card>
       </div>
@@ -209,6 +209,9 @@
         .post(config.backend_host + '/getProductsBelowLimit')
         .then(response => {
           if(response.data.statusCode === "OK")
+            for(var i = 0; i < response.data.data.length; i++) {
+              response.data.data[i].quantity = response.data.data[i].quantity.toLocaleString();
+            }
             this.table.data = response.data.data;
         })
 

@@ -70,7 +70,7 @@
           <div class="col-xl-8"></div>
           <div class="col-xl-3">
             <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px;color: #bfbfc5;">TOTAL AMOUNT</label>
-            <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{totalAmount}}</label>
+            <label style="text-align:center; font-weight:bold; padding-top: 20px;font-size: 14px; color: #bfbfc5; float:right">{{"PHP " + totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}}</label>
           </div>  
         </div>
       </card>
@@ -272,6 +272,11 @@
         return item[column.Item] !== "undefined";
       },
       itemValue(item, column) {
+        if(column.Item == "sellPrice") {
+          return "PHP " + item[column.Item].toLocaleString();
+        } else if(column.Item == "quantitySold") {
+          return item[column.Item].toLocaleString();
+        }
         return item[column.Item];
       },
       showCardByUserType(type){
@@ -341,7 +346,6 @@
           .post(config.backend_host + '/confirmQuantity', this.salesLogsModel)
           .then(response => {
             if(response.data.statusCode === "OK"){
-              console.log(response.data.data)
               if(response.data.data.length == 0) {
                 this.$emit('checkerConfirmOrder', this.salesLogsModel);
                 if(this.table.data.length <= 9)

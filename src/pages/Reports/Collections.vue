@@ -230,6 +230,9 @@
         var temp = item[column.Item];
         if(column.Item == "Balance")
           return this.computeBalance(item["Total_Amount"], item["Paid_Amount"]);
+        else if(column.Item == "termAmount") {
+          return "PHP " + temp.toLocaleString();
+        }
 
         return temp;
       },

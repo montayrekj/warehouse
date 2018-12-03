@@ -54,7 +54,6 @@
         {{errorMessage}}
       </sweet-modal>
     </div>
-    </div>
 </template>
 <script>
   import { SweetModal, SweetModalTab } from 'sweet-modal-vue'

@@ -142,7 +142,9 @@
       },
       itemValue(item, column) {
         var temp = item[column.Item];
-
+        if(column.Item == "quantityIn" || column.Item == "quantityOut") {
+          return temp.toLocaleString();
+        }
         return temp;
       },
       exportToPDF() {
